@@ -240,18 +240,44 @@ fn validate_no_courtyard_overlap(lowered: &LoweredProgram) -> Vec<ValidationErro
 
 fn validate_openings_on_walls(geometry: &GeometryIr) -> Vec<ValidationError> {
     let wall_ids: HashSet<&str> = geometry.walls.iter().map(|w| w.id.as_str()).collect();
-    geometry
-        .openings
-        .iter()
-        .filter(|opening| !wall_ids.contains(opening.wall_id.as_str()))
-        .map(|opening| {
-            ValidationError::new(
-                ErrorCode::OpeningNotOnWall,
-                format!("Opening \"{}\" is not placed on a valid wall", opening.id),
-            )
-            .detail("openingId", json!(opening.id))
-        })
-        .collect()
+    let mut errors = Vec::new();
+    for opening in &geometry.openings {
+        let Some(wall) = geometry
+            .walls
+            .iter()
+            .find(|wall| wall.id == opening.wall_id)
+        else {
+            if !wall_ids.contains(opening.wall_id.as_str()) {
+                errors.push(
+                    ValidationError::new(
+                        ErrorCode::OpeningNotOnWall,
+                        format!("Opening \"{}\" is not placed on a valid wall", opening.id),
+                    )
+                    .detail("openingId", json!(opening.id)),
+                );
+            }
+            continue;
+        };
+
+        let wall_length = dist(wall.start, wall.end);
+        let start = opening.position - opening.width / 2.0;
+        let end = opening.position + opening.width / 2.0;
+        if opening.width > wall_length + 1e-6 || start < -1e-6 || end > wall_length + 1e-6 {
+            errors.push(
+                ValidationError::new(
+                    ErrorCode::OpeningExceedsWall,
+                    format!(
+                        "Opening \"{}\" width {} exceeds wall segment length {}",
+                        opening.id, opening.width, wall_length
+                    ),
+                )
+                .detail("openingId", json!(opening.id))
+                .detail("width", json!(opening.width))
+                .detail("wallLength", json!(wall_length)),
+            );
+        }
+    }
+    errors
 }
 
 fn validate_objects_inside_rooms(geometry: &GeometryIr) -> Vec<ValidationError> {

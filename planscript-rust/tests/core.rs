@@ -1,3 +1,4 @@
+use planscript::ast::DoorSwing;
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
 use planscript::geometry::{calculate_polygon_area, generate_geometry};
@@ -170,4 +171,101 @@ fn renders_compass_reference_geometry() {
     assert!(svg.contains(
         r##"<text x="940.00" y="85.00" font-size="6.00" fill="#e74c3c" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 940.00, 85.00)">STREET</text>"##
     ));
+}
+
+#[test]
+fn renders_handed_and_double_door_swings() {
+    let source = r#"
+        units m
+        defaults {
+          door_width 0.9
+        }
+
+        plan {
+          footprint rect (0,0) (12,8)
+          room foyer { rect (0,0) (4,8) }
+          room living { rect (4,0) (12,8) }
+
+          opening door d_entry {
+            on foyer.edge south
+            at 50%
+            swing rhr
+          }
+
+          opening double door d_living {
+            between foyer and living
+            on shared_edge
+            at 50%
+            swing lh
+          }
+
+          opening door d_custom {
+            on living.edge north
+            at 50%
+            width 1.2
+            swing rh
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    let doors = &ast.plan.openings;
+    assert_eq!(doors.len(), 3);
+
+    let lowered = lower(&ast).expect("lower");
+    let geometry = generate_geometry(&lowered);
+    let entry = geometry
+        .openings
+        .iter()
+        .find(|opening| opening.id == "d_entry")
+        .unwrap();
+    assert_eq!(entry.width, 0.9);
+    assert_eq!(entry.swing, Some(DoorSwing::RightHandReverse));
+    assert!(!entry.double);
+
+    let double = geometry
+        .openings
+        .iter()
+        .find(|opening| opening.id == "d_living")
+        .unwrap();
+    assert_eq!(double.width, 1.8);
+    assert_eq!(double.swing, Some(DoorSwing::LeftHand));
+    assert!(double.double);
+
+    let custom = geometry
+        .openings
+        .iter()
+        .find(|opening| opening.id == "d_custom")
+        .unwrap();
+    assert_eq!(custom.width, 1.2);
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.unwrap();
+    assert_eq!(svg.matches(r#"class="door-swing""#).count(), 4);
+    assert_eq!(svg.matches(r#"class="door-leaf""#).count(), 4);
+}
+
+#[test]
+fn rejects_door_width_that_exceeds_wall() {
+    let source = r#"
+        plan {
+          footprint rect (0,0) (4,4)
+          room r { rect (0,0) (4,4) }
+          opening door d_too_wide {
+            on r.edge south
+            at 50%
+            width 5.0
+            swing lh
+          }
+          assert openings_on_walls
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(!result.success);
+    assert!(result
+        .errors
+        .iter()
+        .any(|error| error.code.as_deref() == Some("E311")));
 }

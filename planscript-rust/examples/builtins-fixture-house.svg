@@ -40,10 +40,10 @@
     <path class="object-clearance" d="M 595.20 60.00 L 554.40 60.00 L 554.40 199.40 L 595.20 199.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 445.60 60.00 L 404.80 60.00 L 404.80 199.40 L 445.60 199.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 700.60 406.80 L 843.40 406.80 L 843.40 355.80 L 700.60 355.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 710.80 202.80 L 833.20 202.80 L 833.20 151.80 L 710.80 151.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 710.80 315.00 L 833.20 315.00 L 833.20 264.00 L 710.80 264.00 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 659.80 264.00 L 710.80 264.00 L 710.80 202.80 L 659.80 202.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 833.20 264.00 L 884.20 264.00 L 884.20 202.80 L 833.20 202.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 710.80 202.80 L 833.20 202.80 L 833.20 151.80 L 710.80 151.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path data-object="wc1" data-catalog-id="builtin.sanitary.toilet.floor_mounted" d="M 92.00 659.08 L 92.00 684.92 L 138.24 684.92 L 138.24 659.08 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
     <circle data-object-origin="wc1" cx="92.00" cy="672.00" r="2.5" fill="#8a6d3b" />
     <path data-object="lav1" data-catalog-id="builtin.sanitary.sink.wall_hung" d="M 178.70 468.00 L 141.30 468.00 L 141.30 498.60 L 178.70 498.60 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />

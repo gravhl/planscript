@@ -19,9 +19,9 @@
 
 
   <!-- Objects / Fixtures -->
-  <path class="object-clearance" d="M 60.00 424.20 L 60.00 437.40 L 99.60 437.40 L 99.60 424.20 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+  <path class="object-clearance" d="M 99.60 375.80 L 99.60 424.20 L 161.20 424.20 L 161.20 375.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 60.00 362.60 L 60.00 375.80 L 99.60 375.80 L 99.60 362.60 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 99.60 375.80 L 99.60 424.20 L 161.20 424.20 L 161.20 375.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 60.00 424.20 L 60.00 437.40 L 99.60 437.40 L 99.60 424.20 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 407.60 584.80 L 592.40 584.80 L 592.40 518.80 L 407.60 518.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path data-object="ifc_basin1" data-catalog-id="open.buildingsmart.basin" d="M 121.50 628.80 L 174.50 628.80 L 174.50 591.63 L 121.50 591.63 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
     <circle data-object-origin="ifc_basin1" cx="148.00" cy="628.80" r="2.5" fill="#8a6d3b" />

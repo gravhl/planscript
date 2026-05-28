@@ -1,4 +1,4 @@
-use crate::ast::{CardinalDirection, Point, Program};
+use crate::ast::{CardinalDirection, DoorSwing, Point, Program};
 use crate::geometry::{
     GeometryIr, OpeningPlacementType, Polygon, ResolvedCourtyard, ResolvedRoom, WallSegment,
 };
@@ -426,20 +426,16 @@ fn generate_openings_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions)
         let ux = dx / wall_length;
         let uy = dy / wall_length;
         let half = opening.width / 2.0;
-        let p1 = transform_point(
-            Point {
-                x: center.x - ux * half,
-                y: center.y - uy * half,
-            },
-            t,
-        );
-        let p2 = transform_point(
-            Point {
-                x: center.x + ux * half,
-                y: center.y + uy * half,
-            },
-            t,
-        );
+        let plan_p1 = Point {
+            x: center.x - ux * half,
+            y: center.y - uy * half,
+        };
+        let plan_p2 = Point {
+            x: center.x + ux * half,
+            y: center.y + uy * half,
+        };
+        let p1 = transform_point(plan_p1, t);
+        let p2 = transform_point(plan_p2, t);
         let (color, stroke) = match opening.opening_type {
             OpeningPlacementType::Door => (&opts.door_color, 4.0),
             OpeningPlacementType::Window => (&opts.window_color, 3.0),
@@ -453,8 +449,129 @@ fn generate_openings_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions)
             color,
             number(stroke)
         ));
+        if opening.opening_type == OpeningPlacementType::Door
+            && (opening.swing.is_some() || opening.double)
+        {
+            out.push(render_door_swing(opening, plan_p1, plan_p2, t, color));
+        }
     }
     out.join("\n    ")
+}
+
+fn render_door_swing(
+    opening: &crate::geometry::OpeningPlacement,
+    plan_p1: Point,
+    plan_p2: Point,
+    t: Transform,
+    color: &str,
+) -> String {
+    let outside = opening.outside_normal.unwrap_or(Point { x: 0.0, y: -1.0 });
+    let open_normal = if opening.swing.is_some_and(DoorSwing::opens_to_outside) {
+        outside
+    } else {
+        Point {
+            x: -outside.x,
+            y: -outside.y,
+        }
+    };
+
+    if opening.double {
+        let center = midpoint(plan_p1, plan_p2);
+        let leaf_width = opening.width / 2.0;
+        return [
+            render_door_leaf(plan_p1, center, open_normal, leaf_width, t, color),
+            render_door_leaf(plan_p2, center, open_normal, leaf_width, t, color),
+        ]
+        .join("\n    ");
+    }
+
+    let swing = opening.swing.unwrap_or(DoorSwing::LeftHand);
+    let (left, right) = left_right_points_from_outside(plan_p1, plan_p2, outside);
+    let (hinge, closed_free) = if swing.hinge_is_left() {
+        (left, right)
+    } else {
+        (right, left)
+    };
+    render_door_leaf(hinge, closed_free, open_normal, opening.width, t, color)
+}
+
+fn render_door_leaf(
+    hinge: Point,
+    closed_free: Point,
+    open_normal: Point,
+    leaf_width: f64,
+    t: Transform,
+    color: &str,
+) -> String {
+    let open_free = Point {
+        x: hinge.x + open_normal.x * leaf_width,
+        y: hinge.y + open_normal.y * leaf_width,
+    };
+    let svg_hinge = transform_point(hinge, t);
+    let svg_closed = transform_point(closed_free, t);
+    let svg_open = transform_point(open_free, t);
+    let radius = leaf_width * t.scale;
+    let sweep = arc_sweep(svg_hinge, svg_closed, svg_open);
+    format!(
+        r#"<line class="door-leaf" x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M {:.2} {:.2} A {:.2} {:.2} 0 0 {} {:.2} {:.2}" fill="none" stroke="{}" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />"#,
+        svg_hinge.x,
+        svg_hinge.y,
+        svg_open.x,
+        svg_open.y,
+        color,
+        svg_closed.x,
+        svg_closed.y,
+        radius,
+        radius,
+        sweep,
+        svg_open.x,
+        svg_open.y,
+        color
+    )
+}
+
+fn left_right_points_from_outside(p1: Point, p2: Point, outside: Point) -> (Point, Point) {
+    let view = Point {
+        x: -outside.x,
+        y: -outside.y,
+    };
+    let right = Point {
+        x: view.y,
+        y: -view.x,
+    };
+    if dot(p1, right) <= dot(p2, right) {
+        (p1, p2)
+    } else {
+        (p2, p1)
+    }
+}
+
+fn midpoint(a: Point, b: Point) -> Point {
+    Point {
+        x: (a.x + b.x) / 2.0,
+        y: (a.y + b.y) / 2.0,
+    }
+}
+
+fn dot(a: Point, b: Point) -> f64 {
+    a.x * b.x + a.y * b.y
+}
+
+fn arc_sweep(hinge: Point, closed: Point, open: Point) -> u8 {
+    let start = Point {
+        x: closed.x - hinge.x,
+        y: closed.y - hinge.y,
+    };
+    let end = Point {
+        x: open.x - hinge.x,
+        y: open.y - hinge.y,
+    };
+    if start.x * end.y - start.y * end.x > 0.0 {
+        1
+    } else {
+        0
+    }
 }
 
 fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -> String {

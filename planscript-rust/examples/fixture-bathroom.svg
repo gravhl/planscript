@@ -19,9 +19,9 @@
 
 
   <!-- Objects / Fixtures -->
-  <path class="object-clearance" d="M 75.00 636.30 L 75.00 670.30 L 190.60 670.30 L 190.60 636.30 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 190.60 571.70 L 190.60 636.30 L 318.10 636.30 L 318.10 571.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+  <path class="object-clearance" d="M 190.60 571.70 L 190.60 636.30 L 318.10 636.30 L 318.10 571.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 75.00 537.70 L 75.00 571.70 L 190.60 571.70 L 190.60 537.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 75.00 636.30 L 75.00 670.30 L 190.60 670.30 L 190.60 636.30 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 291.75 136.50 L 198.25 136.50 L 198.25 255.50 L 291.75 255.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 317.25 60.00 L 291.75 60.00 L 291.75 136.50 L 317.25 136.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 198.25 60.00 L 172.75 60.00 L 172.75 136.50 L 198.25 136.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />

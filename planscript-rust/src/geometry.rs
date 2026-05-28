@@ -1,4 +1,4 @@
-use crate::ast::{ClearanceSide, EdgeSide, Opening, Point, Position};
+use crate::ast::{ClearanceSide, DoorSwing, EdgeSide, Opening, Point, Position};
 use crate::lowering::LoweredProgram;
 use serde::{Deserialize, Serialize};
 
@@ -35,9 +35,19 @@ pub struct OpeningPlacement {
     pub position: f64,
     pub width: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub swing: Option<String>,
+    pub swing: Option<DoorSwing>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub swing_room: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub double: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outside_normal: Option<Point>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sill: Option<f64>,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -91,6 +101,9 @@ pub struct GeometryIr {
     pub walls: Vec<WallSegment>,
     pub openings: Vec<OpeningPlacement>,
 }
+
+const STANDARD_DOOR_WIDTH: f64 = 0.9;
+const STANDARD_WINDOW_WIDTH: f64 = 1.2;
 
 #[derive(Debug, Clone)]
 struct Edge {
@@ -494,10 +507,11 @@ fn place_openings(
                             opening_type: OpeningPlacementType::Door,
                             wall_id: shared.id.clone(),
                             position: resolve_position(&door.at, len),
-                            width: door
-                                .width
-                                .unwrap_or(lowered.defaults.door_width.unwrap_or(0.9)),
-                            swing: door.swing.clone(),
+                            width: resolve_door_width(door.width, door.double, lowered),
+                            swing: door.swing,
+                            swing_room: door.swing_room.clone(),
+                            double: door.double,
+                            outside_normal: room_side_normal(shared, rooms, room1),
                             sill: None,
                         });
                     }
@@ -509,10 +523,11 @@ fn place_openings(
                             opening_type: OpeningPlacementType::Door,
                             wall_id: target.id.clone(),
                             position: resolve_position(&door.at, len),
-                            width: door
-                                .width
-                                .unwrap_or(lowered.defaults.door_width.unwrap_or(0.9)),
-                            swing: door.swing.clone(),
+                            width: resolve_door_width(door.width, door.double, lowered),
+                            swing: door.swing,
+                            swing_room: door.swing_room.clone(),
+                            double: door.double,
+                            outside_normal: Some(edge_outside_normal(edge)),
                             sill: None,
                         });
                     }
@@ -528,10 +543,16 @@ fn place_openings(
                         opening_type: OpeningPlacementType::Window,
                         wall_id: target.id.clone(),
                         position: resolve_position(&window.at, len),
-                        width: window
-                            .width
-                            .unwrap_or(lowered.defaults.window_width.unwrap_or(1.2)),
+                        width: window.width.unwrap_or(
+                            lowered
+                                .defaults
+                                .window_width
+                                .unwrap_or(STANDARD_WINDOW_WIDTH),
+                        ),
                         swing: None,
+                        swing_room: None,
+                        double: false,
+                        outside_normal: Some(edge_outside_normal(window.edge)),
                         sill: window.sill,
                     });
                 }
@@ -540,6 +561,81 @@ fn place_openings(
     }
 
     placements
+}
+
+fn resolve_door_width(width: Option<f64>, double: bool, lowered: &LoweredProgram) -> f64 {
+    let standard = lowered.defaults.door_width.unwrap_or(STANDARD_DOOR_WIDTH);
+    width.unwrap_or(if double { standard * 2.0 } else { standard })
+}
+
+fn edge_outside_normal(edge: EdgeSide) -> Point {
+    match edge {
+        EdgeSide::North => Point { x: 0.0, y: 1.0 },
+        EdgeSide::South => Point { x: 0.0, y: -1.0 },
+        EdgeSide::East => Point { x: 1.0, y: 0.0 },
+        EdgeSide::West => Point { x: -1.0, y: 0.0 },
+    }
+}
+
+fn room_side_normal(wall: &WallSegment, rooms: &[ResolvedRoom], room_name: &str) -> Option<Point> {
+    let room = rooms.iter().find(|room| room.name == room_name)?;
+    let center = polygon_center(&room.polygon.points)?;
+    let mid = Point {
+        x: (wall.start.x + wall.end.x) / 2.0,
+        y: (wall.start.y + wall.end.y) / 2.0,
+    };
+    let wall_vector = Point {
+        x: wall.end.x - wall.start.x,
+        y: wall.end.y - wall.start.y,
+    };
+    let normal = normalize(Point {
+        x: -wall_vector.y,
+        y: wall_vector.x,
+    })?;
+    let toward_room = Point {
+        x: center.x - mid.x,
+        y: center.y - mid.y,
+    };
+    if dot(normal, toward_room) >= 0.0 {
+        Some(normal)
+    } else {
+        Some(Point {
+            x: -normal.x,
+            y: -normal.y,
+        })
+    }
+}
+
+fn polygon_center(points: &[Point]) -> Option<Point> {
+    if points.is_empty() {
+        return None;
+    }
+    let sum = points
+        .iter()
+        .fold(Point { x: 0.0, y: 0.0 }, |acc, p| Point {
+            x: acc.x + p.x,
+            y: acc.y + p.y,
+        });
+    Some(Point {
+        x: sum.x / points.len() as f64,
+        y: sum.y / points.len() as f64,
+    })
+}
+
+fn normalize(vector: Point) -> Option<Point> {
+    let length = (vector.x * vector.x + vector.y * vector.y).sqrt();
+    if length <= 1e-10 {
+        None
+    } else {
+        Some(Point {
+            x: vector.x / length,
+            y: vector.y / length,
+        })
+    }
+}
+
+fn dot(a: Point, b: Point) -> f64 {
+    a.x * b.x + a.y * b.y
 }
 
 fn find_wall_on_room_edge<'a>(

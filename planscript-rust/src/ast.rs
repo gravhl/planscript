@@ -378,7 +378,51 @@ pub struct DoorOpening {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub width: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub swing: Option<String>,
+    pub swing: Option<DoorSwing>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub swing_room: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub double: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum DoorSwing {
+    #[serde(rename = "lh")]
+    LeftHand,
+    #[serde(rename = "rh")]
+    RightHand,
+    #[serde(rename = "lhr")]
+    LeftHandReverse,
+    #[serde(rename = "rhr")]
+    RightHandReverse,
+}
+
+impl DoorSwing {
+    pub fn from_token(raw: &str) -> Option<Self> {
+        match raw.to_ascii_lowercase().as_str() {
+            "lh" | "left" | "left_hand" | "left-hand" => Some(Self::LeftHand),
+            "rh" | "right" | "right_hand" | "right-hand" => Some(Self::RightHand),
+            "lhr" | "left_reverse" | "left_hand_reverse" | "left-hand-reverse" => {
+                Some(Self::LeftHandReverse)
+            }
+            "rhr" | "right_reverse" | "right_hand_reverse" | "right-hand-reverse" => {
+                Some(Self::RightHandReverse)
+            }
+            _ => None,
+        }
+    }
+
+    pub fn opens_to_outside(self) -> bool {
+        matches!(self, Self::LeftHandReverse | Self::RightHandReverse)
+    }
+
+    pub fn hinge_is_left(self) -> bool {
+        matches!(self, Self::LeftHand | Self::LeftHandReverse)
+    }
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
