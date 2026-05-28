@@ -1,4 +1,6 @@
-use planscript::catalog::{candidate_ifc_item_from_file, Catalog};
+use planscript::catalog::{
+    candidate_ifc_item_from_file, lint_catalog_item, Catalog, CatalogItem, CatalogLintSeverity,
+};
 use planscript::compiler::{compile, CompileOptions, CompilePhase};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
 use planscript::solver::{
@@ -68,6 +70,8 @@ Catalog Subcommands:
   catalog list                              List built-in object IDs
   catalog show <id>                         Print a built-in object as .psobj.json
   catalog import-ifc <file.ifc> --id <id> --category <name> [--out <path>]
+  catalog lint <file-or-dir>                 Validate .psobj.json catalog items
+  catalog approve <file> [--out <file>]      Mark a reviewed catalog item approved
 "#
     );
 }
@@ -236,6 +240,8 @@ fn run_catalog(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         "import-ifc" => run_catalog_import_ifc(&args[1..]),
+        "lint" => run_catalog_lint(&args[1..]),
+        "approve" => run_catalog_approve(&args[1..]),
         other => Err(format!("Unknown catalog subcommand: {other}")),
     }
 }
@@ -294,6 +300,120 @@ fn run_catalog_import_ifc(args: &[String]) -> Result<(), String> {
         println!("{json}");
     }
     Ok(())
+}
+
+fn run_catalog_lint(args: &[String]) -> Result<(), String> {
+    if args.is_empty() {
+        return Err("Usage: planscript-rust catalog lint <file-or-dir>".to_string());
+    }
+    let files = collect_catalog_files(PathBuf::from(&args[0]))?;
+    if files.is_empty() {
+        return Err(format!("No .psobj.json files found in {}", args[0]));
+    }
+
+    let mut errors = 0usize;
+    let mut warnings = 0usize;
+    for file in files {
+        let item = read_catalog_item(&file)?;
+        let issues = lint_catalog_item(&item);
+        if issues.is_empty() {
+            println!("{}: ok", file.display());
+            continue;
+        }
+        for issue in issues {
+            match issue.severity {
+                CatalogLintSeverity::Error => {
+                    errors += 1;
+                    println!("{}: error: {}", file.display(), issue.message);
+                }
+                CatalogLintSeverity::Warning => {
+                    warnings += 1;
+                    println!("{}: warning: {}", file.display(), issue.message);
+                }
+            }
+        }
+    }
+    println!("Catalog lint complete: {errors} error(s), {warnings} warning(s)");
+    if errors > 0 {
+        Err(String::new())
+    } else {
+        Ok(())
+    }
+}
+
+fn run_catalog_approve(args: &[String]) -> Result<(), String> {
+    if args.is_empty() {
+        return Err("Usage: planscript-rust catalog approve <file> [--out <file>]".to_string());
+    }
+    let input = PathBuf::from(&args[0]);
+    let mut out = None;
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--out" if i + 1 < args.len() => {
+                out = Some(PathBuf::from(&args[i + 1]));
+                i += 2;
+            }
+            _ => i += 1,
+        }
+    }
+    let mut item = read_catalog_item(&input)?;
+    item.status = Some("approved".to_string());
+    item.needs_review.clear();
+    let issues = lint_catalog_item(&item);
+    let has_errors = issues
+        .iter()
+        .any(|issue| issue.severity == CatalogLintSeverity::Error);
+    if has_errors {
+        let mut message = String::from("Cannot approve catalog item:\n");
+        for issue in issues {
+            if issue.severity == CatalogLintSeverity::Error {
+                message.push_str(&format!("  - {}\n", issue.message));
+            }
+        }
+        return Err(message);
+    }
+    let output = out.unwrap_or(input);
+    let json = serde_json::to_string_pretty(&item)
+        .map_err(|e| format!("Failed to serialize approved catalog item: {e}"))?;
+    fs::write(&output, json).map_err(|e| format!("{}: error: {e}", output.display()))?;
+    println!("Catalog item approved: {}", output.display());
+    Ok(())
+}
+
+fn collect_catalog_files(path: PathBuf) -> Result<Vec<PathBuf>, String> {
+    if path.is_file() {
+        return Ok(if is_catalog_filename(&path) {
+            vec![path]
+        } else {
+            Vec::new()
+        });
+    }
+    if path.is_dir() {
+        let mut files = Vec::new();
+        let entries = fs::read_dir(&path).map_err(|e| format!("{}: error: {e}", path.display()))?;
+        for entry in entries {
+            let entry = entry.map_err(|e| format!("{}: error: {e}", path.display()))?;
+            let entry_path = entry.path();
+            if entry_path.is_file() && is_catalog_filename(&entry_path) {
+                files.push(entry_path);
+            }
+        }
+        files.sort();
+        return Ok(files);
+    }
+    Err(format!("{}: no such file or directory", path.display()))
+}
+
+fn is_catalog_filename(path: &std::path::Path) -> bool {
+    path.file_name()
+        .and_then(|name| name.to_str())
+        .is_some_and(|name| name.ends_with(".psobj.json"))
+}
+
+fn read_catalog_item(path: &std::path::Path) -> Result<CatalogItem, String> {
+    let text = fs::read_to_string(path).map_err(|e| format!("{}: error: {e}", path.display()))?;
+    serde_json::from_str(&text).map_err(|e| format!("{}: error: {e}", path.display()))
 }
 
 fn run_solve(args: &[String]) -> Result<(), String> {

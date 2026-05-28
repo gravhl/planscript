@@ -135,6 +135,13 @@ cargo run -- catalog import-ifc ./toilet.ifc \
   --out ./catalog/vendor
 ```
 
+Review and approve candidates with:
+
+```bash
+cargo run -- catalog lint ./catalog/vendor.toilet.compact.psobj.json
+cargo run -- catalog approve ./catalog/vendor.toilet.compact.psobj.json
+```
+
 This command intentionally writes a candidate with `needsReview` fields. The current Rust-native importer reads IFC STEP text and attempts to extract:
 
 - IFC class and predefined type

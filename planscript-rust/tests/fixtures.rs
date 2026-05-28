@@ -1,4 +1,6 @@
-use planscript::catalog::{candidate_ifc_item_from_file, Catalog, CatalogItem};
+use planscript::catalog::{
+    candidate_ifc_item_from_file, lint_catalog_item, Catalog, CatalogItem, CatalogLintSeverity,
+};
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::JsonExportOptions;
 use planscript::parse;
@@ -207,4 +209,25 @@ END-ISO-10303-21;"#,
     assert!((item.size.height.unwrap() - 0.78).abs() < 0.001);
     assert!(item.needs_review.contains(&"unit-scale".to_string()));
     let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn lints_candidate_catalog_items_before_approval() {
+    let mut item = Catalog::builtins()
+        .get("builtin.sanitary.toilet.floor_mounted")
+        .expect("toilet builtin")
+        .clone();
+    item.status = Some("candidate".to_string());
+    item.needs_review = vec!["license".to_string()];
+
+    let issues = lint_catalog_item(&item);
+    assert!(issues
+        .iter()
+        .any(|issue| issue.severity == CatalogLintSeverity::Warning));
+
+    item.status = Some("approved".to_string());
+    let issues = lint_catalog_item(&item);
+    assert!(issues
+        .iter()
+        .any(|issue| issue.severity == CatalogLintSeverity::Error));
 }
