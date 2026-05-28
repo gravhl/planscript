@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 92.00 740.00 L 908.00 740.00 L 908.00 60.00 L 92.00 60.00 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 92.00 740.00 L 364.00 740.00 L 364.00 468.00 L 92.00 468.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 364.00 740.00 L 908.00 740.00 L 908.00 468.00 L 364.00 468.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 92.00 468.00 L 364.00 468.00 L 364.00 264.00 L 92.00 264.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 364.00 468.00 L 636.00 468.00 L 636.00 60.00 L 364.00 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 636.00 468.00 L 908.00 468.00 L 908.00 60.00 L 636.00 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+  <path d="M 138.24 659.08 L 138.24 684.92 L 189.24 684.92 L 189.24 659.08 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 92.00 684.92 L 92.00 698.52 L 138.24 698.52 L 138.24 684.92 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 92.00 645.48 L 92.00 659.08 L 138.24 659.08 L 138.24 645.48 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 141.30 468.00 L 131.10 468.00 L 131.10 498.60 L 141.30 498.60 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 188.90 468.00 L 178.70 468.00 L 178.70 498.60 L 188.90 498.60 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 178.70 498.60 L 141.30 498.60 L 141.30 546.20 L 178.70 546.20 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 279.00 665.20 L 340.20 665.20 L 340.20 617.60 L 279.00 617.60 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 313.00 607.40 L 313.00 491.80 L 265.40 491.80 L 265.40 607.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 459.20 508.80 L 404.80 508.80 L 404.80 559.80 L 459.20 559.80 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 588.40 512.20 L 547.60 512.20 L 547.60 573.40 L 588.40 573.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 857.00 702.60 L 857.00 641.40 L 795.80 641.40 L 795.80 702.60 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 182.10 308.20 L 137.90 308.20 L 137.90 369.40 L 182.10 369.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 277.30 308.20 L 233.10 308.20 L 233.10 369.40 L 277.30 369.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 445.60 60.00 L 404.80 60.00 L 404.80 199.40 L 445.60 199.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 554.40 199.40 L 445.60 199.40 L 445.60 250.40 L 554.40 250.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 595.20 60.00 L 554.40 60.00 L 554.40 199.40 L 595.20 199.40 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 700.60 406.80 L 843.40 406.80 L 843.40 355.80 L 700.60 355.80 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 710.80 202.80 L 833.20 202.80 L 833.20 151.80 L 710.80 151.80 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 710.80 315.00 L 833.20 315.00 L 833.20 264.00 L 710.80 264.00 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 659.80 264.00 L 710.80 264.00 L 710.80 202.80 L 659.80 202.80 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 833.20 264.00 L 884.20 264.00 L 884.20 202.80 L 833.20 202.80 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path data-object="wc1" data-catalog-id="builtin.sanitary.toilet.floor_mounted" d="M 92.00 659.08 L 92.00 684.92 L 138.24 684.92 L 138.24 659.08 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="wc1" cx="92.00" cy="672.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="lav1" data-catalog-id="builtin.sanitary.sink.wall_hung" d="M 178.70 468.00 L 141.30 468.00 L 141.30 498.60 L 178.70 498.60 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="lav1" cx="160.00" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="shower1" data-catalog-id="builtin.sanitary.shower.size_900x900" d="M 279.00 726.40 L 340.20 726.40 L 340.20 665.20 L 279.00 665.20 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="shower1" cx="309.60" cy="726.40" r="2.5" fill="#8a6d3b" />
+    <path data-object="tub1" data-catalog-id="builtin.sanitary.tub.size_1700" d="M 364.00 607.40 L 364.00 491.80 L 313.00 491.80 L 313.00 607.40 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="tub1" cx="364.00" cy="549.60" r="2.5" fill="#8a6d3b" />
+    <path data-object="kitchen_sink1" data-catalog-id="builtin.kitchen.sink" d="M 459.20 468.00 L 404.80 468.00 L 404.80 508.80 L 459.20 508.80 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="kitchen_sink1" cx="432.00" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="range1" data-catalog-id="builtin.kitchen.range.size_600" d="M 588.40 468.00 L 547.60 468.00 L 547.60 512.20 L 588.40 512.20 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="range1" cx="568.00" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="fridge1" data-catalog-id="builtin.kitchen.fridge.size_900" d="M 908.00 702.60 L 908.00 641.40 L 857.00 641.40 L 857.00 702.60 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="fridge1" cx="908.00" cy="672.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="washer1" data-catalog-id="builtin.laundry.washer" d="M 182.10 264.00 L 137.90 264.00 L 137.90 308.20 L 182.10 308.20 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="washer1" cx="160.00" cy="264.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="dryer1" data-catalog-id="builtin.laundry.dryer" d="M 277.30 264.00 L 233.10 264.00 L 233.10 308.20 L 277.30 308.20 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="dryer1" cx="255.20" cy="264.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="bed1" data-catalog-id="builtin.furniture.bed.queen" d="M 554.40 60.00 L 445.60 60.00 L 445.60 199.40 L 554.40 199.40 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="bed1" cx="500.00" cy="60.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="sofa1" data-catalog-id="builtin.furniture.sofa.three_seat" d="M 700.60 468.00 L 843.40 468.00 L 843.40 406.80 L 700.60 406.80 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="sofa1" cx="772.00" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="dining1" data-catalog-id="builtin.furniture.table.dining_6" d="M 710.80 264.00 L 833.20 264.00 L 833.20 202.80 L 710.80 202.80 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="dining1" cx="772.00" cy="264.00" r="2.5" fill="#8a6d3b" />
+
+  <!-- Walls -->
+  <line x1="364.00" y1="740.00" x2="364.00" y2="468.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="468.00" x2="364.00" y2="468.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="468.00" x2="636.00" y2="468.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="468.00" x2="908.00" y2="468.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="468.00" x2="364.00" y2="264.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="468.00" x2="636.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="740.00" x2="364.00" y2="740.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="740.00" x2="92.00" y2="468.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="740.00" x2="908.00" y2="740.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="908.00" y1="740.00" x2="908.00" y2="468.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="264.00" x2="364.00" y2="264.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="468.00" x2="92.00" y2="264.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="60.00" x2="636.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="264.00" x2="364.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="908.00" y1="468.00" x2="908.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="60.00" x2="908.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+
+
+  <!-- Labels -->
+  <text x="228.00" y="604.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text x="636.00" y="604.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+    <text x="228.00" y="366.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Laundry</text>
+    <text x="500.00" y="264.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom</text>
+    <text x="772.00" y="264.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
+    <text x="115.12" y="672.00" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">WC</text>
+    <text x="160.00" y="483.30" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
+    <text x="309.60" y="695.80" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
+    <text x="338.50" y="549.60" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Tub</text>
+    <text x="432.00" y="488.40" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen Sink</text>
+    <text x="568.00" y="490.10" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Range</text>
+    <text x="882.50" y="672.00" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Fridge</text>
+    <text x="160.00" y="286.10" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Washer</text>
+    <text x="255.20" y="286.10" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dryer</text>
+    <text x="500.00" y="129.70" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Queen Bed</text>
+    <text x="772.00" y="437.40" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sofa</text>
+    <text x="772.00" y="233.40" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dining</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

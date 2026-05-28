@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": "open.buildingsmart.basin",
+      "category": "sanitary",
+      "file": "../../../tests/fixtures/external-ifc/buildingsmart-basin-tessellation.ifc",
+      "name": "buildingSMART Basin",
+      "provider": "buildingSMART Sample-Test-Files",
+      "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+      "license": "CC-BY-4.0",
+      "redistributable": true
+    },
+    {
+      "id": "open.buildingsmart.window",
+      "category": "opening",
+      "file": "../../../tests/fixtures/external-ifc/buildingsmart-wall-window.ifc",
+      "name": "buildingSMART Window",
+      "provider": "buildingSMART Sample-Test-Files",
+      "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+      "license": "CC-BY-4.0",
+      "redistributable": true
+    },
+    {
+      "id": "open.buildingsmart.column",
+      "category": "structure",
+      "file": "../../../tests/fixtures/external-ifc/buildingsmart-column.ifc",
+      "name": "buildingSMART Column",
+      "provider": "buildingSMART Sample-Test-Files",
+      "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+      "license": "CC-BY-4.0",
+      "redistributable": true
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 60.00 693.33 L 940.00 693.33 L 940.00 106.67 L 60.00 106.67 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 60.00 693.33 L 353.33 693.33 L 353.33 106.67 L 60.00 106.67 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 646.67 693.33 L 940.00 693.33 L 940.00 106.67 L 646.67 106.67 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 353.33 510.00 L 646.67 510.00 L 646.67 290.00 L 353.33 290.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="353.33" y1="510.00" x2="353.33" y2="290.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="646.67" y1="510.00" x2="646.67" y2="290.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="693.33" x2="353.33" y2="693.33" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="353.33" y1="693.33" x2="353.33" y2="510.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="353.33" y1="290.00" x2="353.33" y2="106.67" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="106.67" x2="353.33" y2="106.67" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="693.33" x2="60.00" y2="106.67" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="646.67" y1="693.33" x2="940.00" y2="693.33" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="940.00" y1="693.33" x2="940.00" y2="106.67" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="646.67" y1="106.67" x2="940.00" y2="106.67" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="646.67" y1="693.33" x2="646.67" y2="510.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="646.67" y1="290.00" x2="646.67" y2="106.67" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="353.33" y1="510.00" x2="646.67" y2="510.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="353.33" y1="290.00" x2="646.67" y2="290.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="353.33" y1="433.00" x2="353.33" y2="367.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="646.67" y1="433.00" x2="646.67" y2="367.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="60.00" y1="451.33" x2="60.00" y2="348.67" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
+    <line x1="940.00" y1="451.33" x2="940.00" y2="348.67" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text x="206.67" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Room</text>
+    <text x="793.33" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Room</text>
+    <text x="500.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bridge</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

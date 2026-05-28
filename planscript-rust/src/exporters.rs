@@ -187,7 +187,7 @@ pub fn export_svg(
     let width = number(opts.width);
     let height = number(opts.height);
 
-    format!(
+    let svg = format!(
         r#"<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
   <defs>
@@ -195,34 +195,34 @@ pub fn export_svg(
       .room-label {{ font-family: Arial, sans-serif; font-weight: 500; }}
     </style>
   </defs>
-  
+
   <!-- Background -->
   <rect width="{width}" height="{height}" fill="{bg}" />
-  
+
   <!-- Footprint (boundary) -->
   {footprint}
-  
+
   <!-- Rooms -->
   {rooms}
-  
+
   <!-- Courtyards -->
   {courtyards}
 
   <!-- Objects / Fixtures -->
   {objects}
-  
+
   <!-- Walls -->
   {walls}
-  
+
   <!-- Openings (doors/windows) -->
   {openings}
-  
+
   <!-- Labels -->
   {labels}
-  
+
   <!-- Dimensions -->
   {dimensions}
-  
+
   <!-- Compass / Orientation -->
   {compass}
 </svg>"#,
@@ -236,7 +236,21 @@ pub fn export_svg(
         labels = generate_labels_svg(geometry, transform, &opts),
         dimensions = generate_dimensions_svg(geometry, transform, &opts),
         compass = generate_compass_svg(site, &opts),
-    )
+    );
+    strip_blank_line_whitespace(&svg)
+}
+
+fn strip_blank_line_whitespace(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    for (index, line) in input.lines().enumerate() {
+        if index > 0 {
+            out.push('\n');
+        }
+        if !line.trim().is_empty() {
+            out.push_str(line);
+        }
+    }
+    out
 }
 
 fn create_transform(geometry: &GeometryIr, opts: &SvgOptions) -> Transform {

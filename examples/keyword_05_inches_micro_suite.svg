@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 60.00 730.00 L 940.00 730.00 L 940.00 70.00 L 60.00 70.00 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 170.00 620.00 L 610.00 620.00 L 610.00 180.00 L 170.00 180.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 610.00 510.00 L 830.00 510.00 L 830.00 290.00 L 610.00 290.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 610.00 730.00 L 830.00 730.00 L 830.00 510.00 L 610.00 510.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="610.00" y1="510.00" x2="610.00" y2="290.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="610.00" y1="620.00" x2="610.00" y2="510.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="610.00" y1="510.00" x2="830.00" y2="510.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="170.00" y1="620.00" x2="610.00" y2="620.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="610.00" y1="290.00" x2="610.00" y2="180.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="170.00" y1="180.00" x2="610.00" y2="180.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="170.00" y1="620.00" x2="170.00" y2="180.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="830.00" y1="510.00" x2="830.00" y2="290.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="610.00" y1="290.00" x2="830.00" y2="290.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="610.00" y1="730.00" x2="830.00" y2="730.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="830.00" y1="730.00" x2="830.00" y2="510.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="610.00" y1="730.00" x2="610.00" y2="620.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="360.67" y1="620.00" x2="419.33" y2="620.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="610.00" y1="429.33" x2="610.00" y2="370.67" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="346.00" y1="180.00" x2="434.00" y2="180.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text x="390.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Lounge</text>
+    <text x="720.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text x="720.00" y="620.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Closet</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

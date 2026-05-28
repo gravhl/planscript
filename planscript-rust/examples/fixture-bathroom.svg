@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 75.00 740.00 L 925.00 740.00 L 925.00 60.00 L 75.00 60.00 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 75.00 740.00 L 925.00 740.00 L 925.00 60.00 L 75.00 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+  <path d="M 75.00 537.70 L 75.00 571.70 L 190.60 571.70 L 190.60 537.70 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 75.00 636.30 L 75.00 670.30 L 190.60 670.30 L 190.60 636.30 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 190.60 571.70 L 190.60 636.30 L 318.10 636.30 L 318.10 571.70 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 317.25 60.00 L 291.75 60.00 L 291.75 136.50 L 317.25 136.50 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 291.75 136.50 L 198.25 136.50 L 198.25 255.50 L 291.75 255.50 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 198.25 60.00 L 172.75 60.00 L 172.75 136.50 L 198.25 136.50 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path d="M 508.50 553.00 L 661.50 553.00 L 661.50 434.00 L 508.50 434.00 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+    <path data-object="wc1" data-catalog-id="builtin.sanitary.toilet.floor_mounted" d="M 75.00 571.70 L 75.00 636.30 L 190.60 636.30 L 190.60 571.70 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="wc1" cx="75.00" cy="604.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="lav1" data-catalog-id="builtin.sanitary.sink.wall_hung" d="M 291.75 60.00 L 198.25 60.00 L 198.25 136.50 L 291.75 136.50 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="lav1" cx="245.00" cy="60.00" r="2.5" fill="#8a6d3b" />
+    <path data-object="shower1" data-catalog-id="builtin.sanitary.shower.size_900x900" d="M 508.50 706.00 L 661.50 706.00 L 661.50 553.00 L 508.50 553.00 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="shower1" cx="585.00" cy="706.00" r="2.5" fill="#8a6d3b" />
+
+  <!-- Walls -->
+  <line x1="75.00" y1="740.00" x2="925.00" y2="740.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="925.00" y1="740.00" x2="925.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="75.00" y1="60.00" x2="925.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="75.00" y1="740.00" x2="75.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+
+
+  <!-- Labels -->
+  <text x="500.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text x="132.80" y="604.00" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">WC</text>
+    <text x="245.00" y="98.25" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
+    <text x="585.00" y="629.50" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>
