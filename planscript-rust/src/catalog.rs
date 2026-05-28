@@ -1,6 +1,6 @@
 use crate::ast::{ClearanceSide, Point};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -98,6 +98,30 @@ pub enum CatalogLintSeverity {
 pub struct CatalogLintIssue {
     pub severity: CatalogLintSeverity,
     pub message: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CatalogImportManifest {
+    pub items: Vec<CatalogImportSpec>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CatalogImportSpec {
+    pub id: String,
+    pub category: String,
+    pub file: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub license: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redistributable: Option<bool>,
 }
 
 impl fmt::Display for CatalogError {
@@ -212,6 +236,125 @@ pub fn candidate_ifc_item_from_file(
         source_url,
         metadata,
     ))
+}
+
+pub fn candidate_ifc_item_from_spec(
+    spec: &CatalogImportSpec,
+    base_dir: Option<&Path>,
+) -> Result<CatalogItem, CatalogError> {
+    validate_import_spec(spec)?;
+    let resolved_path = resolve_catalog_path(&spec.file, base_dir);
+    let mut item = candidate_ifc_item_from_file(
+        spec.id.clone(),
+        spec.category.clone(),
+        resolved_path,
+        spec.source_url.clone(),
+    )?;
+    item.assets.ifc = Some(spec.file.clone());
+    if let Some(name) = spec.name.as_ref().filter(|name| !name.trim().is_empty()) {
+        item.name = name.clone();
+    }
+    if let Some(source) = item.source.as_mut() {
+        if let Some(provider) = &spec.provider {
+            source.provider = Some(provider.clone());
+        }
+        if let Some(license) = &spec.license {
+            source.license = Some(license.clone());
+        }
+        if let Some(redistributable) = spec.redistributable {
+            source.redistributable = redistributable;
+        }
+    }
+    if spec.license.is_some() && spec.redistributable == Some(true) {
+        item.needs_review.retain(|need| need != "license");
+    }
+    Ok(item)
+}
+
+pub fn import_ifc_manifest(
+    manifest_path: impl AsRef<Path>,
+    out_dir: impl AsRef<Path>,
+) -> Result<Vec<PathBuf>, CatalogError> {
+    let manifest_path = manifest_path.as_ref();
+    let out_dir = out_dir.as_ref();
+    let text = fs::read_to_string(manifest_path).map_err(|error| {
+        CatalogError::new(format!(
+            "Failed to read import manifest {manifest_path:?}: {error}"
+        ))
+    })?;
+    let manifest: CatalogImportManifest = serde_json::from_str(&text).map_err(|error| {
+        CatalogError::new(format!(
+            "Failed to parse import manifest {manifest_path:?}: {error}"
+        ))
+    })?;
+    let base_dir = manifest_path.parent();
+    fs::create_dir_all(out_dir).map_err(|error| {
+        CatalogError::new(format!(
+            "Failed to create catalog output directory {out_dir:?}: {error}"
+        ))
+    })?;
+
+    let mut seen_ids = HashSet::new();
+    let mut written = Vec::new();
+    for spec in &manifest.items {
+        if !seen_ids.insert(spec.id.clone()) {
+            return Err(CatalogError::new(format!(
+                "Import manifest contains duplicate item id {}",
+                spec.id
+            )));
+        }
+        let item = candidate_ifc_item_from_spec(spec, base_dir)?;
+        let json = serde_json::to_string_pretty(&item).map_err(|error| {
+            CatalogError::new(format!(
+                "Failed to serialize catalog item {}: {error}",
+                spec.id
+            ))
+        })?;
+        let path = out_dir.join(format!("{}.psobj.json", spec.id));
+        fs::write(&path, json).map_err(|error| {
+            CatalogError::new(format!("Failed to write catalog item {path:?}: {error}"))
+        })?;
+        written.push(path);
+    }
+    Ok(written)
+}
+
+fn validate_import_spec(spec: &CatalogImportSpec) -> Result<(), CatalogError> {
+    if spec.id.trim().is_empty() {
+        return Err(CatalogError::new("Import manifest item id is required"));
+    }
+    if !is_catalog_id(spec.id.as_str()) {
+        return Err(CatalogError::new(format!(
+            "Import manifest item id {} is not a valid catalog id",
+            spec.id
+        )));
+    }
+    if spec.category.trim().is_empty() {
+        return Err(CatalogError::new(format!(
+            "Import manifest item {} category is required",
+            spec.id
+        )));
+    }
+    if spec.file.trim().is_empty() {
+        return Err(CatalogError::new(format!(
+            "Import manifest item {} file is required",
+            spec.id
+        )));
+    }
+    Ok(())
+}
+
+fn is_catalog_id(id: &str) -> bool {
+    id.split('.').all(is_identifier)
+}
+
+fn is_identifier(value: &str) -> bool {
+    let mut chars = value.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    (first.is_ascii_alphabetic() || first == '_')
+        && chars.all(|ch| ch.is_ascii_alphanumeric() || ch == '_')
 }
 
 pub fn lint_catalog_item(item: &CatalogItem) -> Vec<CatalogLintIssue> {

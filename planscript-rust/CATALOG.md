@@ -135,6 +135,36 @@ cargo run -- catalog import-ifc ./toilet.ifc \
   --out ./catalog/vendor
 ```
 
+For open BIM libraries or a curated source list, use a manifest so source,
+license, and redistribution metadata are preserved consistently:
+
+```json
+{
+  "items": [
+    {
+      "id": "open.buildingsmart.basin",
+      "category": "sanitary",
+      "file": "source/basin.ifc",
+      "name": "buildingSMART Basin",
+      "provider": "buildingSMART Sample-Test-Files",
+      "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+      "license": "CC-BY-4.0",
+      "redistributable": true
+    }
+  ]
+}
+```
+
+Batch-import the manifest:
+
+```bash
+cargo run -- catalog import-manifest ./open-bim.json --out ./catalog/open
+```
+
+Manifest `file` paths are resolved relative to the manifest file. Generated
+items are still candidates because dimensions, footprints, facing, anchors, and
+clearances need review before curation.
+
 Review and approve candidates with:
 
 ```bash
@@ -147,7 +177,8 @@ This command intentionally writes a candidate with `needsReview` fields. The cur
 - IFC class and predefined type
 - units
 - product name
-- conservative bounding box from `IFCCARTESIANPOINT`
+- conservative bounding box from `IFCCARTESIANPOINTLIST2D`,
+  `IFCCARTESIANPOINTLIST3D`, or `IFCCARTESIANPOINT`
 - simple rectangular plan footprint
 
 Because raw IFC representation geometry varies widely, imported items should still be reviewed before becoming curated catalog entries. A later IfcOpenShell-backed enrichment pass should add:
