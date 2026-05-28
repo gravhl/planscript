@@ -326,7 +326,10 @@ fn validate_object_clearances(geometry: &GeometryIr) -> Vec<ValidationError> {
                     )
                     .room(&object.room)
                     .detail("object", json!(object.name))
-                    .detail("side", json!(format!("{:?}", clearance.side).to_lowercase())),
+                    .detail(
+                        "side",
+                        json!(format!("{:?}", clearance.side).to_lowercase()),
+                    ),
                 );
             }
             for other in &geometry.objects {
@@ -344,7 +347,10 @@ fn validate_object_clearances(geometry: &GeometryIr) -> Vec<ValidationError> {
                         )
                         .room(&object.room)
                         .detail("object", json!(object.name))
-                        .detail("side", json!(format!("{:?}", clearance.side).to_lowercase()))
+                        .detail(
+                            "side",
+                            json!(format!("{:?}", clearance.side).to_lowercase()),
+                        )
                         .detail("blockingObject", json!(other.name)),
                     );
                 }

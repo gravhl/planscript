@@ -438,11 +438,7 @@ fn generate_openings_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions)
     out.join("\n    ")
 }
 
-fn generate_labels_svg(
-    geometry: &GeometryIr,
-    t: Transform,
-    opts: &SvgOptions,
-) -> String {
+fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -> String {
     if !opts.show_labels {
         return String::new();
     }

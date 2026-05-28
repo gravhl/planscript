@@ -129,7 +129,9 @@ impl Catalog {
         let path = path.as_ref();
         if path.is_dir() {
             let entries = fs::read_dir(path).map_err(|error| {
-                CatalogError::new(format!("Failed to read catalog directory {path:?}: {error}"))
+                CatalogError::new(format!(
+                    "Failed to read catalog directory {path:?}: {error}"
+                ))
             })?;
             for entry in entries {
                 let entry = entry.map_err(|error| {

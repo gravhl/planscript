@@ -816,7 +816,11 @@ fn object_origin(
             EdgeSide::North | EdgeSide::South => Position::Percentage { value: 50.0 },
             EdgeSide::East | EdgeSide::West => Position::Percentage { value: 50.0 },
         };
-        return Ok(point_on_room_edge(room_bounds, attach.edge, &default_position));
+        return Ok(point_on_room_edge(
+            room_bounds,
+            attach.edge,
+            &default_position,
+        ));
     }
 
     let center = Point {
@@ -953,10 +957,7 @@ fn clearance_polygon(item: &CatalogItem, side: ClearanceSide, value: f64) -> Vec
                 x: -half,
                 y: -value,
             },
-            Point {
-                x: half,
-                y: -value,
-            },
+            Point { x: half, y: -value },
             Point { x: half, y: 0.0 },
             Point { x: -half, y: 0.0 },
         ],

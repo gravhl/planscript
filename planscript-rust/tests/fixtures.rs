@@ -98,7 +98,10 @@ fn builtins_include_bim_semantics() {
         .get("builtin.sanitary.toilet.floor_mounted")
         .expect("toilet builtin");
 
-    assert_eq!(toilet.bim.as_ref().unwrap().ifc_class.as_deref(), Some("IfcSanitaryTerminal"));
+    assert_eq!(
+        toilet.bim.as_ref().unwrap().ifc_class.as_deref(),
+        Some("IfcSanitaryTerminal")
+    );
     assert_eq!(
         toilet.bim.as_ref().unwrap().ifc_predefined_type.as_deref(),
         Some("TOILETPAN")
@@ -150,6 +153,9 @@ fn loads_catalog_items_from_psobj_json() {
 
     let result = compile(&source, CompileOptions::default());
     assert!(result.success, "{:?}", result.errors);
-    assert_eq!(result.geometry.unwrap().objects[0].catalog_id, "custom.fixture.box");
+    assert_eq!(
+        result.geometry.unwrap().objects[0].catalog_id,
+        "custom.fixture.box"
+    );
     let _ = fs::remove_dir_all(&dir);
 }
