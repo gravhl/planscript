@@ -1,3 +1,4 @@
+use planscript::catalog::{candidate_ifc_item, Catalog};
 use planscript::compiler::{compile, CompileOptions, CompilePhase};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
 use planscript::solver::{
@@ -21,6 +22,8 @@ fn main() {
         run_compile(&args[1..])
     } else if command == "solve" {
         run_solve(&args[1..])
+    } else if command == "catalog" {
+        run_catalog(&args[1..])
     } else if command == "intent-schema" {
         run_intent_schema(&args[1..])
     } else if command.ends_with(".json") {
@@ -42,6 +45,7 @@ fn show_help() {
 Commands:
   planscript-rust compile <input.psc> [options]   Compile PlanScript to SVG/JSON
   planscript-rust solve <intent.json> [options]   Generate PlanScript from intent
+  planscript-rust catalog <subcommand> [options]  Inspect or create object catalog items
   planscript-rust intent-schema [options]         Output JSON Schema for intent format
 
 Compile Options:
@@ -59,6 +63,11 @@ Solve Options:
 
 Intent Schema Options:
   --out <file.json>    Write schema to file (default: stdout)
+
+Catalog Subcommands:
+  catalog list                              List built-in object IDs
+  catalog show <id>                         Print a built-in object as .psobj.json
+  catalog import-ifc <file.ifc> --id <id> --category <name> [--out <path>]
 "#
     );
 }
@@ -144,6 +153,7 @@ fn run_compile(args: &[String]) -> Result<(), String> {
                 pretty: Some(true),
                 include_ast: Some(false),
             }),
+            catalog_base_dir: absolute.parent().map(|p| p.to_string_lossy().to_string()),
         },
     );
 
@@ -189,8 +199,98 @@ fn run_compile(args: &[String]) -> Result<(), String> {
     }
     if let Some(geometry) = &result.geometry {
         println!("  Rooms: {}", geometry.rooms.len());
+        println!("  Objects: {}", geometry.objects.len());
         println!("  Walls: {}", geometry.walls.len());
         println!("  Openings: {}", geometry.openings.len());
+    }
+    Ok(())
+}
+
+fn run_catalog(args: &[String]) -> Result<(), String> {
+    if args.is_empty() {
+        return Err(
+            "Error: No catalog subcommand specified\nUsage: planscript-rust catalog <list|show|import-ifc>"
+                .to_string(),
+        );
+    }
+
+    match args[0].as_str() {
+        "list" => {
+            let catalog = Catalog::builtins();
+            for id in catalog.ids() {
+                println!("{id}");
+            }
+            Ok(())
+        }
+        "show" => {
+            if args.len() < 2 {
+                return Err("Usage: planscript-rust catalog show <id>".to_string());
+            }
+            let catalog = Catalog::builtins();
+            let item = catalog
+                .get(&args[1])
+                .ok_or_else(|| format!("Unknown built-in catalog item: {}", args[1]))?;
+            let json = serde_json::to_string_pretty(item)
+                .map_err(|e| format!("Failed to serialize catalog item: {e}"))?;
+            println!("{json}");
+            Ok(())
+        }
+        "import-ifc" => run_catalog_import_ifc(&args[1..]),
+        other => Err(format!("Unknown catalog subcommand: {other}")),
+    }
+}
+
+fn run_catalog_import_ifc(args: &[String]) -> Result<(), String> {
+    if args.is_empty() || args[0].starts_with('-') {
+        return Err(
+            "Usage: planscript-rust catalog import-ifc <file.ifc> --id <id> --category <name> [--out <path>] [--source-url <url>]"
+                .to_string(),
+        );
+    }
+    let ifc_path = args[0].clone();
+    let mut id = None;
+    let mut category = None;
+    let mut out = None;
+    let mut source_url = None;
+
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--id" if i + 1 < args.len() => {
+                id = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--category" if i + 1 < args.len() => {
+                category = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--out" if i + 1 < args.len() => {
+                out = Some(args[i + 1].clone());
+                i += 2;
+            }
+            "--source-url" if i + 1 < args.len() => {
+                source_url = Some(args[i + 1].clone());
+                i += 2;
+            }
+            _ => i += 1,
+        }
+    }
+
+    let id = id.ok_or_else(|| "--id is required".to_string())?;
+    let category = category.ok_or_else(|| "--category is required".to_string())?;
+    let item = candidate_ifc_item(id.clone(), category, ifc_path, source_url);
+    let json = serde_json::to_string_pretty(&item)
+        .map_err(|e| format!("Failed to serialize candidate catalog item: {e}"))?;
+
+    if let Some(out) = out {
+        let mut path = PathBuf::from(out);
+        if path.is_dir() {
+            path = path.join(format!("{id}.psobj.json"));
+        }
+        fs::write(&path, json).map_err(|e| format!("{}: error: {e}", path.display()))?;
+        println!("Catalog candidate written to: {}", path.display());
+    } else {
+        println!("{json}");
     }
     Ok(())
 }

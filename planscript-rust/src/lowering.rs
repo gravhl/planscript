@@ -1,4 +1,5 @@
 use crate::ast::*;
+use crate::catalog::{Catalog, CatalogItem};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
@@ -21,6 +22,29 @@ pub struct LoweredCourtyard {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     pub polygon: Vec<Point>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LoweredObjectClearance {
+    pub side: ClearanceSide,
+    pub polygon: Vec<Point>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LoweredObject {
+    pub name: String,
+    pub catalog_id: String,
+    pub category: String,
+    pub room: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub origin: Point,
+    pub facing: EdgeSide,
+    pub rotation: f64,
+    pub polygon: Vec<Point>,
+    pub clearance_polygons: Vec<LoweredObjectClearance>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
@@ -50,6 +74,7 @@ pub struct LoweredProgram {
     pub footprint: Vec<Point>,
     pub rooms: Vec<LoweredRoom>,
     pub courtyards: Vec<LoweredCourtyard>,
+    pub objects: Vec<LoweredObject>,
     pub openings: Vec<Opening>,
     pub wall_overrides: Vec<WallThicknessOverride>,
     pub assertions: Vec<Assertion>,
@@ -95,6 +120,14 @@ struct ZoneBounds {
 }
 
 pub fn lower(program: &Program) -> Result<LoweredProgram, LoweringError> {
+    let catalog = Catalog::builtins();
+    lower_with_catalog(program, &catalog)
+}
+
+pub fn lower_with_catalog(
+    program: &Program,
+    catalog: &Catalog,
+) -> Result<LoweredProgram, LoweringError> {
     let plan = &program.plan;
     let footprint = lower_footprint(&plan.footprint);
     let mut resolved = HashMap::<String, LoweredRoom>::new();
@@ -122,6 +155,11 @@ pub fn lower(program: &Program) -> Result<LoweredProgram, LoweringError> {
     }
 
     let courtyards = plan.courtyards.iter().map(lower_courtyard).collect();
+    let objects = plan
+        .objects
+        .iter()
+        .map(|object| lower_object(object, &resolved, catalog))
+        .collect::<Result<Vec<_>, _>>()?;
 
     let defaults = Defaults {
         door_width: program.defaults.as_ref().and_then(|d| d.door_width),
@@ -138,6 +176,7 @@ pub fn lower(program: &Program) -> Result<LoweredProgram, LoweringError> {
         footprint,
         rooms: ordered,
         courtyards,
+        objects,
         openings: plan.openings.clone(),
         wall_overrides: plan.wall_overrides.clone(),
         assertions: plan.assertions.clone(),
@@ -673,6 +712,278 @@ fn lower_courtyard(courtyard: &CourtyardDefinition) -> LoweredCourtyard {
         name: courtyard.name.clone(),
         label: courtyard.label.clone(),
         polygon,
+    }
+}
+
+fn lower_object(
+    object: &ObjectDefinition,
+    rooms: &HashMap<String, LoweredRoom>,
+    catalog: &Catalog,
+) -> Result<LoweredObject, LoweringError> {
+    let room = rooms.get(&object.room).ok_or_else(|| {
+        LoweringError::new(
+            format!(
+                "Object \"{}\" references unknown room \"{}\"",
+                object.name, object.room
+            ),
+            Some(object.room.clone()),
+        )
+    })?;
+    let item = catalog.get(&object.catalog_id).ok_or_else(|| {
+        LoweringError::new(
+            format!(
+                "Object \"{}\" references unknown catalog item \"{}\"",
+                object.name, object.catalog_id
+            ),
+            Some(object.name.clone()),
+        )
+    })?;
+
+    let room_bounds = get_room_bounds(room);
+    let facing = object
+        .facing
+        .or_else(|| object.attach.as_ref().map(|a| opposite_edge(a.edge)))
+        .unwrap_or(EdgeSide::North);
+    let base_rotation = facing_rotation(facing);
+    let rotation = normalize_degrees(base_rotation + object.rotate.unwrap_or(0.0));
+    let origin = object_origin(object, item, room_bounds, facing)?;
+
+    let mut local = item.footprint.clone();
+    if let Some(axis) = object.mirror {
+        mirror_polygon(&mut local, axis);
+    }
+    let polygon = transform_local_polygon(&local, origin, rotation);
+
+    let mut clearance_values = item.clearances.clone();
+    for override_item in &object.clearance_overrides {
+        clearance_values.insert(override_item.side, override_item.value);
+    }
+    let clearance_polygons = clearance_values
+        .into_iter()
+        .filter(|(_, value)| *value > 0.0)
+        .map(|(side, value)| {
+            let mut local_clearance = clearance_polygon(item, side, value);
+            if let Some(axis) = object.mirror {
+                mirror_polygon(&mut local_clearance, axis);
+            }
+            LoweredObjectClearance {
+                side,
+                polygon: transform_local_polygon(&local_clearance, origin, rotation),
+            }
+        })
+        .collect();
+
+    Ok(LoweredObject {
+        name: object.name.clone(),
+        catalog_id: object.catalog_id.clone(),
+        category: item.category.clone(),
+        room: object.room.clone(),
+        label: object.label.clone().or_else(|| Some(item.name.clone())),
+        origin,
+        facing,
+        rotation,
+        polygon,
+        clearance_polygons,
+    })
+}
+
+fn object_origin(
+    object: &ObjectDefinition,
+    item: &CatalogItem,
+    room_bounds: Bounds,
+    facing: EdgeSide,
+) -> Result<Point, LoweringError> {
+    if let Some(position) = &object.at {
+        match position {
+            ObjectPosition::Point { point } => return Ok(*point),
+            ObjectPosition::Distance { position } => {
+                let attach = object.attach.as_ref().ok_or_else(|| {
+                    LoweringError::new(
+                        format!(
+                            "Object \"{}\" uses distance placement but has no wall attachment",
+                            object.name
+                        ),
+                        Some(object.name.clone()),
+                    )
+                })?;
+                return Ok(point_on_room_edge(room_bounds, attach.edge, position));
+            }
+        }
+    }
+
+    if let Some(attach) = &object.attach {
+        let default_position = match attach.edge {
+            EdgeSide::North | EdgeSide::South => Position::Percentage { value: 50.0 },
+            EdgeSide::East | EdgeSide::West => Position::Percentage { value: 50.0 },
+        };
+        return Ok(point_on_room_edge(room_bounds, attach.edge, &default_position));
+    }
+
+    let center = Point {
+        x: (room_bounds.min_x + room_bounds.max_x) / 2.0,
+        y: (room_bounds.min_y + room_bounds.max_y) / 2.0,
+    };
+    let local_center = Point {
+        x: 0.0,
+        y: item.size.depth / 2.0,
+    };
+    let rotated_center = rotate_point(local_center, facing_rotation(facing));
+    Ok(Point {
+        x: center.x - rotated_center.x,
+        y: center.y - rotated_center.y,
+    })
+}
+
+fn point_on_room_edge(bounds: Bounds, edge: EdgeSide, position: &Position) -> Point {
+    match edge {
+        EdgeSide::South => {
+            let len = bounds.max_x - bounds.min_x;
+            Point {
+                x: bounds.min_x + resolve_position(position, len),
+                y: bounds.min_y,
+            }
+        }
+        EdgeSide::North => {
+            let len = bounds.max_x - bounds.min_x;
+            Point {
+                x: bounds.min_x + resolve_position(position, len),
+                y: bounds.max_y,
+            }
+        }
+        EdgeSide::West => {
+            let len = bounds.max_y - bounds.min_y;
+            Point {
+                x: bounds.min_x,
+                y: bounds.min_y + resolve_position(position, len),
+            }
+        }
+        EdgeSide::East => {
+            let len = bounds.max_y - bounds.min_y;
+            Point {
+                x: bounds.max_x,
+                y: bounds.min_y + resolve_position(position, len),
+            }
+        }
+    }
+}
+
+fn resolve_position(position: &Position, length: f64) -> f64 {
+    match position {
+        Position::Percentage { value } => value / 100.0 * length,
+        Position::Absolute { value } => *value,
+    }
+}
+
+fn opposite_edge(edge: EdgeSide) -> EdgeSide {
+    match edge {
+        EdgeSide::North => EdgeSide::South,
+        EdgeSide::South => EdgeSide::North,
+        EdgeSide::East => EdgeSide::West,
+        EdgeSide::West => EdgeSide::East,
+    }
+}
+
+fn facing_rotation(facing: EdgeSide) -> f64 {
+    match facing {
+        EdgeSide::North => 0.0,
+        EdgeSide::East => -90.0,
+        EdgeSide::South => 180.0,
+        EdgeSide::West => 90.0,
+    }
+}
+
+fn normalize_degrees(value: f64) -> f64 {
+    let mut normalized = value % 360.0;
+    if normalized < 0.0 {
+        normalized += 360.0;
+    }
+    normalized
+}
+
+fn transform_local_polygon(points: &[Point], origin: Point, rotation_degrees: f64) -> Vec<Point> {
+    points
+        .iter()
+        .map(|point| {
+            let rotated = rotate_point(*point, rotation_degrees);
+            Point {
+                x: rotated.x + origin.x,
+                y: rotated.y + origin.y,
+            }
+        })
+        .collect()
+}
+
+fn rotate_point(point: Point, rotation_degrees: f64) -> Point {
+    let radians = rotation_degrees.to_radians();
+    let cos = radians.cos();
+    let sin = radians.sin();
+    Point {
+        x: point.x * cos - point.y * sin,
+        y: point.x * sin + point.y * cos,
+    }
+}
+
+fn mirror_polygon(points: &mut [Point], axis: MirrorAxis) {
+    for point in points {
+        match axis {
+            MirrorAxis::X => point.y = -point.y,
+            MirrorAxis::Y => point.x = -point.x,
+        }
+    }
+}
+
+fn clearance_polygon(item: &CatalogItem, side: ClearanceSide, value: f64) -> Vec<Point> {
+    let half = item.size.width / 2.0;
+    let depth = item.size.depth;
+    match side {
+        ClearanceSide::Front => vec![
+            Point { x: -half, y: depth },
+            Point { x: half, y: depth },
+            Point {
+                x: half,
+                y: depth + value,
+            },
+            Point {
+                x: -half,
+                y: depth + value,
+            },
+        ],
+        ClearanceSide::Back => vec![
+            Point {
+                x: -half,
+                y: -value,
+            },
+            Point {
+                x: half,
+                y: -value,
+            },
+            Point { x: half, y: 0.0 },
+            Point { x: -half, y: 0.0 },
+        ],
+        ClearanceSide::Left => vec![
+            Point {
+                x: -half - value,
+                y: 0.0,
+            },
+            Point { x: -half, y: 0.0 },
+            Point { x: -half, y: depth },
+            Point {
+                x: -half - value,
+                y: depth,
+            },
+        ],
+        ClearanceSide::Right => vec![
+            Point { x: half, y: 0.0 },
+            Point {
+                x: half + value,
+                y: 0.0,
+            },
+            Point {
+                x: half + value,
+                y: depth,
+            },
+            Point { x: half, y: depth },
+        ],
     }
 }
 

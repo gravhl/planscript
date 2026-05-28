@@ -88,6 +88,14 @@ pub struct DefaultsDeclaration {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct CatalogDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SiteDeclaration {
     #[serde(rename = "type")]
     pub node_type: String,
@@ -402,6 +410,69 @@ impl Opening {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ClearanceSide {
+    Front,
+    Back,
+    Left,
+    Right,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum MirrorAxis {
+    X,
+    Y,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum ObjectPosition {
+    Point { point: Point },
+    Distance { position: Position },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObjectWallAttachment {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub edge: EdgeSide,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObjectClearanceOverride {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub side: ClearanceSide,
+    pub value: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObjectDefinition {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub name: String,
+    pub catalog_id: String,
+    pub room: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub at: Option<ObjectPosition>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attach: Option<ObjectWallAttachment>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub facing: Option<EdgeSide>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rotate: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mirror: Option<MirrorAxis>,
+    pub clearance_overrides: Vec<ObjectClearanceOverride>,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct WallThicknessOverride {
@@ -427,6 +498,9 @@ pub enum Assertion {
         min_area: f64,
     },
     AssertionRoomsConnected,
+    AssertionObjectsInsideRooms,
+    AssertionObjectNoOverlap,
+    AssertionObjectClearances,
     AssertionOrientationHasWindow {
         room: String,
         target: OrientationTarget,
@@ -500,6 +574,7 @@ pub struct PlanDefinition {
     pub zones: Vec<ZoneDefinition>,
     pub rooms: Vec<RoomDefinition>,
     pub courtyards: Vec<CourtyardDefinition>,
+    pub objects: Vec<ObjectDefinition>,
     pub openings: Vec<Opening>,
     pub wall_overrides: Vec<WallThicknessOverride>,
     pub assertions: Vec<Assertion>,
@@ -522,6 +597,7 @@ pub struct Program {
     pub defaults: Option<DefaultsDeclaration>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteDeclaration>,
+    pub catalogs: Vec<CatalogDeclaration>,
     pub plan: PlanDefinition,
 }
 

@@ -41,6 +41,12 @@ pub enum ErrorCode {
     RoomOverlapsCourtyard,
     #[serde(rename = "E801")]
     RoomsNotConnected,
+    #[serde(rename = "E901")]
+    ObjectOutsideRoom,
+    #[serde(rename = "E902")]
+    ObjectsOverlap,
+    #[serde(rename = "E903")]
+    ObjectClearanceViolation,
 }
 
 impl ErrorCode {
@@ -63,6 +69,9 @@ impl ErrorCode {
             Self::OrientationNoGardenView => "E605",
             Self::RoomOverlapsCourtyard => "E701",
             Self::RoomsNotConnected => "E801",
+            Self::ObjectOutsideRoom => "E901",
+            Self::ObjectsOverlap => "E902",
+            Self::ObjectClearanceViolation => "E903",
         }
     }
 }
@@ -118,6 +127,15 @@ pub fn validate(lowered: &LoweredProgram, geometry: &GeometryIr) -> Vec<Validati
             }
             Assertion::AssertionRoomsConnected => {
                 errors.extend(validate_rooms_connected(lowered, geometry));
+            }
+            Assertion::AssertionObjectsInsideRooms => {
+                errors.extend(validate_objects_inside_rooms(geometry));
+            }
+            Assertion::AssertionObjectNoOverlap => {
+                errors.extend(validate_object_no_overlap(geometry));
+            }
+            Assertion::AssertionObjectClearances => {
+                errors.extend(validate_object_clearances(geometry));
             }
             _ => {}
         }
@@ -232,6 +250,108 @@ fn validate_openings_on_walls(geometry: &GeometryIr) -> Vec<ValidationError> {
             .detail("openingId", json!(opening.id))
         })
         .collect()
+}
+
+fn validate_objects_inside_rooms(geometry: &GeometryIr) -> Vec<ValidationError> {
+    let mut errors = Vec::new();
+    for object in &geometry.objects {
+        let Some(room) = geometry.rooms.iter().find(|room| room.name == object.room) else {
+            errors.push(
+                ValidationError::new(
+                    ErrorCode::ObjectOutsideRoom,
+                    format!(
+                        "Object \"{}\" references missing room \"{}\"",
+                        object.name, object.room
+                    ),
+                )
+                .detail("object", json!(object.name))
+                .detail("room", json!(object.room)),
+            );
+            continue;
+        };
+        if !polygon_inside_polygon(&object.polygon.points, &room.polygon.points) {
+            errors.push(
+                ValidationError::new(
+                    ErrorCode::ObjectOutsideRoom,
+                    format!(
+                        "Object \"{}\" is outside room \"{}\"",
+                        object.name, object.room
+                    ),
+                )
+                .room(&object.room)
+                .detail("object", json!(object.name)),
+            );
+        }
+    }
+    errors
+}
+
+fn validate_object_no_overlap(geometry: &GeometryIr) -> Vec<ValidationError> {
+    let mut errors = Vec::new();
+    for i in 0..geometry.objects.len() {
+        for j in (i + 1)..geometry.objects.len() {
+            let a = &geometry.objects[i];
+            let b = &geometry.objects[j];
+            if a.room == b.room && polygons_overlap(&a.polygon.points, &b.polygon.points) {
+                errors.push(
+                    ValidationError::new(
+                        ErrorCode::ObjectsOverlap,
+                        format!("Objects \"{}\" and \"{}\" overlap", a.name, b.name),
+                    )
+                    .room(&a.room)
+                    .detail("object1", json!(a.name))
+                    .detail("object2", json!(b.name)),
+                );
+            }
+        }
+    }
+    errors
+}
+
+fn validate_object_clearances(geometry: &GeometryIr) -> Vec<ValidationError> {
+    let mut errors = Vec::new();
+    for object in &geometry.objects {
+        let Some(room) = geometry.rooms.iter().find(|room| room.name == object.room) else {
+            continue;
+        };
+        for clearance in &object.clearance_polygons {
+            if !polygon_inside_polygon(&clearance.polygon.points, &room.polygon.points) {
+                errors.push(
+                    ValidationError::new(
+                        ErrorCode::ObjectClearanceViolation,
+                        format!(
+                            "Object \"{}\" {:?} clearance is outside room \"{}\"",
+                            object.name, clearance.side, object.room
+                        ),
+                    )
+                    .room(&object.room)
+                    .detail("object", json!(object.name))
+                    .detail("side", json!(format!("{:?}", clearance.side).to_lowercase())),
+                );
+            }
+            for other in &geometry.objects {
+                if other.name == object.name || other.room != object.room {
+                    continue;
+                }
+                if polygons_overlap(&clearance.polygon.points, &other.polygon.points) {
+                    errors.push(
+                        ValidationError::new(
+                            ErrorCode::ObjectClearanceViolation,
+                            format!(
+                                "Object \"{}\" {:?} clearance overlaps object \"{}\"",
+                                object.name, clearance.side, other.name
+                            ),
+                        )
+                        .room(&object.room)
+                        .detail("object", json!(object.name))
+                        .detail("side", json!(format!("{:?}", clearance.side).to_lowercase()))
+                        .detail("blockingObject", json!(other.name)),
+                    );
+                }
+            }
+        }
+    }
+    errors
 }
 
 fn validate_min_room_area(lowered: &LoweredProgram) -> Vec<ValidationError> {

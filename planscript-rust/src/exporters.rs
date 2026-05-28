@@ -26,6 +26,9 @@ pub struct SvgExportOptions {
     pub courtyard_fill_color: Option<String>,
     pub courtyard_stroke_color: Option<String>,
     pub courtyard_stroke_width: Option<f64>,
+    pub object_fill_color: Option<String>,
+    pub object_stroke_color: Option<String>,
+    pub object_clearance_color: Option<String>,
     pub door_color: Option<String>,
     pub window_color: Option<String>,
     pub footprint_color: Option<String>,
@@ -58,6 +61,9 @@ struct SvgOptions {
     courtyard_fill_color: String,
     courtyard_stroke_color: String,
     courtyard_stroke_width: f64,
+    object_fill_color: String,
+    object_stroke_color: String,
+    object_clearance_color: String,
     door_color: String,
     window_color: String,
     footprint_color: String,
@@ -101,6 +107,15 @@ impl SvgOptions {
                 .courtyard_stroke_color
                 .unwrap_or_else(|| "#27ae60".to_string()),
             courtyard_stroke_width: options.courtyard_stroke_width.unwrap_or(2.0),
+            object_fill_color: options
+                .object_fill_color
+                .unwrap_or_else(|| "#f8f1df".to_string()),
+            object_stroke_color: options
+                .object_stroke_color
+                .unwrap_or_else(|| "#8a6d3b".to_string()),
+            object_clearance_color: options
+                .object_clearance_color
+                .unwrap_or_else(|| "#f39c12".to_string()),
             door_color: options.door_color.unwrap_or_else(|| "#e74c3c".to_string()),
             window_color: options
                 .window_color
@@ -192,6 +207,9 @@ pub fn export_svg(
   
   <!-- Courtyards -->
   {courtyards}
+
+  <!-- Objects / Fixtures -->
+  {objects}
   
   <!-- Walls -->
   {walls}
@@ -212,9 +230,10 @@ pub fn export_svg(
         footprint = generate_footprint_svg(&geometry.footprint, transform, &opts),
         rooms = generate_rooms_svg(&geometry.rooms, transform, &opts),
         courtyards = generate_courtyards_svg(&geometry.courtyards, transform, &opts),
+        objects = generate_objects_svg(geometry, transform, &opts),
         walls = generate_walls_svg(&geometry.walls, transform, &opts),
         openings = generate_openings_svg(geometry, transform, &opts),
-        labels = generate_labels_svg(&geometry.rooms, &geometry.courtyards, transform, &opts),
+        labels = generate_labels_svg(geometry, transform, &opts),
         dimensions = generate_dimensions_svg(geometry, transform, &opts),
         compass = generate_compass_svg(site, &opts),
     )
@@ -318,6 +337,36 @@ fn generate_courtyards_svg(
         .join("\n    ")
 }
 
+fn generate_objects_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -> String {
+    let mut out = Vec::new();
+    for object in &geometry.objects {
+        for clearance in &object.clearance_polygons {
+            let points = transform_polygon(&clearance.polygon.points, t);
+            out.push(format!(
+                r#"<path d="{}" fill="{}" fill-opacity="0.12" stroke="{}" stroke-width="1" stroke-dasharray="3,2" />"#,
+                points_to_path(&points),
+                opts.object_clearance_color,
+                opts.object_clearance_color
+            ));
+        }
+    }
+    for object in &geometry.objects {
+        let points = transform_polygon(&object.polygon.points, t);
+        out.push(format!(
+            r#"<path d="{}" fill="{}" stroke="{}" stroke-width="1.5" />"#,
+            points_to_path(&points),
+            opts.object_fill_color,
+            opts.object_stroke_color
+        ));
+        let origin = transform_point(object.origin, t);
+        out.push(format!(
+            r#"<circle cx="{:.2}" cy="{:.2}" r="2.5" fill="{}" />"#,
+            origin.x, origin.y, opts.object_stroke_color
+        ));
+    }
+    out.join("\n    ")
+}
+
 fn generate_walls_svg(walls: &[WallSegment], t: Transform, opts: &SvgOptions) -> String {
     walls
         .iter()
@@ -390,8 +439,7 @@ fn generate_openings_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions)
 }
 
 fn generate_labels_svg(
-    rooms: &[ResolvedRoom],
-    courtyards: &[ResolvedCourtyard],
+    geometry: &GeometryIr,
     t: Transform,
     opts: &SvgOptions,
 ) -> String {
@@ -399,7 +447,7 @@ fn generate_labels_svg(
         return String::new();
     }
     let mut out = Vec::new();
-    for room in rooms {
+    for room in &geometry.rooms {
         if let Some(label) = &room.label {
             let center = transform_point(polygon_center(&room.polygon.points), t);
             out.push(format!(
@@ -412,7 +460,7 @@ fn generate_labels_svg(
             ));
         }
     }
-    for courtyard in courtyards {
+    for courtyard in &geometry.courtyards {
         if let Some(label) = &courtyard.label {
             let center = transform_point(polygon_center(&courtyard.polygon.points), t);
             out.push(format!(
@@ -421,6 +469,19 @@ fn generate_labels_svg(
                 center.y,
                 number(opts.label_font_size),
                 opts.courtyard_stroke_color,
+                escape_xml(label)
+            ));
+        }
+    }
+    for object in &geometry.objects {
+        if let Some(label) = &object.label {
+            let center = transform_point(polygon_center(&object.polygon.points), t);
+            out.push(format!(
+                r#"<text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">{}</text>"#,
+                center.x,
+                center.y,
+                number((opts.label_font_size * 0.72).max(7.0)),
+                opts.object_stroke_color,
                 escape_xml(label)
             ));
         }

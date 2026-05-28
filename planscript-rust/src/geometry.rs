@@ -1,4 +1,4 @@
-use crate::ast::{Opening, Point, Position};
+use crate::ast::{ClearanceSide, EdgeSide, Opening, Point, Position};
 use crate::lowering::LoweredProgram;
 use serde::{Deserialize, Serialize};
 
@@ -60,10 +60,34 @@ pub struct ResolvedCourtyard {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ObjectClearancePlacement {
+    pub side: ClearanceSide,
+    pub polygon: Polygon,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolvedObject {
+    pub name: String,
+    pub catalog_id: String,
+    pub category: String,
+    pub room: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub origin: Point,
+    pub facing: EdgeSide,
+    pub rotation: f64,
+    pub polygon: Polygon,
+    pub clearance_polygons: Vec<ObjectClearancePlacement>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GeometryIr {
     pub footprint: Polygon,
     pub rooms: Vec<ResolvedRoom>,
     pub courtyards: Vec<ResolvedCourtyard>,
+    pub objects: Vec<ResolvedObject>,
     pub walls: Vec<WallSegment>,
     pub openings: Vec<OpeningPlacement>,
 }
@@ -183,6 +207,34 @@ pub fn generate_geometry(lowered: &LoweredProgram) -> GeometryIr {
         })
         .collect();
 
+    let objects: Vec<ResolvedObject> = lowered
+        .objects
+        .iter()
+        .map(|object| ResolvedObject {
+            name: object.name.clone(),
+            catalog_id: object.catalog_id.clone(),
+            category: object.category.clone(),
+            room: object.room.clone(),
+            label: object.label.clone(),
+            origin: object.origin,
+            facing: object.facing,
+            rotation: object.rotation,
+            polygon: Polygon {
+                points: object.polygon.clone(),
+            },
+            clearance_polygons: object
+                .clearance_polygons
+                .iter()
+                .map(|clearance| ObjectClearancePlacement {
+                    side: clearance.side,
+                    polygon: Polygon {
+                        points: clearance.polygon.clone(),
+                    },
+                })
+                .collect(),
+        })
+        .collect();
+
     let walls = generate_walls(&rooms, &footprint, 0.15);
     let openings = place_openings(&lowered.openings, &walls, &rooms, lowered);
 
@@ -190,6 +242,7 @@ pub fn generate_geometry(lowered: &LoweredProgram) -> GeometryIr {
         footprint,
         rooms,
         courtyards,
+        objects,
         walls,
         openings,
     }
