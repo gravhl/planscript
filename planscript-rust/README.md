@@ -12,6 +12,7 @@ cargo run -- solve ../examples/simple-house.intent.json --out /tmp/simple-house.
 cargo run -- intent-schema
 cargo run -- catalog list
 cargo run -- catalog show builtin.sanitary.toilet.floor_mounted
+cargo run -- catalog import-ifc ./toilet.ifc --id vendor.toilet.compact --category sanitary --out ./catalog
 ```
 
 ## Fixtures and Objects

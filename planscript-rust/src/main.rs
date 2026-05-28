@@ -1,4 +1,4 @@
-use planscript::catalog::{candidate_ifc_item, Catalog};
+use planscript::catalog::{candidate_ifc_item_from_file, Catalog};
 use planscript::compiler::{compile, CompileOptions, CompilePhase};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
 use planscript::solver::{
@@ -278,7 +278,8 @@ fn run_catalog_import_ifc(args: &[String]) -> Result<(), String> {
 
     let id = id.ok_or_else(|| "--id is required".to_string())?;
     let category = category.ok_or_else(|| "--category is required".to_string())?;
-    let item = candidate_ifc_item(id.clone(), category, ifc_path, source_url);
+    let item = candidate_ifc_item_from_file(id.clone(), category, &ifc_path, source_url)
+        .map_err(|error| error.message)?;
     let json = serde_json::to_string_pretty(&item)
         .map_err(|e| format!("Failed to serialize candidate catalog item: {e}"))?;
 

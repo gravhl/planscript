@@ -1,0 +1,13 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('PlanScript minimal IFC fixture sample'),'2;1');
+FILE_NAME('minimal-toilet.ifc','2026-05-27T00:00:00',('PlanScript'),('PlanScript'),'PlanScript Rust','PlanScript','');
+FILE_SCHEMA(('IFC4'));
+ENDSEC;
+DATA;
+#1=IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.);
+#10=IFCSANITARYTERMINAL('abc',#2,'Minimal Toilet',$,$,$,$,$,.TOILETPAN.);
+#20=IFCCARTESIANPOINT((0.,0.,0.));
+#21=IFCCARTESIANPOINT((380.,680.,780.));
+ENDSEC;
+END-ISO-10303-21;
