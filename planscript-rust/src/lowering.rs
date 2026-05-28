@@ -758,6 +758,8 @@ fn lower_object(
     for override_item in &object.clearance_overrides {
         clearance_values.insert(override_item.side, override_item.value);
     }
+    let mut clearance_values = clearance_values.into_iter().collect::<Vec<_>>();
+    clearance_values.sort_by_key(|(side, _)| clearance_side_order(*side));
     let clearance_polygons = clearance_values
         .into_iter()
         .filter(|(_, value)| *value > 0.0)
@@ -785,6 +787,15 @@ fn lower_object(
         polygon,
         clearance_polygons,
     })
+}
+
+fn clearance_side_order(side: ClearanceSide) -> u8 {
+    match side {
+        ClearanceSide::Front => 0,
+        ClearanceSide::Back => 1,
+        ClearanceSide::Left => 2,
+        ClearanceSide::Right => 3,
+    }
 }
 
 fn object_origin(

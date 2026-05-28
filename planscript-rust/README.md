@@ -60,6 +60,33 @@ plan "With Catalog" {
 
 See [CATALOG.md](CATALOG.md) for the catalog format, BIM curation plan, and IFC import workflow.
 
+## Door Swing Conventions
+
+Rust supports construction-style door handing on door openings:
+
+```planscript
+opening door d_entry {
+  on foyer.edge south
+  at 50%
+  swing rhr
+}
+
+opening double door d_patio {
+  between lounge and terrace
+  on shared_edge
+  at 50%
+}
+```
+
+Supported swing values:
+
+- `lh` - left hand
+- `rh` - right hand
+- `lhr` - left hand reverse
+- `rhr` - right hand reverse
+
+Single doors default to `door_width` from `defaults` or `0.9m`. Double doors default to two standard leaves, so their default total width is `2 * door_width`. Any door can override the total opening width with `width <value>`.
+
 ## Library
 
 The crate exposes the same main pipeline shape as the TypeScript implementation:

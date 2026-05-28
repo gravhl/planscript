@@ -933,8 +933,13 @@ impl Parser {
 
     fn parse_opening(&mut self) -> Result<Opening, ParseError> {
         self.expect_keyword("opening")?;
-        if self.consume_keyword("door") {
-            self.parse_door_opening()
+        if self.consume_keyword("double") {
+            self.expect_keyword("door")?;
+            self.parse_door_opening(true)
+        } else if self.consume_keyword("double_door") {
+            self.parse_door_opening(true)
+        } else if self.consume_keyword("door") {
+            self.parse_door_opening(false)
         } else if self.consume_keyword("window") {
             self.parse_window_opening()
         } else {
@@ -942,7 +947,7 @@ impl Parser {
         }
     }
 
-    fn parse_door_opening(&mut self) -> Result<Opening, ParseError> {
+    fn parse_door_opening(&mut self, default_double: bool) -> Result<Opening, ParseError> {
         let name = self.expect_ident()?;
         self.expect_symbol("{")?;
         let mut between = None;
@@ -951,6 +956,8 @@ impl Parser {
         let mut at = Position::Absolute { value: 0.0 };
         let mut width = None;
         let mut swing = None;
+        let mut swing_room = None;
+        let mut double = default_double;
 
         while !self.consume_symbol("}") {
             if self.consume_keyword("between") {
@@ -973,7 +980,14 @@ impl Parser {
             } else if self.consume_keyword("width") {
                 width = Some(self.expect_number()?);
             } else if self.consume_keyword("swing") {
-                swing = Some(self.expect_ident()?);
+                let raw = self.expect_ident()?;
+                if let Some(door_swing) = DoorSwing::from_token(&raw) {
+                    swing = Some(door_swing);
+                } else {
+                    swing_room = Some(raw);
+                }
+            } else if self.consume_keyword("double") {
+                double = true;
             } else {
                 return Err(self.error_here("Expected door content"));
             }
@@ -988,6 +1002,8 @@ impl Parser {
             at,
             width,
             swing,
+            swing_room,
+            double,
         }))
     }
 

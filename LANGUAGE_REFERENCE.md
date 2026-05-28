@@ -746,6 +746,8 @@ opening door <id> {
   on shared_edge
   at <position>
   width <value>           # Optional if defaults set
+  swing <lh|rh|lhr|rhr>   # Rust: optional door hand convention
+  double                  # Rust: optional double-door leaves
 }
 ```
 
@@ -768,6 +770,8 @@ opening door <id> {
   on <room>.edge <direction>
   at <position>
   width <value>           # Optional if defaults set
+  swing <lh|rh|lhr|rhr>   # Rust: optional door hand convention
+  double                  # Rust: optional double-door leaves
 }
 ```
 
@@ -777,6 +781,27 @@ opening door d_front {
   on foyer.edge south
   at 50%
   width 1.0
+  swing rhr
+}
+```
+
+#### Door Handing and Double Doors (Rust)
+
+The Rust compiler supports standard door handing values:
+
+- `lh` - left hand
+- `rh` - right hand
+- `lhr` - left hand reverse
+- `rhr` - right hand reverse
+
+Use either `opening double door <id> { ... }` or add `double` inside an `opening door` block. Single doors default to `door_width` from `defaults` or `0.9m`; double doors default to two standard leaves, so their default total width is `2 * door_width`. `width <value>` always overrides the total opening width.
+
+```planscript
+opening double door d_patio {
+  between lounge and terrace
+  on shared_edge
+  at 50%
+  swing lh
 }
 ```
 
