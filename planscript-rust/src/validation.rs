@@ -469,24 +469,27 @@ fn validate_orientation_assertions(
     geometry: &GeometryIr,
 ) -> Vec<ValidationError> {
     let mut errors = Vec::new();
-    for assertion in &lowered.assertions {
-        let needs_site = matches!(
+    let needs_site = lowered.assertions.iter().any(|assertion| {
+        matches!(
             assertion,
             Assertion::AssertionOrientationHasWindow { .. }
                 | Assertion::AssertionOrientationNearStreet { .. }
                 | Assertion::AssertionOrientationAwayFromStreet { .. }
                 | Assertion::AssertionOrientationGardenView { .. }
-        );
-        if needs_site && lowered.site.is_none() {
-            errors.push(ValidationError::new(
-                ErrorCode::OrientationNoSite,
-                "Orientation assertions require a site declaration with street direction",
-            ));
-            return errors;
-        }
-        let Some(site) = lowered.site else {
-            continue;
-        };
+        )
+    });
+    if needs_site && lowered.site.is_none() {
+        errors.push(ValidationError::new(
+            ErrorCode::OrientationNoSite,
+            "Orientation assertions require a site declaration with street direction",
+        ));
+        return errors;
+    }
+    let Some(site) = lowered.site else {
+        return errors;
+    };
+
+    for assertion in &lowered.assertions {
         match assertion {
             Assertion::AssertionOrientationHasWindow { room, target } => {
                 if let Some(error) = validate_orientation_has_window(room, *target, site, geometry)
