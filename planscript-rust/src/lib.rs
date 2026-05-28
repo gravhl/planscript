@@ -9,8 +9,8 @@ pub mod solver;
 pub mod validation;
 
 pub use catalog::{
-    builtin_items, candidate_ifc_item, candidate_ifc_item_from_file, Catalog, CatalogError,
-    CatalogItem,
+    builtin_items, candidate_ifc_item, candidate_ifc_item_from_file, lint_catalog_item, Catalog,
+    CatalogError, CatalogItem, CatalogLintIssue, CatalogLintSeverity,
 };
 pub use compiler::{compile, CompileError, CompileOptions, CompileResult};
 pub use exporters::{export_json, export_svg, JsonExportOptions, SvgExportOptions};

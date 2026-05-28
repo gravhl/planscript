@@ -13,6 +13,8 @@ cargo run -- intent-schema
 cargo run -- catalog list
 cargo run -- catalog show builtin.sanitary.toilet.floor_mounted
 cargo run -- catalog import-ifc ./toilet.ifc --id vendor.toilet.compact --category sanitary --out ./catalog
+cargo run -- catalog lint ./catalog
+cargo run -- catalog approve ./catalog/vendor.toilet.compact.psobj.json
 ```
 
 ## Fixtures and Objects

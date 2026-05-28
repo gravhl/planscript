@@ -86,6 +86,20 @@ pub struct CatalogError {
     pub message: String,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CatalogLintSeverity {
+    Error,
+    Warning,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CatalogLintIssue {
+    pub severity: CatalogLintSeverity,
+    pub message: String,
+}
+
 impl fmt::Display for CatalogError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.message)
@@ -198,6 +212,86 @@ pub fn candidate_ifc_item_from_file(
         source_url,
         metadata,
     ))
+}
+
+pub fn lint_catalog_item(item: &CatalogItem) -> Vec<CatalogLintIssue> {
+    let mut issues = Vec::new();
+    if item.id.trim().is_empty() {
+        issues.push(lint_error("Catalog item id is required"));
+    }
+    if item.name.trim().is_empty() {
+        issues.push(lint_error("Catalog item name is required"));
+    }
+    if item.category.trim().is_empty() {
+        issues.push(lint_error("Catalog item category is required"));
+    }
+    if item.size.width <= 0.0 {
+        issues.push(lint_error("Catalog item size.width must be greater than 0"));
+    }
+    if item.size.depth <= 0.0 {
+        issues.push(lint_error("Catalog item size.depth must be greater than 0"));
+    }
+    if item.footprint.len() < 3 {
+        issues.push(lint_error(
+            "Catalog item footprint must have at least 3 points",
+        ));
+    }
+    if polygon_area(&item.footprint) <= 0.0 {
+        issues.push(lint_error("Catalog item footprint must have positive area"));
+    }
+    if item.status.as_deref() == Some("approved") && !item.needs_review.is_empty() {
+        issues.push(lint_error(
+            "Approved catalog item cannot have non-empty needsReview",
+        ));
+    }
+    if item.status.as_deref() != Some("approved") {
+        issues.push(lint_warning(
+            "Catalog item is not approved and should be reviewed before curation",
+        ));
+    }
+    if item.source.as_ref().is_none_or(|source| {
+        source.license.as_deref().is_none_or(str::is_empty)
+            || (!source.redistributable && item.status.as_deref() == Some("approved"))
+    }) {
+        issues.push(lint_warning(
+            "Catalog item license/redistribution metadata needs review",
+        ));
+    }
+    if let Some(bim) = &item.bim {
+        if bim.ifc_class.as_deref().is_none_or(str::is_empty) {
+            issues.push(lint_warning("BIM metadata is missing ifcClass"));
+        }
+    } else {
+        issues.push(lint_warning("Catalog item is missing BIM metadata"));
+    }
+    issues
+}
+
+fn lint_error(message: impl Into<String>) -> CatalogLintIssue {
+    CatalogLintIssue {
+        severity: CatalogLintSeverity::Error,
+        message: message.into(),
+    }
+}
+
+fn lint_warning(message: impl Into<String>) -> CatalogLintIssue {
+    CatalogLintIssue {
+        severity: CatalogLintSeverity::Warning,
+        message: message.into(),
+    }
+}
+
+fn polygon_area(points: &[Point]) -> f64 {
+    if points.len() < 3 {
+        return 0.0;
+    }
+    let mut area = 0.0;
+    for i in 0..points.len() {
+        let j = (i + 1) % points.len();
+        area += points[i].x * points[j].y;
+        area -= points[j].x * points[i].y;
+    }
+    area.abs() / 2.0
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
