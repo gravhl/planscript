@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 160.00 740.00 L 840.00 740.00 L 840.00 60.00 L 160.00 60.00 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 160.00 740.00 L 840.00 740.00 L 840.00 527.50 L 160.00 527.50 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 160.00 527.50 L 372.50 527.50 L 372.50 60.00 L 160.00 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 627.50 527.50 L 840.00 527.50 L 840.00 60.00 L 627.50 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 372.50 272.50 L 627.50 272.50 L 627.50 60.00 L 372.50 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+
+  <!-- Courtyards -->
+  <path d="M 372.50 527.50 L 627.50 527.50 L 627.50 272.50 L 372.50 272.50 Z" fill="#d5f5e3" stroke="#27ae60" stroke-width="2" stroke-dasharray="4,2" />
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="160.00" y1="527.50" x2="372.50" y2="527.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="527.50" x2="840.00" y2="527.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="272.50" x2="372.50" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="272.50" x2="627.50" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="740.00" x2="840.00" y2="740.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="840.00" y1="740.00" x2="840.00" y2="527.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="527.50" x2="627.50" y2="527.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="740.00" x2="160.00" y2="527.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="527.50" x2="372.50" y2="272.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="60.00" x2="372.50" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="527.50" x2="160.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="840.00" y1="527.50" x2="840.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="60.00" x2="840.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="527.50" x2="627.50" y2="272.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="272.50" x2="627.50" y2="272.50" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="60.00" x2="627.50" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="247.12" y1="527.50" x2="285.38" y2="527.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="714.62" y1="527.50" x2="752.88" y2="527.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="372.50" y1="185.38" x2="372.50" y2="147.12" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line x1="457.50" y1="60.00" x2="542.50" y2="60.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text x="500.00" y="633.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Hall</text>
+    <text x="266.25" y="293.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Studio</text>
+    <text x="733.75" y="293.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Suite</text>
+    <text x="500.00" y="166.25" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">North Lounge</text>
+    <text x="500.00" y="400.00" font-size="14" fill="#27ae60" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">Atrium</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

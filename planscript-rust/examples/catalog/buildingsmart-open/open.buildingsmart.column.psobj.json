@@ -1,0 +1,55 @@
+{
+  "id": "open.buildingsmart.column",
+  "name": "buildingSMART Column",
+  "category": "structure",
+  "source": {
+    "format": "IFC",
+    "provider": "buildingSMART Sample-Test-Files",
+    "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+    "license": "CC-BY-4.0",
+    "redistributable": true
+  },
+  "bim": {
+    "ifcClass": "IfcColumn",
+    "ifcPredefinedType": "COLUMN"
+  },
+  "size": {
+    "width": 0.2032,
+    "depth": 0.2032,
+    "height": 3.048
+  },
+  "footprint": [
+    {
+      "x": -0.1016,
+      "y": 0.0
+    },
+    {
+      "x": 0.1016,
+      "y": 0.0
+    },
+    {
+      "x": 0.1016,
+      "y": 0.2032
+    },
+    {
+      "x": -0.1016,
+      "y": 0.2032
+    }
+  ],
+  "anchors": {
+    "origin": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "assets": {
+    "ifc": "../../../tests/fixtures/external-ifc/buildingsmart-column.ifc"
+  },
+  "status": "candidate",
+  "needsReview": [
+    "origin-anchor",
+    "facing",
+    "clearances",
+    "unit-scale"
+  ]
+}

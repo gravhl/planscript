@@ -1,0 +1,55 @@
+{
+  "id": "open.buildingsmart.basin",
+  "name": "buildingSMART Basin",
+  "category": "sanitary",
+  "source": {
+    "format": "IFC",
+    "provider": "buildingSMART Sample-Test-Files",
+    "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+    "license": "CC-BY-4.0",
+    "redistributable": true
+  },
+  "bim": {
+    "ifcClass": "IfcSanitaryTerminal",
+    "ifcPredefinedType": "WASHHANDBASIN"
+  },
+  "size": {
+    "width": 0.60236825,
+    "depth": 0.422338172,
+    "height": 0.094
+  },
+  "footprint": [
+    {
+      "x": -0.301184125,
+      "y": 0.0
+    },
+    {
+      "x": 0.301184125,
+      "y": 0.0
+    },
+    {
+      "x": 0.301184125,
+      "y": 0.422338172
+    },
+    {
+      "x": -0.301184125,
+      "y": 0.422338172
+    }
+  ],
+  "anchors": {
+    "origin": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "assets": {
+    "ifc": "../../../tests/fixtures/external-ifc/buildingsmart-basin-tessellation.ifc"
+  },
+  "status": "candidate",
+  "needsReview": [
+    "origin-anchor",
+    "facing",
+    "clearances",
+    "unit-scale"
+  ]
+}

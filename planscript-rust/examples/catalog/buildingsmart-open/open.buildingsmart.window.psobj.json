@@ -1,0 +1,55 @@
+{
+  "id": "open.buildingsmart.window",
+  "name": "buildingSMART Window",
+  "category": "opening",
+  "source": {
+    "format": "IFC",
+    "provider": "buildingSMART Sample-Test-Files",
+    "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+    "license": "CC-BY-4.0",
+    "redistributable": true
+  },
+  "bim": {
+    "ifcClass": "IfcWindow",
+    "ifcPredefinedType": "SINGLE_PANEL"
+  },
+  "size": {
+    "width": 3.0,
+    "depth": 0.3,
+    "height": 0.5
+  },
+  "footprint": [
+    {
+      "x": -1.5,
+      "y": 0.0
+    },
+    {
+      "x": 1.5,
+      "y": 0.0
+    },
+    {
+      "x": 1.5,
+      "y": 0.3
+    },
+    {
+      "x": -1.5,
+      "y": 0.3
+    }
+  ],
+  "anchors": {
+    "origin": {
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "assets": {
+    "ifc": "../../../tests/fixtures/external-ifc/buildingsmart-wall-window.ifc"
+  },
+  "status": "candidate",
+  "needsReview": [
+    "origin-anchor",
+    "facing",
+    "clearances",
+    "unit-scale"
+  ]
+}
