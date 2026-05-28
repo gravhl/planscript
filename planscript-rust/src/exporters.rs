@@ -636,26 +636,40 @@ fn generate_compass_svg(site: Option<SiteInfo>, opts: &SvgOptions) -> String {
     let center_x = opts.width - opts.padding - size / 2.0;
     let center_y = opts.padding + size / 2.0;
     let arrow = size * 0.4;
+    let arrow_width = size * 0.15;
     let label = size * 0.55;
-    let (street_x, street_y) = street_label_position(site.street, center_x, center_y, arrow);
+    let (street_x, street_y, street_rotation) =
+        street_label_position(site.street, center_x, center_y, arrow);
+    let street_transform = if street_rotation != 0.0 {
+        format!(
+            r#" transform="rotate({}, {:.2}, {:.2})""#,
+            number(street_rotation),
+            street_x,
+            street_y
+        )
+    } else {
+        String::new()
+    };
     format!(
         r#"<g class="compass">
     <circle cx="{cx:.2}" cy="{cy:.2}" r="{r:.2}" fill="none" stroke="{color}" stroke-width="1" opacity="0.3" />
     <polygon points="{cx:.2},{nt:.2} {nl:.2},{cy:.2} {nr:.2},{cy:.2}" fill="{color}" />
+    <polygon points="{cx:.2},{st:.2} {nl:.2},{cy:.2} {nr:.2},{cy:.2}" fill="none" stroke="{color}" stroke-width="1" />
     <line x1="{wl:.2}" y1="{cy:.2}" x2="{er:.2}" y2="{cy:.2}" stroke="{color}" stroke-width="1" />
     <text x="{cx:.2}" y="{ny:.2}" font-size="{fs:.2}" fill="{color}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-weight="bold">N</text>
     <text x="{cx:.2}" y="{sy:.2}" font-size="{sfs:.2}" fill="{color}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">S</text>
     <text x="{ex:.2}" y="{cy:.2}" font-size="{sfs:.2}" fill="{color}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">E</text>
     <text x="{wx:.2}" y="{cy:.2}" font-size="{sfs:.2}" fill="{color}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">W</text>
-    <text x="{sx:.2}" y="{sty:.2}" font-size="{stfs:.2}" fill="{street_color}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">STREET</text>
+    <text x="{sx:.2}" y="{sty:.2}" font-size="{stfs:.2}" fill="{street_color}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif"{street_transform}>STREET</text>
   </g>"#,
         cx = center_x,
         cy = center_y,
         r = size / 2.0,
         color = opts.compass_color,
         nt = center_y - arrow,
-        nl = center_x - size * 0.075,
-        nr = center_x + size * 0.075,
+        st = center_y + arrow,
+        nl = center_x - arrow_width / 2.0,
+        nr = center_x + arrow_width / 2.0,
         wl = center_x - arrow * 0.7,
         er = center_x + arrow * 0.7,
         ny = center_y - label,
@@ -668,15 +682,16 @@ fn generate_compass_svg(site: Option<SiteInfo>, opts: &SvgOptions) -> String {
         sty = street_y,
         stfs = size * 0.12,
         street_color = opts.street_indicator_color,
+        street_transform = street_transform,
     )
 }
 
-fn street_label_position(dir: CardinalDirection, x: f64, y: f64, arrow: f64) -> (f64, f64) {
+fn street_label_position(dir: CardinalDirection, x: f64, y: f64, arrow: f64) -> (f64, f64, f64) {
     match dir {
-        CardinalDirection::North => (x, y - arrow - 7.0),
-        CardinalDirection::South => (x, y + arrow + 7.0),
-        CardinalDirection::East => (x + arrow + 12.0, y),
-        CardinalDirection::West => (x - arrow - 12.0, y),
+        CardinalDirection::North => (x, y - arrow - 5.0, 0.0),
+        CardinalDirection::South => (x, y + arrow + 5.0, 0.0),
+        CardinalDirection::East => (x + arrow + 5.0, y, 90.0),
+        CardinalDirection::West => (x - arrow - 5.0, y, -90.0),
     }
 }
 
