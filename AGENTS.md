@@ -6,6 +6,8 @@ This document provides context for AI agents (Claude, GPT, etc.) working on the 
 
 **PlanScript** is a deterministic, textual DSL for defining 2D architectural floor plans. It compiles human-readable code into precise geometry (SVG, JSON).
 
+**Current product direction**: PlanScript is Rust-first. The canonical implementation is in `planscript-rust/`. The TypeScript implementation in `src/` is deprecated reference material; do not add new product functionality there unless explicitly asked.
+
 Key design principles:
 - **Deterministic**: Same input always produces same output
 - **Compiler-based**: Parse → Lower → Generate → Validate → Export
@@ -15,17 +17,43 @@ Key design principles:
 
 | Component | Technology |
 |-----------|------------|
-| Language | TypeScript (ES modules) |
-| Parser | Peggy (PEG parser generator) + ts-pegjs |
-| Testing | Vitest |
-| Build | TypeScript compiler (tsc) |
-| Package | npm |
+| Language | Rust |
+| Parser | Hand-written deterministic parser |
+| Testing | Cargo test |
+| Build | Cargo |
+| Package | Cargo crate / Rust CLI |
+
+Deprecated reference implementation:
+- `src/` TypeScript sources
+- Peggy grammar and generated parser
+- Vitest/npm scripts
 
 ## Project Structure
 
 ```
 cado/
+├── planscript-rust/          # CANONICAL Rust implementation
+│   ├── src/
+│   │   ├── parser.rs         # Rust parser
+│   │   ├── ast.rs            # AST node type definitions
+│   │   ├── lowering.rs       # AST → LoweredProgram
+│   │   ├── geometry.rs       # Geometry IR generation
+│   │   ├── validation.rs     # Validation
+│   │   ├── exporters.rs      # SVG/JSON export
+│   │   ├── catalog.rs        # Object catalog and BIM import normalization
+│   │   ├── compiler.rs       # Main compilation pipeline
+│   │   ├── solver.rs         # Intent solver
+│   │   └── main.rs           # CLI entry point
+│   ├── tests/
+│   └── CATALOG.md
 ├── src/
+│   └── ...                   # Deprecated TypeScript reference implementation
+```
+
+Deprecated TypeScript layout:
+
+```
+src/
 │   ├── parser/
 │   │   ├── grammar.pegjs     # PEG grammar definition (SOURCE OF TRUTH)
 │   │   ├── grammar.ts        # Generated parser (DO NOT EDIT)
@@ -55,7 +83,28 @@ cado/
 └── package.json
 ```
 
-## NPM Scripts
+## Rust Commands
+
+```bash
+cd planscript-rust
+
+# Run tests
+cargo test
+
+# Compile PlanScript
+cargo run -- compile ../examples/house.psc --svg /tmp/house.svg
+
+# Compile fixture example
+cargo run -- compile examples/fixture-bathroom.psc --svg /tmp/fixture.svg --json /tmp/fixture.json
+
+# Catalog tools
+cargo run -- catalog list
+cargo run -- catalog show builtin.sanitary.toilet.floor_mounted
+cargo run -- catalog import-ifc examples/ifc/minimal-toilet.ifc --id sample.toilet --category sanitary --out /tmp
+cargo run -- catalog lint /tmp/sample.toilet.psobj.json
+```
+
+## Deprecated NPM Scripts
 
 ```bash
 # Install dependencies
@@ -84,15 +133,15 @@ npm run test:watch
 
 ```
 Source (.psc)
-    ↓ parse()           # src/parser/index.ts
+    ↓ parse()           # planscript-rust/src/parser.rs
 AST (Program)
-    ↓ lower()           # src/lowering/index.ts
+    ↓ lower()           # planscript-rust/src/lowering.rs
 LoweredProgram          # All geometry resolved to polygons
-    ↓ generateGeometry() # src/geometry/index.ts
+    ↓ generate_geometry() # planscript-rust/src/geometry.rs
 GeometryIR              # Walls, openings with coordinates
-    ↓ validate()        # src/validation/index.ts
+    ↓ validate()        # planscript-rust/src/validation.rs
 Validation errors OR success
-    ↓ exportSVG() / exportJSON()  # src/exporters/
+    ↓ export_svg() / export_json()  # planscript-rust/src/exporters.rs
 Output
 ```
 
@@ -100,48 +149,35 @@ Output
 
 ### Adding New Syntax
 
-1. **`src/parser/grammar.pegjs`** - Add grammar rules
-2. **`src/ast/types.ts`** - Add AST type definitions
-3. **`src/lowering/index.ts`** - Add lowering logic to resolve geometry
-4. **`src/parser/parser.test.ts`** - Add parser tests
-5. **`src/lowering/lowering.test.ts`** - Add lowering tests
-6. **`LANGUAGE_REFERENCE.md`** - Document the new syntax
-
-**Important**: After modifying `grammar.pegjs`, run `npm run build:grammar` to regenerate `grammar.ts`.
+1. **`planscript-rust/src/parser.rs`** - Add parser rules
+2. **`planscript-rust/src/ast.rs`** - Add AST type definitions
+3. **`planscript-rust/src/lowering.rs`** - Add lowering logic to resolve geometry
+4. **`planscript-rust/tests/*.rs`** - Add parser/lowering/compiler tests
+5. **`LANGUAGE_REFERENCE.md`** and **`planscript-rust/README.md`** - Document the new syntax
 
 ### Modifying Geometry Generation
 
-- **`src/geometry/index.ts`** - Wall/opening generation logic
-- **`src/geometry/types.ts`** - Geometry IR type definitions
-- **`src/geometry/geometry.test.ts`** - Geometry tests
+- **`planscript-rust/src/geometry.rs`** - Wall/opening/object generation logic
+- **`planscript-rust/tests/core.rs`** and **`planscript-rust/tests/fixtures.rs`** - Geometry tests
 
 ### Modifying Validation
 
-- **`src/validation/index.ts`** - Assertion checking, overlap detection
-- **`src/validation/validation.test.ts`** - Validation tests
+- **`planscript-rust/src/validation.rs`** - Assertion checking, overlap detection
+- **`planscript-rust/tests/*.rs`** - Validation tests
 
 ### Modifying Export
 
-- **`src/exporters/svg.ts`** - SVG rendering
-- **`src/exporters/json.ts`** - JSON serialization
-- **`src/exporters/exporters.test.ts`** - Export tests
+- **`planscript-rust/src/exporters.rs`** - SVG rendering and JSON serialization
+- **`planscript-rust/tests/*.rs`** - Export tests
 
 ## Testing
 
-Tests use Vitest. Each module has co-located test files (`*.test.ts`).
+Tests use Cargo.
 
 ```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npx vitest run src/parser/parser.test.ts
-
-# Run tests matching pattern
-npx vitest run -t "explicit alignment"
-
-# Watch mode
-npm run test:watch
+cd planscript-rust
+cargo test
+cargo test --test fixtures
 ```
 
 ### Test Structure
@@ -155,58 +191,33 @@ npm run test:watch
 ## CLI Usage
 
 ```bash
-# After building
-node dist/cli.js <input.psc> [options]
+cd planscript-rust
+cargo run -- compile <input.psc> [options]
 
 # Options:
 #   --svg <file>      Output SVG file
 #   --json <file>     Output JSON file
 #   --dimensions      Include dimension lines in SVG
 
-# Example:
-node dist/cli.js examples/house.psc --svg output.svg --dimensions
+cargo run -- compile ../examples/house.psc --svg output.svg --dimensions
 ```
 
 ## Common Tasks
 
 ### Add a New Room Geometry Type
 
-1. Add type to `src/ast/types.ts`:
-   ```typescript
-   export interface RoomNewType extends ASTNode {
-     type: 'RoomNewType';
-     // ... properties
-   }
-   ```
-
-2. Add to `RoomGeometry` union in `src/ast/types.ts`
-
-3. Add grammar rule in `src/parser/grammar.pegjs`:
-   ```
-   RoomNewType
-     = "newtype"i _ /* ... */ {
-         return { type: 'RoomNewType', /* ... */ } as AST.RoomNewType;
-       }
-   ```
-
-4. Add to `RoomGeometry` rule in grammar
-
-5. Add lowering logic in `src/lowering/index.ts`:
-   ```typescript
-   case 'RoomNewType': {
-     // Convert to polygon
-     return /* Point[] */;
-   }
-   ```
-
-6. Add tests and documentation
+1. Add a variant to `RoomGeometry` in `planscript-rust/src/ast.rs`
+2. Parse it in `planscript-rust/src/parser.rs`
+3. Lower it in `planscript-rust/src/lowering.rs`
+4. Add tests under `planscript-rust/tests/`
+5. Update docs
 
 ### Add a New Directive
 
-1. Add type to `src/ast/types.ts`
+1. Add type to `planscript-rust/src/ast.rs`
 2. Add to `RoomDefinition` interface if room-level
-3. Add grammar rule and include in `RoomContent`
-4. Handle in room definition parsing in grammar
+3. Parse it in `planscript-rust/src/parser.rs`
+4. Handle it in lowering/geometry/validation as appropriate
 5. Use in lowering logic
 6. Add tests and documentation
 
@@ -234,15 +245,14 @@ Errors include source locations when available.
 
 Minimal dependencies by design:
 
-- **peggy** + **ts-pegjs**: Parser generation
-- **typescript**: Type checking and compilation
-- **vitest**: Testing
+- **serde** and **serde_json**: JSON serialization/deserialization
+- Rust standard library for parser/compiler/runtime
 
 No runtime dependencies for the core library.
 
 ## Solver Development Philosophy
 
-The solver (`src/solver/`) converts high-level intent JSON into valid PlanScript. When working on the solver, follow these principles:
+The solver (`planscript-rust/src/solver.rs`) converts high-level intent JSON into valid PlanScript. When working on the solver, follow these principles:
 
 ### The Solver Adapts to Intents, Not Vice Versa
 

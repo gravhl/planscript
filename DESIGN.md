@@ -1,5 +1,7 @@
 # Deterministic Floor Plan DSL (DFP-DSL)
 
+> **Implementation note:** The final product direction is Rust. `planscript-rust/` is the canonical compiler and solver implementation; the TypeScript implementation is deprecated reference material.
+
 ## 1. Project Overview
 
 This project defines and implements a **deterministic, textual Domain-Specific Language (DSL)** for describing **2D architectural floor plans**.
