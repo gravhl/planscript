@@ -137,11 +137,13 @@ pub fn validate(lowered: &LoweredProgram, geometry: &GeometryIr) -> Vec<Validati
             Assertion::AssertionObjectClearances => {
                 errors.extend(validate_object_clearances(geometry));
             }
+            Assertion::AssertionMinRoomArea { room, min_area } => {
+                errors.extend(validate_min_room_area(lowered, room, *min_area));
+            }
             _ => {}
         }
     }
 
-    errors.extend(validate_min_room_area(lowered));
     errors.extend(validate_orientation_assertions(lowered, geometry));
     errors
 }
@@ -360,27 +362,27 @@ fn validate_object_clearances(geometry: &GeometryIr) -> Vec<ValidationError> {
     errors
 }
 
-fn validate_min_room_area(lowered: &LoweredProgram) -> Vec<ValidationError> {
+fn validate_min_room_area(
+    lowered: &LoweredProgram,
+    room: &str,
+    min_area: f64,
+) -> Vec<ValidationError> {
     let mut errors = Vec::new();
-    for assertion in &lowered.assertions {
-        if let Assertion::AssertionMinRoomArea { room, min_area } = assertion {
-            if let Some(found) = lowered.rooms.iter().find(|r| &r.name == room) {
-                let area = calculate_polygon_area(&found.polygon);
-                if area < *min_area {
-                    errors.push(
-                        ValidationError::new(
-                            ErrorCode::MinAreaViolation,
-                            format!(
-                                "Room \"{}\" area ({:.2}) is less than minimum ({})",
-                                room, area, min_area
-                            ),
-                        )
-                        .room(room)
-                        .detail("actual", json!(area))
-                        .detail("minimum", json!(min_area)),
-                    );
-                }
-            }
+    if let Some(found) = lowered.rooms.iter().find(|r| r.name == room) {
+        let area = calculate_polygon_area(&found.polygon);
+        if area < min_area {
+            errors.push(
+                ValidationError::new(
+                    ErrorCode::MinAreaViolation,
+                    format!(
+                        "Room \"{}\" area ({:.2}) is less than minimum ({})",
+                        room, area, min_area
+                    ),
+                )
+                .room(room)
+                .detail("actual", json!(area))
+                .detail("minimum", json!(min_area)),
+            );
         }
     }
     errors
