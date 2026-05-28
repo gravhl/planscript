@@ -177,11 +177,131 @@ pub fn candidate_ifc_item(
     ifc_path: String,
     source_url: Option<String>,
 ) -> CatalogItem {
+    candidate_ifc_item_with_metadata(id, category, ifc_path, source_url, IfcExtract::default())
+}
+
+pub fn candidate_ifc_item_from_file(
+    id: String,
+    category: String,
+    ifc_path: impl AsRef<Path>,
+    source_url: Option<String>,
+) -> Result<CatalogItem, CatalogError> {
+    let ifc_path = ifc_path.as_ref();
+    let text = fs::read_to_string(ifc_path).map_err(|error| {
+        CatalogError::new(format!("Failed to read IFC file {ifc_path:?}: {error}"))
+    })?;
+    let metadata = extract_ifc_metadata(&text);
+    Ok(candidate_ifc_item_with_metadata(
+        id,
+        category,
+        ifc_path.to_string_lossy().to_string(),
+        source_url,
+        metadata,
+    ))
+}
+
+#[derive(Debug, Clone, Default, PartialEq)]
+struct IfcExtract {
+    name: Option<String>,
+    ifc_class: Option<String>,
+    predefined_type: Option<String>,
+    bounds: Option<IfcBounds>,
+    unit_scale: f64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct IfcBounds {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+    min_z: f64,
+    max_z: f64,
+}
+
+impl IfcBounds {
+    fn width(self) -> f64 {
+        self.max_x - self.min_x
+    }
+
+    fn depth(self) -> f64 {
+        self.max_y - self.min_y
+    }
+
+    fn height(self) -> f64 {
+        self.max_z - self.min_z
+    }
+}
+
+fn candidate_ifc_item_with_metadata(
+    id: String,
+    category: String,
+    ifc_path: String,
+    source_url: Option<String>,
+    metadata: IfcExtract,
+) -> CatalogItem {
     let mut anchors = HashMap::new();
     anchors.insert("origin".to_string(), Point { x: 0.0, y: 0.0 });
+    let (size, footprint, mut needs_review) = if let Some(bounds) = metadata.bounds {
+        let width = bounds.width().abs();
+        let depth = bounds.depth().abs();
+        if width > 0.001 && depth > 0.001 {
+            (
+                CatalogSize {
+                    width,
+                    depth,
+                    height: (bounds.height() > 0.001).then(|| bounds.height()),
+                },
+                rectangle_footprint(width, depth),
+                vec![
+                    "origin-anchor".to_string(),
+                    "facing".to_string(),
+                    "clearances".to_string(),
+                    "license".to_string(),
+                ],
+            )
+        } else {
+            (
+                CatalogSize {
+                    width: 1.0,
+                    depth: 1.0,
+                    height: None,
+                },
+                rectangle_footprint(1.0, 1.0),
+                vec![
+                    "dimensions".to_string(),
+                    "footprint".to_string(),
+                    "facing".to_string(),
+                    "clearances".to_string(),
+                    "license".to_string(),
+                ],
+            )
+        }
+    } else {
+        (
+            CatalogSize {
+                width: 1.0,
+                depth: 1.0,
+                height: None,
+            },
+            rectangle_footprint(1.0, 1.0),
+            vec![
+                "dimensions".to_string(),
+                "footprint".to_string(),
+                "facing".to_string(),
+                "clearances".to_string(),
+                "license".to_string(),
+            ],
+        )
+    };
+    if (metadata.unit_scale - 1.0).abs() > f64::EPSILON {
+        needs_review.push("unit-scale".to_string());
+    }
     CatalogItem {
         id,
-        name: "Imported IFC Candidate".to_string(),
+        name: metadata
+            .name
+            .unwrap_or_else(|| "Imported IFC Candidate".to_string()),
         category,
         source: Some(CatalogSource {
             format: "IFC".to_string(),
@@ -191,15 +311,11 @@ pub fn candidate_ifc_item(
             redistributable: false,
         }),
         bim: Some(CatalogBim {
-            ifc_class: None,
-            ifc_predefined_type: None,
+            ifc_class: metadata.ifc_class,
+            ifc_predefined_type: metadata.predefined_type,
         }),
-        size: CatalogSize {
-            width: 1.0,
-            depth: 1.0,
-            height: None,
-        },
-        footprint: rectangle_footprint(1.0, 1.0),
+        size,
+        footprint,
         clearances: HashMap::new(),
         anchors,
         assets: CatalogAssets {
@@ -207,13 +323,295 @@ pub fn candidate_ifc_item(
             ..Default::default()
         },
         status: Some("candidate".to_string()),
-        needs_review: vec![
-            "dimensions".to_string(),
-            "footprint".to_string(),
-            "facing".to_string(),
-            "clearances".to_string(),
-            "license".to_string(),
-        ],
+        needs_review,
+    }
+}
+
+fn extract_ifc_metadata(text: &str) -> IfcExtract {
+    let unit_scale = infer_length_unit_scale(text);
+    let mut extract = IfcExtract {
+        unit_scale,
+        ..Default::default()
+    };
+    let mut bounds: Option<IfcBounds> = None;
+    let mut product_candidate: Option<(String, Option<String>, Option<String>, i32)> = None;
+
+    for statement in ifc_statements(text) {
+        let Some(entity) = entity_name(&statement) else {
+            continue;
+        };
+        if entity == "IFCCARTESIANPOINT" {
+            if let Some(point) = parse_cartesian_point(&statement, unit_scale) {
+                bounds = Some(update_ifc_bounds(bounds, point));
+            }
+        }
+
+        if let Some(priority) = product_priority(&entity) {
+            let args = entity_arguments(&statement);
+            let name = args.get(2).and_then(|arg| clean_ifc_string(arg));
+            let predefined = args.iter().rev().find_map(|arg| enum_value(arg));
+            let replace = product_candidate
+                .as_ref()
+                .is_none_or(|(_, _, _, existing)| priority < *existing);
+            if replace {
+                product_candidate = Some((entity, name, predefined, priority));
+            }
+        }
+    }
+
+    if let Some((ifc_class, name, predefined_type, _)) = product_candidate {
+        extract.ifc_class = Some(to_pascal_ifc(&ifc_class));
+        extract.name = name;
+        extract.predefined_type = predefined_type;
+    }
+    extract.bounds = bounds;
+    extract
+}
+
+fn ifc_statements(text: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut current = String::new();
+    let mut in_string = false;
+    let mut chars = text.chars().peekable();
+    while let Some(ch) = chars.next() {
+        current.push(ch);
+        if ch == '\'' {
+            if in_string && chars.peek() == Some(&'\'') {
+                if let Some(next) = chars.next() {
+                    current.push(next);
+                }
+            } else {
+                in_string = !in_string;
+            }
+        } else if ch == ';' && !in_string {
+            out.push(current.trim().to_string());
+            current.clear();
+        }
+    }
+    if !current.trim().is_empty() {
+        out.push(current.trim().to_string());
+    }
+    out
+}
+
+fn entity_name(statement: &str) -> Option<String> {
+    let after_equal = statement.split_once('=')?.1.trim_start();
+    let end = after_equal.find('(')?;
+    Some(after_equal[..end].trim().to_ascii_uppercase())
+}
+
+fn entity_arguments(statement: &str) -> Vec<String> {
+    let Some(start) = statement.find('(') else {
+        return Vec::new();
+    };
+    let Some(end) = statement.rfind(')') else {
+        return Vec::new();
+    };
+    split_top_level_args(&statement[start + 1..end])
+}
+
+fn split_top_level_args(input: &str) -> Vec<String> {
+    let mut args = Vec::new();
+    let mut current = String::new();
+    let mut depth = 0i32;
+    let mut in_string = false;
+    let mut chars = input.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '\'' {
+            current.push(ch);
+            if in_string && chars.peek() == Some(&'\'') {
+                if let Some(next) = chars.next() {
+                    current.push(next);
+                }
+            } else {
+                in_string = !in_string;
+            }
+            continue;
+        }
+        if !in_string {
+            match ch {
+                '(' => depth += 1,
+                ')' => depth -= 1,
+                ',' if depth == 0 => {
+                    args.push(current.trim().to_string());
+                    current.clear();
+                    continue;
+                }
+                _ => {}
+            }
+        }
+        current.push(ch);
+    }
+    if !current.trim().is_empty() {
+        args.push(current.trim().to_string());
+    }
+    args
+}
+
+fn clean_ifc_string(arg: &str) -> Option<String> {
+    let trimmed = arg.trim();
+    if trimmed == "$" || trimmed == "*" || !trimmed.starts_with('\'') {
+        return None;
+    }
+    let without_quotes = trimmed.strip_prefix('\'')?.strip_suffix('\'')?;
+    let value = without_quotes.replace("''", "'");
+    (!value.trim().is_empty()).then(|| value)
+}
+
+fn enum_value(arg: &str) -> Option<String> {
+    let trimmed = arg.trim();
+    if !trimmed.starts_with('.') || !trimmed.ends_with('.') || trimmed.len() < 3 {
+        return None;
+    }
+    let value = &trimmed[1..trimmed.len() - 1];
+    if matches!(value, "T" | "F" | "U" | "NOTDEFINED") {
+        None
+    } else {
+        Some(value.to_string())
+    }
+}
+
+fn parse_cartesian_point(statement: &str, scale: f64) -> Option<[f64; 3]> {
+    let args = entity_arguments(statement);
+    let first = args.first()?;
+    let numbers = parse_numbers(first);
+    if numbers.len() < 2 {
+        return None;
+    }
+    Some([
+        numbers[0] * scale,
+        numbers[1] * scale,
+        numbers.get(2).copied().unwrap_or(0.0) * scale,
+    ])
+}
+
+fn parse_numbers(input: &str) -> Vec<f64> {
+    let mut numbers = Vec::new();
+    let mut current = String::new();
+    for ch in input.chars() {
+        if ch.is_ascii_digit() || matches!(ch, '-' | '+' | '.' | 'E' | 'e') {
+            current.push(ch);
+        } else if !current.is_empty() {
+            if let Ok(value) = current.parse::<f64>() {
+                numbers.push(value);
+            }
+            current.clear();
+        }
+    }
+    if !current.is_empty() {
+        if let Ok(value) = current.parse::<f64>() {
+            numbers.push(value);
+        }
+    }
+    numbers
+}
+
+fn update_ifc_bounds(bounds: Option<IfcBounds>, point: [f64; 3]) -> IfcBounds {
+    if let Some(bounds) = bounds {
+        IfcBounds {
+            min_x: bounds.min_x.min(point[0]),
+            max_x: bounds.max_x.max(point[0]),
+            min_y: bounds.min_y.min(point[1]),
+            max_y: bounds.max_y.max(point[1]),
+            min_z: bounds.min_z.min(point[2]),
+            max_z: bounds.max_z.max(point[2]),
+        }
+    } else {
+        IfcBounds {
+            min_x: point[0],
+            max_x: point[0],
+            min_y: point[1],
+            max_y: point[1],
+            min_z: point[2],
+            max_z: point[2],
+        }
+    }
+}
+
+fn infer_length_unit_scale(text: &str) -> f64 {
+    for statement in ifc_statements(text) {
+        let upper = statement.to_ascii_uppercase();
+        if upper.contains("IFCSIUNIT")
+            && upper.contains(".LENGTHUNIT.")
+            && upper.contains(".METRE.")
+        {
+            if upper.contains(".MILLI.") {
+                return 0.001;
+            }
+            if upper.contains(".CENTI.") {
+                return 0.01;
+            }
+            if upper.contains(".DECI.") {
+                return 0.1;
+            }
+            if upper.contains(".KILO.") {
+                return 1000.0;
+            }
+            return 1.0;
+        }
+    }
+    1.0
+}
+
+fn product_priority(entity: &str) -> Option<i32> {
+    match entity {
+        "IFCSANITARYTERMINAL" => Some(0),
+        "IFCELECTRICAPPLIANCE" => Some(1),
+        "IFCFURNISHINGELEMENT" => Some(2),
+        "IFCFURNITURE" => Some(3),
+        "IFCDOOR" => Some(4),
+        "IFCWINDOW" => Some(5),
+        "IFCFLOWTERMINAL" => Some(6),
+        "IFCBUILDINGELEMENTPROXY" => Some(7),
+        "IFCSANITARYTERMINALTYPE" => Some(20),
+        "IFCELECTRICAPPLIANCETYPE" => Some(21),
+        "IFCFURNITURETYPE" => Some(22),
+        "IFCDOORTYPE" => Some(23),
+        "IFCWINDOWTYPE" => Some(24),
+        "IFCFLOWTERMINALTYPE" => Some(25),
+        _ => None,
+    }
+}
+
+fn to_pascal_ifc(entity: &str) -> String {
+    let known = match entity {
+        "IFCSANITARYTERMINAL" => Some("IfcSanitaryTerminal"),
+        "IFCSANITARYTERMINALTYPE" => Some("IfcSanitaryTerminalType"),
+        "IFCELECTRICAPPLIANCE" => Some("IfcElectricAppliance"),
+        "IFCELECTRICAPPLIANCETYPE" => Some("IfcElectricApplianceType"),
+        "IFCFURNISHINGELEMENT" => Some("IfcFurnishingElement"),
+        "IFCFURNITURE" => Some("IfcFurniture"),
+        "IFCFURNITURETYPE" => Some("IfcFurnitureType"),
+        "IFCDOOR" => Some("IfcDoor"),
+        "IFCDOORTYPE" => Some("IfcDoorType"),
+        "IFCWINDOW" => Some("IfcWindow"),
+        "IFCWINDOWTYPE" => Some("IfcWindowType"),
+        "IFCFLOWTERMINAL" => Some("IfcFlowTerminal"),
+        "IFCFLOWTERMINALTYPE" => Some("IfcFlowTerminalType"),
+        "IFCBUILDINGELEMENTPROXY" => Some("IfcBuildingElementProxy"),
+        _ => None,
+    };
+    if let Some(known) = known {
+        return known.to_string();
+    }
+    let lower = entity.to_ascii_lowercase();
+    let mut out = String::new();
+    let mut capitalize_next = true;
+    for ch in lower.chars() {
+        if capitalize_next {
+            out.extend(ch.to_uppercase());
+            capitalize_next = false;
+        } else {
+            out.push(ch);
+        }
+        if ch == 'c' && out == "Ifc" {
+            capitalize_next = true;
+        }
+    }
+    if out.starts_with("Ifc") {
+        out
+    } else {
+        entity.to_string()
     }
 }
 

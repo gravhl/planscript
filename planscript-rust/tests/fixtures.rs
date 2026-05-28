@@ -1,4 +1,4 @@
-use planscript::catalog::{Catalog, CatalogItem};
+use planscript::catalog::{candidate_ifc_item_from_file, Catalog, CatalogItem};
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::JsonExportOptions;
 use planscript::parse;
@@ -157,5 +157,54 @@ fn loads_catalog_items_from_psobj_json() {
         result.geometry.unwrap().objects[0].catalog_id,
         "custom.fixture.box"
     );
+    let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn imports_ifc_candidate_metadata_and_bounds() {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_nanos();
+    let dir = std::env::temp_dir().join(format!("planscript-ifc-{nonce}"));
+    fs::create_dir_all(&dir).expect("create temp ifc dir");
+    let ifc = dir.join("toilet.ifc");
+    fs::write(
+        &ifc,
+        r#"ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition [CoordinationView]'),'2;1');
+ENDSEC;
+DATA;
+#1=IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.);
+#10=IFCSANITARYTERMINAL('abc',#2,'Compact WC',$,$,$,$,$,.TOILETPAN.);
+#20=IFCCARTESIANPOINT((0.,0.,0.));
+#21=IFCCARTESIANPOINT((380.,680.,780.));
+ENDSEC;
+END-ISO-10303-21;"#,
+    )
+    .expect("write ifc");
+
+    let item = candidate_ifc_item_from_file(
+        "vendor.compact_wc".to_string(),
+        "sanitary".to_string(),
+        &ifc,
+        Some("https://example.com/wc".to_string()),
+    )
+    .expect("import ifc");
+
+    assert_eq!(item.name, "Compact WC");
+    assert_eq!(
+        item.bim.as_ref().unwrap().ifc_class.as_deref(),
+        Some("IfcSanitaryTerminal")
+    );
+    assert_eq!(
+        item.bim.as_ref().unwrap().ifc_predefined_type.as_deref(),
+        Some("TOILETPAN")
+    );
+    assert!((item.size.width - 0.38).abs() < 0.001);
+    assert!((item.size.depth - 0.68).abs() < 0.001);
+    assert!((item.size.height.unwrap() - 0.78).abs() < 0.001);
+    assert!(item.needs_review.contains(&"unit-scale".to_string()));
     let _ = fs::remove_dir_all(&dir);
 }

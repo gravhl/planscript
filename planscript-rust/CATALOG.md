@@ -135,13 +135,18 @@ cargo run -- catalog import-ifc ./toilet.ifc \
   --out ./catalog/vendor
 ```
 
-This command intentionally writes a candidate with `needsReview` fields. It does not yet parse IFC geometry. The next importer milestone should add an IfcOpenShell-backed extractor that fills:
+This command intentionally writes a candidate with `needsReview` fields. The current Rust-native importer reads IFC STEP text and attempts to extract:
 
 - IFC class and predefined type
-- manufacturer/model metadata
 - units
-- bounding box
-- 2D top projection footprint
+- product name
+- conservative bounding box from `IFCCARTESIANPOINT`
+- simple rectangular plan footprint
+
+Because raw IFC representation geometry varies widely, imported items should still be reviewed before becoming curated catalog entries. A later IfcOpenShell-backed enrichment pass should add:
+
+- manufacturer/model metadata
+- true representation-derived top projection footprint
 - optional SVG and GLB generated through `IfcConvert`
 - anchors for plumbing, electrical, exhaust, or wall mounting
 
