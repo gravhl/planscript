@@ -623,6 +623,7 @@ fn generate_compass_svg(site: Option<SiteInfo>, opts: &SvgOptions) -> String {
     let center_y = opts.padding + size / 2.0;
     let arrow = size * 0.4;
     let label = size * 0.55;
+    let (street_x, street_y) = street_label_position(site.street, center_x, center_y, arrow);
     format!(
         r#"<g class="compass">
     <circle cx="{cx:.2}" cy="{cy:.2}" r="{r:.2}" fill="none" stroke="{color}" stroke-width="1" opacity="0.3" />
@@ -649,8 +650,8 @@ fn generate_compass_svg(site: Option<SiteInfo>, opts: &SvgOptions) -> String {
         wx = center_x - label,
         fs = size * 0.2,
         sfs = size * 0.16,
-        sx = street_label_position(site.street, center_x, center_y, arrow).0,
-        sty = street_label_position(site.street, center_x, center_y, arrow).1,
+        sx = street_x,
+        sty = street_y,
         stfs = size * 0.12,
         street_color = opts.street_indicator_color,
     )
