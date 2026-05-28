@@ -1,0 +1,530 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum UnitType {
+    M,
+    Meters,
+    Cm,
+    Mm,
+    Ft,
+    In,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AxisDirection {
+    Right,
+    Left,
+    Up,
+    Down,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CardinalDirection {
+    North,
+    South,
+    East,
+    West,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Hemisphere {
+    North,
+    South,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UnitsDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub unit: UnitType,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OriginDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub point: Point,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AxisDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub x: AxisDirection,
+    pub y: AxisDirection,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GridDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub size: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DefaultsDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub door_width: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_width: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SiteDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub street: CardinalDirection,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hemisphere: Option<Hemisphere>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Footprint {
+    FootprintPolygon { points: Vec<Point> },
+    FootprintRect { p1: Point, p2: Point },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DimensionValue {
+    Number(f64),
+    Auto(String),
+}
+
+impl DimensionValue {
+    pub fn auto() -> Self {
+        Self::Auto("auto".to_string())
+    }
+
+    pub fn as_number(&self) -> Option<f64> {
+        match self {
+            Self::Number(value) => Some(*value),
+            Self::Auto(_) => None,
+        }
+    }
+
+    pub fn is_auto(&self) -> bool {
+        matches!(self, Self::Auto(_))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SizeValue {
+    pub x: DimensionValue,
+    pub y: DimensionValue,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum RoomGeometry {
+    RoomPolygon {
+        points: Vec<Point>,
+    },
+    RoomRectDiagonal {
+        p1: Point,
+        p2: Point,
+    },
+    RoomRectAtSize {
+        at: Point,
+        size: Point,
+    },
+    RoomRectCenterSize {
+        center: Point,
+        size: Point,
+    },
+    RoomRectSizeOnly {
+        size: SizeValue,
+    },
+    RoomFill {
+        between: [String; 2],
+        #[serde(skip_serializing_if = "Option::is_none")]
+        width: Option<f64>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        height: Option<f64>,
+    },
+    RoomRectSpan {
+        #[serde(rename = "spanX")]
+        span_x: SpanX,
+        #[serde(rename = "spanY")]
+        span_y: SpanY,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RelativeDirection {
+    NorthOf,
+    SouthOf,
+    EastOf,
+    WestOf,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AlignmentType {
+    Top,
+    Bottom,
+    Left,
+    Right,
+    Center,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AlignEdge {
+    Top,
+    Bottom,
+    Left,
+    Right,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AttachDirective {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub direction: RelativeDirection,
+    pub target: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum AlignDirective {
+    AlignDirective {
+        #[serde(skip_serializing_if = "Option::is_none")]
+        alignment: Option<AlignmentType>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        my_edge: Option<AlignEdge>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        with_room: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        with_edge: Option<AlignEdge>,
+    },
+}
+
+impl AlignDirective {
+    pub fn simple(alignment: AlignmentType) -> Self {
+        Self::AlignDirective {
+            alignment: Some(alignment),
+            my_edge: None,
+            with_room: None,
+            with_edge: None,
+        }
+    }
+
+    pub fn explicit(my_edge: AlignEdge, with_room: String, with_edge: AlignEdge) -> Self {
+        Self::AlignDirective {
+            alignment: None,
+            my_edge: Some(my_edge),
+            with_room: Some(with_room),
+            with_edge: Some(with_edge),
+        }
+    }
+
+    pub fn alignment(&self) -> Option<AlignmentType> {
+        match self {
+            Self::AlignDirective { alignment, .. } => *alignment,
+        }
+    }
+
+    pub fn explicit_parts(&self) -> Option<(AlignEdge, &str, AlignEdge)> {
+        match self {
+            Self::AlignDirective {
+                my_edge: Some(my_edge),
+                with_room: Some(with_room),
+                with_edge: Some(with_edge),
+                ..
+            } => Some((*my_edge, with_room.as_str(), *with_edge)),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GapDirective {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub distance: f64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum EdgeRefSide {
+    Left,
+    Right,
+    Top,
+    Bottom,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EdgeReference {
+    pub room: String,
+    pub edge: EdgeRefSide,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtendDirective {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub axis: Axis,
+    pub from: EdgeReference,
+    pub to: EdgeReference,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Axis {
+    X,
+    Y,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpanX {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub from: EdgeReference,
+    pub to: EdgeReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpanY {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub from: f64,
+    pub to: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RoomDefinition {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub geometry: RoomGeometry,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attach: Option<AttachDirective>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub align: Option<AlignDirective>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gap: Option<GapDirective>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extend: Option<ExtendDirective>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum EdgeSide {
+    North,
+    South,
+    East,
+    West,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum Position {
+    #[serde(rename = "absolute")]
+    Absolute { value: f64 },
+    #[serde(rename = "percentage")]
+    Percentage { value: f64 },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DoorOpening {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub between: Option<[String; 2]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub on: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub room: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edge: Option<EdgeSide>,
+    pub at: Position,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub width: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub swing: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WindowOpening {
+    pub name: String,
+    pub room: String,
+    pub edge: EdgeSide,
+    pub at: Position,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub width: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sill: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Opening {
+    DoorOpening(DoorOpening),
+    WindowOpening(WindowOpening),
+}
+
+impl Opening {
+    pub fn name(&self) -> &str {
+        match self {
+            Opening::DoorOpening(d) => &d.name,
+            Opening::WindowOpening(w) => &w.name,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WallThicknessOverride {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub room: String,
+    pub edge: EdgeSide,
+    pub thickness: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Assertion {
+    AssertionInsideFootprint {
+        target: String,
+    },
+    AssertionNoOverlap {
+        target: String,
+    },
+    AssertionOpeningsOnWalls,
+    AssertionMinRoomArea {
+        room: String,
+        min_area: f64,
+    },
+    AssertionRoomsConnected,
+    AssertionOrientationHasWindow {
+        room: String,
+        target: OrientationTarget,
+    },
+    AssertionOrientationNearStreet {
+        room: String,
+    },
+    AssertionOrientationAwayFromStreet {
+        room: String,
+    },
+    AssertionOrientationGardenView {
+        room: String,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OrientationTarget {
+    MorningSun,
+    AfternoonSun,
+    GoodSun,
+    Street,
+    North,
+    South,
+    East,
+    West,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ZoneDefinition {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub rooms: Vec<RoomDefinition>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attach: Option<AttachDirective>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub align: Option<AlignDirective>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gap: Option<GapDirective>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum CourtyardGeometry {
+    CourtyardRect { p1: Point, p2: Point },
+    CourtyardPolygon { points: Vec<Point> },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CourtyardDefinition {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub geometry: CourtyardGeometry,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlanDefinition {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub name: String,
+    pub footprint: Footprint,
+    pub zones: Vec<ZoneDefinition>,
+    pub rooms: Vec<RoomDefinition>,
+    pub courtyards: Vec<CourtyardDefinition>,
+    pub openings: Vec<Opening>,
+    pub wall_overrides: Vec<WallThicknessOverride>,
+    pub assertions: Vec<Assertion>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Program {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub units: Option<UnitsDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub origin: Option<OriginDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub axis: Option<AxisDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub grid: Option<GridDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub defaults: Option<DefaultsDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub site: Option<SiteDeclaration>,
+    pub plan: PlanDefinition,
+}
+
+pub fn node_type(name: &str) -> String {
+    name.to_string()
+}
