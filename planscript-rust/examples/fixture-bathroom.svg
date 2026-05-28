@@ -19,13 +19,13 @@
 
 
   <!-- Objects / Fixtures -->
-  <path d="M 75.00 537.70 L 75.00 571.70 L 190.60 571.70 L 190.60 537.70 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
-    <path d="M 75.00 636.30 L 75.00 670.30 L 190.60 670.30 L 190.60 636.30 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
-    <path d="M 190.60 571.70 L 190.60 636.30 L 318.10 636.30 L 318.10 571.70 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
-    <path d="M 317.25 60.00 L 291.75 60.00 L 291.75 136.50 L 317.25 136.50 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
-    <path d="M 291.75 136.50 L 198.25 136.50 L 198.25 255.50 L 291.75 255.50 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
-    <path d="M 198.25 60.00 L 172.75 60.00 L 172.75 136.50 L 198.25 136.50 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
-    <path d="M 508.50 553.00 L 661.50 553.00 L 661.50 434.00 L 508.50 434.00 Z" fill="#f39c12" fill-opacity="0.12" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,2" />
+  <path class="object-clearance" d="M 75.00 636.30 L 75.00 670.30 L 190.60 670.30 L 190.60 636.30 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 190.60 571.70 L 190.60 636.30 L 318.10 636.30 L 318.10 571.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 75.00 537.70 L 75.00 571.70 L 190.60 571.70 L 190.60 537.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 291.75 136.50 L 198.25 136.50 L 198.25 255.50 L 291.75 255.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 317.25 60.00 L 291.75 60.00 L 291.75 136.50 L 317.25 136.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 198.25 60.00 L 172.75 60.00 L 172.75 136.50 L 198.25 136.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 508.50 553.00 L 661.50 553.00 L 661.50 434.00 L 508.50 434.00 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path data-object="wc1" data-catalog-id="builtin.sanitary.toilet.floor_mounted" d="M 75.00 571.70 L 75.00 636.30 L 190.60 636.30 L 190.60 571.70 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
     <circle data-object-origin="wc1" cx="75.00" cy="604.00" r="2.5" fill="#8a6d3b" />
     <path data-object="lav1" data-catalog-id="builtin.sanitary.sink.wall_hung" d="M 291.75 60.00 L 198.25 60.00 L 198.25 136.50 L 291.75 136.50 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />

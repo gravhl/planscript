@@ -54,11 +54,12 @@
   <g class="compass">
     <circle cx="915.00" cy="85.00" r="25.00" fill="none" stroke="#2c3e50" stroke-width="1" opacity="0.3" />
     <polygon points="915.00,65.00 911.25,85.00 918.75,85.00" fill="#2c3e50" />
+    <polygon points="915.00,105.00 911.25,85.00 918.75,85.00" fill="none" stroke="#2c3e50" stroke-width="1" />
     <line x1="901.00" y1="85.00" x2="929.00" y2="85.00" stroke="#2c3e50" stroke-width="1" />
     <text x="915.00" y="57.50" font-size="10.00" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-weight="bold">N</text>
     <text x="915.00" y="112.50" font-size="8.00" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">S</text>
     <text x="942.50" y="85.00" font-size="8.00" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">E</text>
     <text x="887.50" y="85.00" font-size="8.00" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">W</text>
-    <text x="915.00" y="58.00" font-size="6.00" fill="#e74c3c" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">STREET</text>
+    <text x="915.00" y="60.00" font-size="6.00" fill="#e74c3c" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">STREET</text>
   </g>
 </svg>

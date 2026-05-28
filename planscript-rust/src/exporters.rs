@@ -115,7 +115,7 @@ impl SvgOptions {
                 .unwrap_or_else(|| "#8a6d3b".to_string()),
             object_clearance_color: options
                 .object_clearance_color
-                .unwrap_or_else(|| "#f39c12".to_string()),
+                .unwrap_or_else(|| "#7f8c8d".to_string()),
             door_color: options.door_color.unwrap_or_else(|| "#e74c3c".to_string()),
             window_color: options
                 .window_color
@@ -357,7 +357,7 @@ fn generate_objects_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) 
         for clearance in &object.clearance_polygons {
             let points = transform_polygon(&clearance.polygon.points, t);
             out.push(format!(
-                r#"<path d="{}" fill="{}" fill-opacity="0.12" stroke="{}" stroke-width="1" stroke-dasharray="3,2" />"#,
+                r#"<path class="object-clearance" d="{}" fill="{}" fill-opacity="0.08" stroke="{}" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />"#,
                 points_to_path(&points),
                 opts.object_clearance_color,
                 opts.object_clearance_color
