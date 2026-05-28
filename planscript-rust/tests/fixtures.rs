@@ -1,5 +1,6 @@
 use planscript::catalog::{
-    candidate_ifc_item_from_file, lint_catalog_item, Catalog, CatalogItem, CatalogLintSeverity,
+    candidate_ifc_item_from_file, import_ifc_manifest, lint_catalog_item, Catalog, CatalogItem,
+    CatalogLintSeverity,
 };
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::JsonExportOptions;
@@ -292,6 +293,116 @@ fn imports_public_buildingsmart_ifc_fixtures() {
     assert_close(column.size.depth, 0.2032, 0.0001);
     assert_close(column.size.height.unwrap(), 3.048, 0.0001);
     assert!(column.needs_review.contains(&"unit-scale".to_string()));
+}
+
+#[test]
+fn import_manifest_batches_open_ifc_candidates() {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_nanos();
+    let dir = std::env::temp_dir().join(format!("planscript-ifc-manifest-{nonce}"));
+    let source_dir = dir.join("source");
+    let out_dir = dir.join("catalog");
+    fs::create_dir_all(&source_dir).expect("create source dir");
+    fs::copy(
+        external_ifc_fixture("buildingsmart-basin-tessellation.ifc"),
+        source_dir.join("basin.ifc"),
+    )
+    .expect("copy basin ifc");
+    fs::copy(
+        external_ifc_fixture("buildingsmart-column.ifc"),
+        source_dir.join("column.ifc"),
+    )
+    .expect("copy column ifc");
+
+    let manifest_path = dir.join("buildingsmart-open.json");
+    fs::write(
+        &manifest_path,
+        r#"{
+          "items": [
+            {
+              "id": "open.buildingsmart.basin",
+              "category": "sanitary",
+              "file": "source/basin.ifc",
+              "name": "buildingSMART Basin",
+              "provider": "buildingSMART Sample-Test-Files",
+              "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+              "license": "CC-BY-4.0",
+              "redistributable": true
+            },
+            {
+              "id": "open.buildingsmart.column",
+              "category": "structure",
+              "file": "source/column.ifc",
+              "provider": "buildingSMART Sample-Test-Files",
+              "sourceUrl": "https://github.com/buildingSMART/Sample-Test-Files",
+              "license": "CC-BY-4.0",
+              "redistributable": true
+            }
+          ]
+        }"#,
+    )
+    .expect("write import manifest");
+
+    let written = import_ifc_manifest(&manifest_path, &out_dir).expect("import manifest");
+    assert_eq!(written.len(), 2);
+    assert!(out_dir.join("open.buildingsmart.basin.psobj.json").exists());
+    assert!(out_dir
+        .join("open.buildingsmart.column.psobj.json")
+        .exists());
+
+    let basin_json =
+        fs::read_to_string(out_dir.join("open.buildingsmart.basin.psobj.json")).expect("read item");
+    let basin: CatalogItem = serde_json::from_str(&basin_json).expect("parse item");
+    assert_eq!(basin.name, "buildingSMART Basin");
+    let source = basin.source.as_ref().expect("source");
+    assert_eq!(
+        source.provider.as_deref(),
+        Some("buildingSMART Sample-Test-Files")
+    );
+    assert_eq!(source.license.as_deref(), Some("CC-BY-4.0"));
+    assert!(source.redistributable);
+    assert_eq!(basin.assets.ifc.as_deref(), Some("source/basin.ifc"));
+    assert!(!basin.needs_review.contains(&"license".to_string()));
+
+    let mut catalog = Catalog::builtins();
+    catalog.load_path(&out_dir).expect("load generated catalog");
+    assert!(catalog.get("open.buildingsmart.basin").is_some());
+    assert!(catalog.get("open.buildingsmart.column").is_some());
+
+    let source = format!(
+        r#"
+        catalog "{}"
+        plan "Manifest Catalog" {{
+          footprint rect (0,0) (5,3)
+          room lab {{ rect (0,0) (5,3) }}
+
+          object basin1 {{
+            use open.buildingsmart.basin
+            in lab
+            at (1.0, 0.5)
+            facing north
+          }}
+
+          object column1 {{
+            use open.buildingsmart.column
+            in lab
+            at (3.5, 0.5)
+            facing north
+          }}
+
+          assert objects_inside_rooms
+          assert object_no_overlap
+        }}
+    "#,
+        out_dir.display()
+    );
+    let result = compile(&source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert_eq!(result.geometry.unwrap().objects.len(), 2);
+
+    let _ = fs::remove_dir_all(&dir);
 }
 
 #[test]

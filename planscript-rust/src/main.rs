@@ -1,5 +1,6 @@
 use planscript::catalog::{
-    candidate_ifc_item_from_file, lint_catalog_item, Catalog, CatalogItem, CatalogLintSeverity,
+    candidate_ifc_item_from_file, import_ifc_manifest, lint_catalog_item, Catalog, CatalogItem,
+    CatalogLintSeverity,
 };
 use planscript::compiler::{compile, CompileOptions, CompilePhase};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
@@ -70,6 +71,7 @@ Catalog Subcommands:
   catalog list                              List built-in object IDs
   catalog show <id>                         Print a built-in object as .psobj.json
   catalog import-ifc <file.ifc> --id <id> --category <name> [--out <path>]
+  catalog import-manifest <manifest.json> --out <dir>
   catalog lint <file-or-dir>                 Validate .psobj.json catalog items
   catalog approve <file> [--out <file>]      Mark a reviewed catalog item approved
 "#
@@ -240,6 +242,7 @@ fn run_catalog(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         "import-ifc" => run_catalog_import_ifc(&args[1..]),
+        "import-manifest" => run_catalog_import_manifest(&args[1..]),
         "lint" => run_catalog_lint(&args[1..]),
         "approve" => run_catalog_approve(&args[1..]),
         other => Err(format!("Unknown catalog subcommand: {other}")),
@@ -299,6 +302,34 @@ fn run_catalog_import_ifc(args: &[String]) -> Result<(), String> {
     } else {
         println!("{json}");
     }
+    Ok(())
+}
+
+fn run_catalog_import_manifest(args: &[String]) -> Result<(), String> {
+    if args.is_empty() || args[0].starts_with('-') {
+        return Err(
+            "Usage: planscript-rust catalog import-manifest <manifest.json> --out <dir>"
+                .to_string(),
+        );
+    }
+    let manifest_path = args[0].clone();
+    let mut out = None;
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--out" if i + 1 < args.len() => {
+                out = Some(args[i + 1].clone());
+                i += 2;
+            }
+            _ => i += 1,
+        }
+    }
+    let out = out.ok_or_else(|| "--out is required".to_string())?;
+    let written = import_ifc_manifest(&manifest_path, &out).map_err(|error| error.message)?;
+    for path in &written {
+        println!("Catalog candidate written to: {}", path.display());
+    }
+    println!("Imported {} catalog item(s).", written.len());
     Ok(())
 }
 
