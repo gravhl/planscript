@@ -812,10 +812,7 @@ fn object_origin(
     }
 
     if let Some(attach) = &object.attach {
-        let default_position = match attach.edge {
-            EdgeSide::North | EdgeSide::South => Position::Percentage { value: 50.0 },
-            EdgeSide::East | EdgeSide::West => Position::Percentage { value: 50.0 },
-        };
+        let default_position = Position::Percentage { value: 50.0 };
         return Ok(point_on_room_edge(
             room_bounds,
             attach.edge,
