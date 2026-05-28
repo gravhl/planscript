@@ -2,6 +2,8 @@
 
 A **deterministic, textual DSL** for defining 2D architectural floor plans. Write human-readable code, compile to precise geometry.
 
+> **Rust-first notice:** The production implementation now lives in [`planscript-rust`](planscript-rust/). The TypeScript implementation in `src/` is deprecated and kept only as historical/reference code while the Rust compiler becomes the final product.
+
 <p align="center">
   <img src="examples/house.svg" alt="Floor plan" width="50%">
 </p>
@@ -92,6 +94,16 @@ plan "Example House" {
 </p>
 
 ## 📦 Installation
+
+Use the Rust implementation for current development:
+
+```bash
+cd planscript-rust
+cargo run -- compile ../examples/house.psc --svg /tmp/house.svg
+cargo run -- catalog list
+```
+
+The old npm package path is deprecated.
 
 ```bash
 npm install planscript
