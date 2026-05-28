@@ -427,16 +427,22 @@ fn extract_ifc_metadata(text: &str) -> IfcExtract {
         unit_scale,
         ..Default::default()
     };
-    let mut bounds: Option<IfcBounds> = None;
+    let mut cartesian_bounds: Option<IfcBounds> = None;
+    let mut point_list_bounds: Option<IfcBounds> = None;
     let mut product_candidate: Option<(String, Option<String>, Option<String>, i32)> = None;
+    let mut type_candidate: Option<(String, Option<String>, Option<String>, i32)> = None;
 
     for statement in ifc_statements(text) {
         let Some(entity) = entity_name(&statement) else {
             continue;
         };
-        if entity == "IFCCARTESIANPOINT" {
+        if entity == "IFCCARTESIANPOINTLIST2D" || entity == "IFCCARTESIANPOINTLIST3D" {
+            for point in parse_cartesian_point_list(&statement, unit_scale) {
+                point_list_bounds = Some(update_ifc_bounds(point_list_bounds, point));
+            }
+        } else if entity == "IFCCARTESIANPOINT" {
             if let Some(point) = parse_cartesian_point(&statement, unit_scale) {
-                bounds = Some(update_ifc_bounds(bounds, point));
+                cartesian_bounds = Some(update_ifc_bounds(cartesian_bounds, point));
             }
         }
 
@@ -444,6 +450,15 @@ fn extract_ifc_metadata(text: &str) -> IfcExtract {
             let args = entity_arguments(&statement);
             let name = args.get(2).and_then(|arg| clean_ifc_string(arg));
             let predefined = args.iter().rev().find_map(|arg| enum_value(arg));
+            if entity.ends_with("TYPE") {
+                let replace_type = type_candidate
+                    .as_ref()
+                    .is_none_or(|(_, _, _, existing)| priority < *existing);
+                if replace_type {
+                    type_candidate =
+                        Some((entity.clone(), name.clone(), predefined.clone(), priority));
+                }
+            }
             let replace = product_candidate
                 .as_ref()
                 .is_none_or(|(_, _, _, existing)| priority < *existing);
@@ -453,12 +468,22 @@ fn extract_ifc_metadata(text: &str) -> IfcExtract {
         }
     }
 
-    if let Some((ifc_class, name, predefined_type, _)) = product_candidate {
+    if let Some((ifc_class, mut name, mut predefined_type, _)) = product_candidate {
+        if let Some((type_class, type_name, type_predefined, _)) = &type_candidate {
+            if same_ifc_family(&ifc_class, type_class) {
+                if predefined_type.is_none() {
+                    predefined_type = type_predefined.clone();
+                }
+                if name.is_none() && is_useful_ifc_name(type_name.as_deref(), type_class) {
+                    name = type_name.clone();
+                }
+            }
+        }
         extract.ifc_class = Some(to_pascal_ifc(&ifc_class));
         extract.name = name;
         extract.predefined_type = predefined_type;
     }
-    extract.bounds = bounds;
+    extract.bounds = point_list_bounds.or(cartesian_bounds);
     extract
 }
 
@@ -579,6 +604,31 @@ fn parse_cartesian_point(statement: &str, scale: f64) -> Option<[f64; 3]> {
     ])
 }
 
+fn parse_cartesian_point_list(statement: &str, scale: f64) -> Vec<[f64; 3]> {
+    let Some(entity) = entity_name(statement) else {
+        return Vec::new();
+    };
+    let dimensions = if entity == "IFCCARTESIANPOINTLIST2D" {
+        2
+    } else {
+        3
+    };
+    let args = entity_arguments(statement);
+    let Some(first) = args.first() else {
+        return Vec::new();
+    };
+    parse_numbers(first)
+        .chunks_exact(dimensions)
+        .map(|chunk| {
+            [
+                chunk[0] * scale,
+                chunk[1] * scale,
+                chunk.get(2).copied().unwrap_or(0.0) * scale,
+            ]
+        })
+        .collect()
+}
+
 fn parse_numbers(input: &str) -> Vec<f64> {
     let mut numbers = Vec::new();
     let mut current = String::new();
@@ -625,6 +675,26 @@ fn update_ifc_bounds(bounds: Option<IfcBounds>, point: [f64; 3]) -> IfcBounds {
 fn infer_length_unit_scale(text: &str) -> f64 {
     for statement in ifc_statements(text) {
         let upper = statement.to_ascii_uppercase();
+        if upper.contains("IFCCONVERSIONBASEDUNIT") && upper.contains(".LENGTHUNIT.") {
+            if upper.contains("'INCH'") {
+                return 0.0254;
+            }
+            if upper.contains("'FOOT'") || upper.contains("'FEET'") {
+                return 0.3048;
+            }
+            if upper.contains("'YARD'") {
+                return 0.9144;
+            }
+            if upper.contains("'MILLIMETRE'") || upper.contains("'MILLIMETER'") {
+                return 0.001;
+            }
+            if upper.contains("'CENTIMETRE'") || upper.contains("'CENTIMETER'") {
+                return 0.01;
+            }
+        }
+    }
+    for statement in ifc_statements(text) {
+        let upper = statement.to_ascii_uppercase();
         if upper.contains("IFCSIUNIT")
             && upper.contains(".LENGTHUNIT.")
             && upper.contains(".METRE.")
@@ -657,14 +727,45 @@ fn product_priority(entity: &str) -> Option<i32> {
         "IFCWINDOW" => Some(5),
         "IFCFLOWTERMINAL" => Some(6),
         "IFCBUILDINGELEMENTPROXY" => Some(7),
+        "IFCCOLUMN" => Some(8),
+        "IFCBEAM" => Some(9),
+        "IFCMEMBER" => Some(10),
+        "IFCPLATE" => Some(11),
+        "IFCSLAB" => Some(12),
+        "IFCWALL" => Some(13),
+        "IFCWALLSTANDARDCASE" => Some(14),
+        "IFCCOVERING" => Some(15),
         "IFCSANITARYTERMINALTYPE" => Some(20),
         "IFCELECTRICAPPLIANCETYPE" => Some(21),
         "IFCFURNITURETYPE" => Some(22),
         "IFCDOORTYPE" => Some(23),
         "IFCWINDOWTYPE" => Some(24),
         "IFCFLOWTERMINALTYPE" => Some(25),
+        "IFCCOLUMNTYPE" => Some(26),
+        "IFCBEAMTYPE" => Some(27),
+        "IFCMEMBERTYPE" => Some(28),
+        "IFCPLATETYPE" => Some(29),
+        "IFCSLABTYPE" => Some(30),
+        "IFCWALLTYPE" => Some(31),
+        "IFCCOVERINGTYPE" => Some(32),
         _ => None,
     }
+}
+
+fn same_ifc_family(entity: &str, type_entity: &str) -> bool {
+    type_entity
+        .strip_suffix("TYPE")
+        .is_some_and(|base| base == entity)
+}
+
+fn is_useful_ifc_name(name: Option<&str>, entity: &str) -> bool {
+    let Some(name) = name else {
+        return false;
+    };
+    let trimmed = name.trim();
+    !trimmed.is_empty()
+        && !trimmed.eq_ignore_ascii_case(entity)
+        && !trimmed.eq_ignore_ascii_case(&to_pascal_ifc(entity))
 }
 
 fn to_pascal_ifc(entity: &str) -> String {
@@ -683,6 +784,21 @@ fn to_pascal_ifc(entity: &str) -> String {
         "IFCFLOWTERMINAL" => Some("IfcFlowTerminal"),
         "IFCFLOWTERMINALTYPE" => Some("IfcFlowTerminalType"),
         "IFCBUILDINGELEMENTPROXY" => Some("IfcBuildingElementProxy"),
+        "IFCCOLUMN" => Some("IfcColumn"),
+        "IFCCOLUMNTYPE" => Some("IfcColumnType"),
+        "IFCBEAM" => Some("IfcBeam"),
+        "IFCBEAMTYPE" => Some("IfcBeamType"),
+        "IFCMEMBER" => Some("IfcMember"),
+        "IFCMEMBERTYPE" => Some("IfcMemberType"),
+        "IFCPLATE" => Some("IfcPlate"),
+        "IFCPLATETYPE" => Some("IfcPlateType"),
+        "IFCSLAB" => Some("IfcSlab"),
+        "IFCSLABTYPE" => Some("IfcSlabType"),
+        "IFCWALL" => Some("IfcWall"),
+        "IFCWALLSTANDARDCASE" => Some("IfcWallStandardCase"),
+        "IFCWALLTYPE" => Some("IfcWallType"),
+        "IFCCOVERING" => Some("IfcCovering"),
+        "IFCCOVERINGTYPE" => Some("IfcCoveringType"),
         _ => None,
     };
     if let Some(known) = known {

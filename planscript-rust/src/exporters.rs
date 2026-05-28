@@ -353,15 +353,20 @@ fn generate_objects_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) 
     for object in &geometry.objects {
         let points = transform_polygon(&object.polygon.points, t);
         out.push(format!(
-            r#"<path d="{}" fill="{}" stroke="{}" stroke-width="1.5" />"#,
+            r#"<path data-object="{}" data-catalog-id="{}" d="{}" fill="{}" stroke="{}" stroke-width="1.5" />"#,
+            escape_xml(&object.name),
+            escape_xml(&object.catalog_id),
             points_to_path(&points),
             opts.object_fill_color,
             opts.object_stroke_color
         ));
         let origin = transform_point(object.origin, t);
         out.push(format!(
-            r#"<circle cx="{:.2}" cy="{:.2}" r="2.5" fill="{}" />"#,
-            origin.x, origin.y, opts.object_stroke_color
+            r#"<circle data-object-origin="{}" cx="{:.2}" cy="{:.2}" r="2.5" fill="{}" />"#,
+            escape_xml(&object.name),
+            origin.x,
+            origin.y,
+            opts.object_stroke_color
         ));
     }
     out.join("\n    ")
