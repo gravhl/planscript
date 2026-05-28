@@ -1,4 +1,5 @@
 pub mod ast;
+pub mod catalog;
 pub mod compiler;
 pub mod exporters;
 pub mod geometry;
@@ -8,6 +9,7 @@ pub mod solver;
 pub mod validation;
 
 pub use compiler::{compile, CompileError, CompileOptions, CompileResult};
+pub use catalog::{builtin_items, candidate_ifc_item, Catalog, CatalogError, CatalogItem};
 pub use exporters::{export_json, export_svg, JsonExportOptions, SvgExportOptions};
 pub use geometry::{generate_geometry, GeometryIr};
 pub use lowering::{lower, LoweredProgram, LoweringError};

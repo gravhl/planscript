@@ -122,7 +122,7 @@ impl<'a> Lexer<'a> {
                 continue;
             }
 
-            if "{}()[],.:%".contains(ch) {
+            if "{}()[],.:%/".contains(ch) {
                 self.bump();
                 tokens.push(Token {
                     kind: TokenKind::Symbol(ch.to_string()),
@@ -294,6 +294,7 @@ impl Parser {
         let mut grid = None;
         let mut defaults = None;
         let mut site = None;
+        let mut catalogs = Vec::new();
 
         loop {
             if self.check_keyword("units") {
@@ -308,6 +309,8 @@ impl Parser {
                 defaults = Some(self.parse_defaults()?);
             } else if self.check_keyword("site") {
                 site = Some(self.parse_site()?);
+            } else if self.check_keyword("catalog") {
+                catalogs.push(self.parse_catalog()?);
             } else {
                 break;
             }
@@ -323,6 +326,7 @@ impl Parser {
             grid,
             defaults,
             site,
+            catalogs,
             plan,
         })
     }
@@ -521,6 +525,14 @@ impl Parser {
         })
     }
 
+    fn parse_catalog(&mut self) -> Result<CatalogDeclaration, ParseError> {
+        self.expect_keyword("catalog")?;
+        Ok(CatalogDeclaration {
+            node_type: node_type("CatalogDeclaration"),
+            path: self.expect_string()?,
+        })
+    }
+
     fn parse_cardinal(&mut self) -> Result<CardinalDirection, ParseError> {
         let raw = self.expect_ident()?.to_lowercase();
         match raw.as_str() {
@@ -554,6 +566,7 @@ impl Parser {
         let mut zones = Vec::new();
         let mut rooms = Vec::new();
         let mut courtyards = Vec::new();
+        let mut objects = Vec::new();
         let mut openings = Vec::new();
         let mut wall_overrides = Vec::new();
         let mut assertions = Vec::new();
@@ -567,6 +580,8 @@ impl Parser {
                 courtyards.push(self.parse_courtyard()?);
             } else if self.check_keyword("room") {
                 rooms.push(self.parse_room()?);
+            } else if self.check_keyword("object") {
+                objects.push(self.parse_object()?);
             } else if self.check_keyword("opening") {
                 openings.push(self.parse_opening()?);
             } else if self.check_keyword("wall_thickness") {
@@ -586,6 +601,7 @@ impl Parser {
             zones,
             rooms,
             courtyards,
+            objects,
             openings,
             wall_overrides,
             assertions,
@@ -1031,6 +1047,104 @@ impl Parser {
         }
     }
 
+    fn parse_object(&mut self) -> Result<ObjectDefinition, ParseError> {
+        self.expect_keyword("object")?;
+        let name = self.expect_ident()?;
+        self.expect_symbol("{")?;
+        let mut catalog_id = None;
+        let mut room = None;
+        let mut label = None;
+        let mut at = None;
+        let mut attach = None;
+        let mut facing = None;
+        let mut rotate = None;
+        let mut mirror = None;
+        let mut clearance_overrides = Vec::new();
+
+        while !self.consume_symbol("}") {
+            if self.consume_keyword("use") {
+                catalog_id = Some(self.parse_catalog_id()?);
+            } else if self.consume_keyword("in") {
+                room = Some(self.expect_ident()?);
+            } else if self.consume_keyword("label") {
+                label = Some(self.expect_string()?);
+            } else if self.consume_keyword("at") {
+                if self.check_symbol("(") {
+                    at = Some(ObjectPosition::Point {
+                        point: self.parse_point()?,
+                    });
+                } else {
+                    at = Some(ObjectPosition::Distance {
+                        position: self.parse_position()?,
+                    });
+                }
+            } else if self.consume_keyword("attach") {
+                let edge = self.parse_edge_side()?;
+                self.expect_keyword("wall")?;
+                attach = Some(ObjectWallAttachment {
+                    node_type: node_type("ObjectWallAttachment"),
+                    edge,
+                });
+            } else if self.consume_keyword("facing") {
+                facing = Some(self.parse_edge_side()?);
+            } else if self.consume_keyword("rotate") {
+                rotate = Some(self.expect_number()?);
+            } else if self.consume_keyword("mirror") {
+                mirror = Some(self.parse_mirror_axis()?);
+            } else if self.consume_keyword("clearance") {
+                clearance_overrides.push(ObjectClearanceOverride {
+                    node_type: node_type("ObjectClearanceOverride"),
+                    side: self.parse_clearance_side()?,
+                    value: self.expect_number()?,
+                });
+            } else {
+                return Err(self.error_here("Expected object content"));
+            }
+        }
+
+        Ok(ObjectDefinition {
+            node_type: node_type("ObjectDefinition"),
+            name,
+            catalog_id: catalog_id.ok_or_else(|| self.error_here("Object is missing use"))?,
+            room: room.ok_or_else(|| self.error_here("Object is missing room"))?,
+            label,
+            at,
+            attach,
+            facing,
+            rotate,
+            mirror,
+            clearance_overrides,
+        })
+    }
+
+    fn parse_catalog_id(&mut self) -> Result<String, ParseError> {
+        let mut parts = vec![self.expect_ident()?];
+        while self.consume_symbol(".") {
+            parts.push(self.expect_ident()?);
+        }
+        Ok(parts.join("."))
+    }
+
+    fn parse_mirror_axis(&mut self) -> Result<MirrorAxis, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "x" => Ok(MirrorAxis::X),
+            "y" => Ok(MirrorAxis::Y),
+            _ => Err(self.error_here(format!("Unknown mirror axis '{raw}'"))),
+        }
+    }
+
+    fn parse_clearance_side(&mut self) -> Result<ClearanceSide, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "front" => Ok(ClearanceSide::Front),
+            "back" => Ok(ClearanceSide::Back),
+            "left" => Ok(ClearanceSide::Left),
+            "right" => Ok(ClearanceSide::Right),
+            _ => Err(self.error_here(format!("Unknown clearance side '{raw}'"))),
+        }
+    }
+
     fn parse_wall_override(&mut self) -> Result<WallThicknessOverride, ParseError> {
         self.expect_keyword("wall_thickness")?;
         let room = self.expect_ident()?;
@@ -1070,6 +1184,15 @@ impl Parser {
         }
         if self.consume_keyword("rooms_connected") {
             return Ok(Assertion::AssertionRoomsConnected);
+        }
+        if self.consume_keyword("objects_inside_rooms") {
+            return Ok(Assertion::AssertionObjectsInsideRooms);
+        }
+        if self.consume_keyword("object_no_overlap") {
+            return Ok(Assertion::AssertionObjectNoOverlap);
+        }
+        if self.consume_keyword("object_clearances") {
+            return Ok(Assertion::AssertionObjectClearances);
         }
         if self.consume_keyword("orientation") {
             let room = self.expect_ident()?;

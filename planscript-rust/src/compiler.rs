@@ -1,11 +1,13 @@
 use crate::ast::Program;
+use crate::catalog::{resolve_catalog_path, Catalog};
 use crate::exporters::{export_json, export_svg, JsonExportOptions, SvgExportOptions};
 use crate::geometry::{generate_geometry, GeometryIr};
-use crate::lowering::lower;
+use crate::lowering::lower_with_catalog;
 use crate::parser::try_parse;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::path::Path;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -40,6 +42,7 @@ pub struct CompileOptions {
     pub emit_json: Option<bool>,
     pub svg_options: Option<SvgExportOptions>,
     pub json_options: Option<JsonExportOptions>,
+    pub catalog_base_dir: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -80,7 +83,29 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
         }
     };
 
-    let lowered = match lower(&ast) {
+    let mut catalog = Catalog::builtins();
+    let base_dir = options.catalog_base_dir.as_deref().map(Path::new);
+    for declaration in &ast.catalogs {
+        let path = resolve_catalog_path(&declaration.path, base_dir);
+        if let Err(error) = catalog.load_path(&path) {
+            return CompileResult {
+                success: false,
+                errors: vec![CompileError {
+                    phase: CompilePhase::Lower,
+                    message: error.message,
+                    location: None,
+                    code: None,
+                    details: None,
+                }],
+                ast: Some(ast),
+                geometry: None,
+                svg: None,
+                json: None,
+            };
+        }
+    }
+
+    let lowered = match lower_with_catalog(&ast, &catalog) {
         Ok(lowered) => lowered,
         Err(error) => {
             let mut details = None;
