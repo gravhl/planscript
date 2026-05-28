@@ -8,8 +8,8 @@ pub mod parser;
 pub mod solver;
 pub mod validation;
 
-pub use compiler::{compile, CompileError, CompileOptions, CompileResult};
 pub use catalog::{builtin_items, candidate_ifc_item, Catalog, CatalogError, CatalogItem};
+pub use compiler::{compile, CompileError, CompileOptions, CompileResult};
 pub use exporters::{export_json, export_svg, JsonExportOptions, SvgExportOptions};
 pub use geometry::{generate_geometry, GeometryIr};
 pub use lowering::{lower, LoweredProgram, LoweringError};
