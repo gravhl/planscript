@@ -18,7 +18,8 @@ plan "IFC Fixture Showroom" {
   object ifc_basin1 {
     use open.buildingsmart.basin
     in gallery
-    at (1.0, 0.4)
+    attach south wall
+    at 1.0
     facing north
     label "IFC Basin"
   }
