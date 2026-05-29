@@ -51,6 +51,14 @@ Initial built-ins include:
 - `builtin.kitchen.sink`
 - `builtin.kitchen.range.size_600`
 - `builtin.kitchen.fridge.size_900`
+- `builtin.kitchen.counter.size_<12|15|18|21|24|27|30|33|36|42|48>in`
+- `builtin.kitchen.fridge.standard_<24|30|33|36>in`
+- `builtin.kitchen.fridge.counter_depth_<30|33|36>in`
+- `builtin.kitchen.refrigerator.standard_<24|30|33|36>in`
+- `builtin.kitchen.refrigerator.counter_depth_<30|33|36>in`
+- `builtin.kitchen.cooktop.size_<15|24|30|36|48>in`
+- `builtin.kitchen.stovetop.size_<15|24|30|36|48>in`
+- `builtin.kitchen.range.size_<24|30|36|48>in`
 - `builtin.laundry.washer`
 - `builtin.laundry.dryer`
 - `builtin.furniture.bed.queen`
@@ -58,6 +66,8 @@ Initial built-ins include:
 - `builtin.furniture.table.dining_6`
 
 These items are generic PlanScript-owned assets. They include BIM alignment fields like `ifcClass` and `ifcPredefinedType`, but are not copied from manufacturer files.
+
+US nominal kitchen sizes are stored in meters internally while preserving inch-based IDs for authoring. Counter modules use 25.5 in depth and 36 in height; refrigerator variants distinguish standard-depth and counter-depth footprints; cooktop and stovetop IDs are aliases for stove tops that sit in counter space.
 
 ## `.psobj.json` Format
 

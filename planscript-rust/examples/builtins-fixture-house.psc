@@ -74,7 +74,7 @@ plan "Built-In Fixture House" {
   }
 
   object range1 {
-    use builtin.kitchen.range.size_600
+    use builtin.kitchen.range.size_30in
     in kitchen
     attach north wall
     at 3.0
@@ -83,7 +83,7 @@ plan "Built-In Fixture House" {
   }
 
   object fridge1 {
-    use builtin.kitchen.fridge.size_900
+    use builtin.kitchen.fridge.counter_depth_36in
     in kitchen
     attach east wall
     at 1.0
