@@ -75,12 +75,12 @@
     <line x1="60.00" y1="391.44" x2="60.00" y2="354.78" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="341.11" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hallway</text>
-    <text x="658.89" y="293.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
-    <text x="658.89" y="587.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
-    <text x="182.22" y="204.44" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
-    <text x="182.22" y="568.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 2</text>
-    <text x="182.22" y="373.11" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bathroom</text>
+  <text class="room-label" data-room-label="hall" x="341.11" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hallway</text>
+    <text class="room-label" data-room-label="living" x="658.89" y="293.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
+    <text class="room-label" data-room-label="kitchen" x="658.89" y="587.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+    <text class="room-label" data-room-label="master" x="182.22" y="204.44" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
+    <text class="room-label" data-room-label="bedroom2" x="182.22" y="568.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 2</text>
+    <text class="room-label" data-room-label="bath" x="182.22" y="373.11" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bathroom</text>
 
   <!-- Dimensions -->
 

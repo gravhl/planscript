@@ -38,8 +38,8 @@
     <line x1="432.00" y1="196.00" x2="568.00" y2="196.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="500.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Core</text>
-    <text x="500.00" y="672.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Room</text>
+  <text class="room-label" data-room-label="core" x="500.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Core</text>
+    <text class="room-label" data-room-label="south_room" x="500.00" y="672.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Room</text>
 
   <!-- Dimensions -->
 

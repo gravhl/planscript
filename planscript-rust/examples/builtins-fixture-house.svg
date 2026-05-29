@@ -173,11 +173,11 @@
     <path class="door-swing" d="M 636.00 230.00 A 68.00 68.00 0 0 0 568.00 298.00" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
 
   <!-- Labels -->
-  <text x="228.00" y="604.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
-    <text x="636.00" y="604.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
-    <text x="228.00" y="366.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Laundry</text>
-    <text x="500.00" y="264.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom</text>
-    <text x="772.00" y="264.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
+  <text class="room-label" data-room-label="bath" x="228.00" y="604.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text class="room-label" data-room-label="kitchen" x="636.00" y="604.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+    <text class="room-label" data-room-label="laundry" x="228.00" y="366.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Laundry</text>
+    <text class="room-label" data-room-label="bedroom" x="500.00" y="264.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom</text>
+    <text class="room-label" data-room-label="living" x="772.00" y="325.20" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
     <text class="fixture-label" data-object-label="wc1" x="115.12" y="695.25" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">WC</text>
     <text class="fixture-label" data-object-label="lav1" x="160.00" y="508.93" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
     <text class="fixture-label" data-object-label="shower1" x="309.60" y="750.33" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>

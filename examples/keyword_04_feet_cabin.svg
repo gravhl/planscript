@@ -48,9 +48,9 @@
     <line x1="60.00" y1="482.50" x2="60.00" y2="317.50" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="307.50" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Great Room</text>
-    <text x="747.50" y="262.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom</text>
-    <text x="747.50" y="592.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+  <text class="room-label" data-room-label="great_room" x="307.50" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Great Room</text>
+    <text class="room-label" data-room-label="bedroom" x="747.50" y="262.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom</text>
+    <text class="room-label" data-room-label="bath" x="747.50" y="592.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
 
   <!-- Dimensions -->
 

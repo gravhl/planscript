@@ -1219,14 +1219,28 @@ fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -
     if !opts.show_labels {
         return String::new();
     }
+    let obstacles = label_obstacles(geometry, t);
+    let mut placed = Vec::new();
     let mut out = Vec::new();
+
     for room in &geometry.rooms {
         if let Some(label) = &room.label {
-            let center = transform_point(polygon_center(&room.polygon.points), t);
+            let polygon = transform_polygon(&room.polygon.points, t);
+            let candidate = best_area_label_candidate(
+                label,
+                opts.label_font_size,
+                &polygon,
+                &obstacles,
+                &placed,
+                opts.width,
+                opts.height,
+            );
+            placed.push(candidate.rect);
             out.push(format!(
-                r#"<text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">{}</text>"#,
-                center.x,
-                center.y,
+                r#"<text class="room-label" data-room-label="{}" x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">{}</text>"#,
+                escape_xml(&room.name),
+                candidate.x,
+                candidate.y,
                 number(opts.label_font_size),
                 opts.label_color,
                 escape_xml(label)
@@ -1235,18 +1249,35 @@ fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -
     }
     for courtyard in &geometry.courtyards {
         if let Some(label) = &courtyard.label {
-            let center = transform_point(polygon_center(&courtyard.polygon.points), t);
+            let polygon = transform_polygon(&courtyard.polygon.points, t);
+            let candidate = best_area_label_candidate(
+                label,
+                opts.label_font_size,
+                &polygon,
+                &obstacles,
+                &placed,
+                opts.width,
+                opts.height,
+            );
+            placed.push(candidate.rect);
             out.push(format!(
-                r#"<text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">{}</text>"#,
-                center.x,
-                center.y,
+                r#"<text class="courtyard-label" data-courtyard-label="{}" x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">{}</text>"#,
+                escape_xml(&courtyard.name),
+                candidate.x,
+                candidate.y,
                 number(opts.label_font_size),
                 opts.courtyard_stroke_color,
                 escape_xml(label)
             ));
         }
     }
-    out.extend(generate_object_labels_svg(geometry, t, opts));
+    out.extend(generate_object_labels_svg(
+        geometry,
+        t,
+        opts,
+        &obstacles,
+        &mut placed,
+    ));
     out.join("\n    ")
 }
 
@@ -1271,10 +1302,10 @@ fn generate_object_labels_svg(
     geometry: &GeometryIr,
     t: Transform,
     opts: &SvgOptions,
+    obstacles: &[LabelRect],
+    placed: &mut Vec<LabelRect>,
 ) -> Vec<String> {
     let font_size = (opts.label_font_size * 0.72).max(7.0);
-    let obstacles = label_obstacles(geometry, t);
-    let mut placed = Vec::new();
     let mut out = Vec::new();
 
     for object in &geometry.objects {
@@ -1286,8 +1317,8 @@ fn generate_object_labels_svg(
             label,
             font_size,
             object_rect,
-            &obstacles,
-            &placed,
+            obstacles,
+            placed,
             opts.width,
             opts.height,
         );
@@ -1311,6 +1342,84 @@ fn generate_object_labels_svg(
             transform,
             escape_xml(label)
         ));
+    }
+
+    out
+}
+
+fn best_area_label_candidate(
+    label: &str,
+    font_size: f64,
+    polygon: &[Point],
+    obstacles: &[LabelRect],
+    placed: &[LabelRect],
+    canvas_width: f64,
+    canvas_height: f64,
+) -> LabelCandidate {
+    let candidates = area_label_candidates(label, font_size, polygon);
+    let inside = candidates
+        .iter()
+        .copied()
+        .filter(|candidate| rect_inside_polygon(candidate.rect, polygon))
+        .collect::<Vec<_>>();
+    let candidates = if inside.is_empty() {
+        candidates
+    } else {
+        inside
+    };
+
+    candidates
+        .into_iter()
+        .min_by(|a, b| {
+            let a_score = label_score(a, obstacles, placed, canvas_width, canvas_height);
+            let b_score = label_score(b, obstacles, placed, canvas_width, canvas_height);
+            a_score
+                .partial_cmp(&b_score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .expect("area label candidates")
+}
+
+fn area_label_candidates(label: &str, font_size: f64, polygon: &[Point]) -> Vec<LabelCandidate> {
+    let text_width = estimate_text_width(label, font_size);
+    let text_height = font_size * 1.15;
+    if polygon.is_empty() {
+        return vec![label_candidate(0.0, 0.0, 0.0, text_width, text_height, 0.0)];
+    }
+
+    let center = polygon_center(polygon);
+    let (min_x, max_x, min_y, max_y) = bounds(polygon);
+    let diagonal = distance(Point { x: min_x, y: min_y }, Point { x: max_x, y: max_y }).max(1.0);
+
+    let mut out = vec![label_candidate(
+        center.x,
+        center.y,
+        0.0,
+        text_width,
+        text_height,
+        0.0,
+    )];
+
+    let fractions = [0.5, 0.35, 0.65, 0.2, 0.8, 0.1, 0.9];
+    for fy in fractions {
+        for fx in fractions {
+            let point = Point {
+                x: min_x + (max_x - min_x) * fx,
+                y: min_y + (max_y - min_y) * fy,
+            };
+            if !point_in_polygon_or_boundary(point, polygon) {
+                continue;
+            }
+            let preference = 1.0 + distance(point, center) / diagonal * 4.0;
+            out.push(label_candidate(
+                point.x,
+                point.y,
+                0.0,
+                text_width,
+                text_height,
+                preference,
+            ));
+        }
     }
 
     out
@@ -1556,6 +1665,82 @@ fn rect_for_line(a: Point, b: Point) -> LabelRect {
         min_y: a.y.min(b.y),
         max_y: a.y.max(b.y),
     }
+}
+
+fn rect_inside_polygon(rect: LabelRect, polygon: &[Point]) -> bool {
+    if polygon.is_empty() {
+        return false;
+    }
+
+    let center = Point {
+        x: (rect.min_x + rect.max_x) / 2.0,
+        y: (rect.min_y + rect.max_y) / 2.0,
+    };
+    let points = [
+        center,
+        Point {
+            x: rect.min_x,
+            y: rect.min_y,
+        },
+        Point {
+            x: rect.max_x,
+            y: rect.min_y,
+        },
+        Point {
+            x: rect.max_x,
+            y: rect.max_y,
+        },
+        Point {
+            x: rect.min_x,
+            y: rect.max_y,
+        },
+    ];
+
+    points
+        .iter()
+        .all(|point| point_in_polygon_or_boundary(*point, polygon))
+}
+
+fn point_in_polygon_or_boundary(point: Point, polygon: &[Point]) -> bool {
+    point_in_polygon(point, polygon) || point_on_polygon_boundary(point, polygon, 0.01)
+}
+
+fn point_in_polygon(point: Point, polygon: &[Point]) -> bool {
+    let mut inside = false;
+    let n = polygon.len();
+    if n == 0 {
+        return false;
+    }
+
+    let mut j = n - 1;
+    for i in 0..n {
+        let pi = polygon[i];
+        let pj = polygon[j];
+        if (pi.y > point.y) != (pj.y > point.y)
+            && point.x < ((pj.x - pi.x) * (point.y - pi.y)) / (pj.y - pi.y) + pi.x
+        {
+            inside = !inside;
+        }
+        j = i;
+    }
+    inside
+}
+
+fn point_on_polygon_boundary(point: Point, polygon: &[Point], epsilon: f64) -> bool {
+    for i in 0..polygon.len() {
+        let a = polygon[i];
+        let b = polygon[(i + 1) % polygon.len()];
+        if (distance(point, a) + distance(point, b) - distance(a, b)).abs() <= epsilon {
+            return true;
+        }
+    }
+    false
+}
+
+fn distance(a: Point, b: Point) -> f64 {
+    let dx = a.x - b.x;
+    let dy = a.y - b.y;
+    (dx * dx + dy * dy).sqrt()
 }
 
 fn overlap_area(a: LabelRect, b: LabelRect) -> f64 {

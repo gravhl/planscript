@@ -100,15 +100,15 @@
     <line x1="716.36" y1="376.82" x2="716.36" y2="330.45" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="268.18" y="678.18" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Entry</text>
-    <text x="453.64" y="678.18" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Garage</text>
-    <text x="299.09" y="523.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
-    <text x="484.55" y="523.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dining Room</text>
-    <text x="639.09" y="523.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
-    <text x="283.64" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
-    <text x="422.73" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bath</text>
-    <text x="530.91" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 2</text>
-    <text x="654.55" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 3</text>
+  <text class="room-label" data-room-label="entry" x="268.18" y="678.18" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Entry</text>
+    <text class="room-label" data-room-label="garage" x="453.64" y="678.18" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Garage</text>
+    <text class="room-label" data-room-label="living" x="299.09" y="523.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
+    <text class="room-label" data-room-label="dining" x="484.55" y="523.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dining Room</text>
+    <text class="room-label" data-room-label="kitchen" x="639.09" y="523.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+    <text class="room-label" data-room-label="master" x="283.64" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
+    <text class="room-label" data-room-label="master_bath" x="422.73" y="307.27" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bath</text>
+    <text class="room-label" data-room-label="bedroom2" x="530.91" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 2</text>
+    <text class="room-label" data-room-label="bedroom3" x="654.55" y="353.64" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 3</text>
 
   <!-- Dimensions -->
 

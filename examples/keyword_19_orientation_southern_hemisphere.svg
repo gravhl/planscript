@@ -47,9 +47,9 @@
     <line x1="896.67" y1="612.50" x2="896.67" y2="527.50" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="273.33" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Suite</text>
-    <text x="670.00" y="230.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
-    <text x="670.00" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+  <text class="room-label" data-room-label="suite" x="273.33" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Suite</text>
+    <text class="room-label" data-room-label="living" x="670.00" y="230.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
+    <text class="room-label" data-room-label="kitchen" x="670.00" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
 
   <!-- Dimensions -->
 

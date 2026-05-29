@@ -53,10 +53,10 @@
     <line x1="115.00" y1="433.00" x2="115.00" y2="367.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="445.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Base</text>
-    <text x="445.00" y="565.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Porch</text>
-    <text x="390.00" y="235.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Loft</text>
-    <text x="197.50" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Side</text>
+  <text class="room-label" data-room-label="base" x="445.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Base</text>
+    <text class="room-label" data-room-label="porch" x="445.00" y="565.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Porch</text>
+    <text class="room-label" data-room-label="loft" x="390.00" y="235.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Loft</text>
+    <text class="room-label" data-room-label="side" x="197.50" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Side</text>
 
   <!-- Dimensions -->
 
