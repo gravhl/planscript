@@ -45,9 +45,9 @@
     <line x1="437.14" y1="337.14" x2="562.86" y2="337.14" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="185.71" y="462.86" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Left Room</text>
-    <text x="814.29" y="462.86" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Right Room</text>
-    <text x="500.00" y="462.86" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Connector</text>
+  <text class="room-label" data-room-label="left_room" x="185.71" y="462.86" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Left Room</text>
+    <text class="room-label" data-room-label="right_room" x="814.29" y="462.86" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Right Room</text>
+    <text class="room-label" data-room-label="connector" x="500.00" y="462.86" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Connector</text>
 
   <!-- Dimensions -->
 

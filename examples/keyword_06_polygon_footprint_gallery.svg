@@ -55,10 +55,10 @@
     <line x1="273.33" y1="60.00" x2="386.67" y2="60.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="273.33" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Entry</text>
-    <text x="500.00" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Connector</text>
-    <text x="726.67" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Office</text>
-    <text x="330.00" y="230.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Gallery</text>
+  <text class="room-label" data-room-label="entry" x="273.33" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Entry</text>
+    <text class="room-label" data-room-label="connector" x="500.00" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Connector</text>
+    <text class="room-label" data-room-label="office" x="726.67" y="570.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Office</text>
+    <text class="room-label" data-room-label="gallery" x="330.00" y="230.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Gallery</text>
 
   <!-- Dimensions -->
 

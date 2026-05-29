@@ -38,6 +38,70 @@ fn assert_close(actual: f64, expected: f64, epsilon: f64) {
     );
 }
 
+#[derive(Debug, Clone, Copy)]
+struct SvgRect {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+}
+
+fn svg_text_position(svg: &str, marker: &str) -> Option<(f64, f64)> {
+    let tag = svg_tag_containing(svg, "text", marker)?;
+    Some((
+        svg_attr(tag, "x")?.parse().ok()?,
+        svg_attr(tag, "y")?.parse().ok()?,
+    ))
+}
+
+fn svg_path_bounds(svg: &str, marker: &str) -> Option<SvgRect> {
+    let tag = svg_tag_containing(svg, "path", marker)?;
+    let d = svg_attr(tag, "d")?;
+    let coords = d
+        .split(|ch: char| !(ch.is_ascii_digit() || ch == '.' || ch == '-' || ch == '+'))
+        .filter(|part| !part.is_empty())
+        .filter_map(|part| part.parse::<f64>().ok())
+        .collect::<Vec<_>>();
+    if coords.len() < 2 {
+        return None;
+    }
+
+    let mut rect = SvgRect {
+        min_x: f64::INFINITY,
+        max_x: f64::NEG_INFINITY,
+        min_y: f64::INFINITY,
+        max_y: f64::NEG_INFINITY,
+    };
+    for pair in coords.chunks(2) {
+        if let [x, y] = pair {
+            rect.min_x = rect.min_x.min(*x);
+            rect.max_x = rect.max_x.max(*x);
+            rect.min_y = rect.min_y.min(*y);
+            rect.max_y = rect.max_y.max(*y);
+        }
+    }
+    Some(rect)
+}
+
+fn svg_tag_containing<'a>(svg: &'a str, tag_name: &str, marker: &str) -> Option<&'a str> {
+    let marker_index = svg.find(marker)?;
+    let tag_open = format!("<{tag_name}");
+    let tag_start = svg[..marker_index].rfind(&tag_open)?;
+    let tag_end = tag_start + svg[tag_start..].find('>')? + 1;
+    Some(&svg[tag_start..tag_end])
+}
+
+fn svg_attr<'a>(tag: &'a str, name: &str) -> Option<&'a str> {
+    let needle = format!(r#"{name}=""#);
+    let start = tag.find(&needle)? + needle.len();
+    let end = start + tag[start..].find('"')?;
+    Some(&tag[start..end])
+}
+
+fn point_in_rect(x: f64, y: f64, rect: SvgRect) -> bool {
+    x >= rect.min_x && x <= rect.max_x && y >= rect.min_y && y <= rect.max_y
+}
+
 #[test]
 fn parses_fixture_object_blocks() {
     let source = r#"
@@ -258,6 +322,40 @@ fn warns_when_wall_backed_fixture_is_near_wall_but_not_attached() {
             && warning.contains("south wall")),
         "{:?}",
         result.warnings
+    );
+}
+
+#[test]
+fn room_labels_move_to_empty_room_area_when_objects_cover_center() {
+    let source = r#"
+        plan "Room Label Avoidance" {
+          footprint rect (0,0) (6,4)
+          room living {
+            rect (0,0) (6,4)
+            label "Living"
+          }
+          object dining1 {
+            use builtin.furniture.table.dining_6
+            in living
+            at (3.0, 1.55)
+            facing north
+            label "Dining"
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    let (label_x, label_y) =
+        svg_text_position(&svg, r#"class="room-label" data-room-label="living""#)
+            .expect("living room label");
+    let table_rect = svg_path_bounds(&svg, r#"class="fixture-base fixture-dining-table""#)
+        .expect("dining table fixture");
+
+    assert!(
+        !point_in_rect(label_x, label_y, table_rect),
+        "room label ({label_x}, {label_y}) should move away from table {table_rect:?}"
     );
 }
 

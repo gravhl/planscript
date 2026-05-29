@@ -97,17 +97,17 @@
     <line x1="726.67" y1="496.33" x2="726.67" y2="462.33" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="341.33" y="649.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Entry</text>
-    <text x="500.00" y="649.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
-    <text x="658.67" y="649.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dining</text>
-    <text x="341.33" y="479.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
-    <text x="341.33" y="320.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Laundry</text>
-    <text x="658.67" y="479.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 1</text>
-    <text x="658.67" y="320.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
-    <text x="386.67" y="150.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
-    <text x="545.33" y="150.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bath</text>
-    <text x="658.67" y="150.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Walk-in Closet</text>
-    <text x="500.00" y="400.00" font-size="14" fill="#27ae60" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">Central Patio</text>
+  <text class="room-label" data-room-label="entry" x="341.33" y="649.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Entry</text>
+    <text class="room-label" data-room-label="living" x="500.00" y="649.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
+    <text class="room-label" data-room-label="dining" x="658.67" y="649.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dining</text>
+    <text class="room-label" data-room-label="kitchen" x="341.33" y="479.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+    <text class="room-label" data-room-label="laundry" x="341.33" y="320.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Laundry</text>
+    <text class="room-label" data-room-label="bedroom1" x="658.67" y="479.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom 1</text>
+    <text class="room-label" data-room-label="bath1" x="658.67" y="320.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text class="room-label" data-room-label="master" x="386.67" y="150.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
+    <text class="room-label" data-room-label="master_bath" x="545.33" y="123.47" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bath</text>
+    <text class="room-label" data-room-label="closet" x="658.67" y="150.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Walk-in Closet</text>
+    <text class="courtyard-label" data-courtyard-label="patio" x="500.00" y="400.00" font-size="14" fill="#27ae60" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">Central Patio</text>
 
   <!-- Dimensions -->
 

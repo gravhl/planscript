@@ -52,10 +52,10 @@
     <line x1="377.78" y1="253.33" x2="524.44" y2="253.33" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="206.67" y="522.22" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Studio</text>
-    <text x="793.33" y="522.22" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Studio</text>
-    <text x="500.00" y="326.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Gallery</text>
-    <text x="500.00" y="522.22" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Storage</text>
+  <text class="room-label" data-room-label="studio_west" x="206.67" y="522.22" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Studio</text>
+    <text class="room-label" data-room-label="studio_east" x="793.33" y="522.22" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Studio</text>
+    <text class="room-label" data-room-label="gallery" x="500.00" y="326.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Gallery</text>
+    <text class="room-label" data-room-label="storage" x="500.00" y="522.22" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Storage</text>
 
   <!-- Dimensions -->
 

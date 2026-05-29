@@ -48,9 +48,9 @@
     <line x1="720.00" y1="341.33" x2="720.00" y2="238.67" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="280.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Studio</text>
-    <text x="610.00" y="583.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Service</text>
-    <text x="610.00" y="290.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Nook</text>
+  <text class="room-label" data-room-label="studio" x="280.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Studio</text>
+    <text class="room-label" data-room-label="service" x="610.00" y="583.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Service</text>
+    <text class="room-label" data-room-label="nook" x="610.00" y="290.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Nook</text>
 
   <!-- Dimensions -->
 

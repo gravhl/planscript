@@ -55,11 +55,11 @@
     <line x1="457.50" y1="60.00" x2="542.50" y2="60.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="500.00" y="633.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Hall</text>
-    <text x="266.25" y="293.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Studio</text>
-    <text x="733.75" y="293.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Suite</text>
-    <text x="500.00" y="166.25" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">North Lounge</text>
-    <text x="500.00" y="400.00" font-size="14" fill="#27ae60" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">Atrium</text>
+  <text class="room-label" data-room-label="south_hall" x="500.00" y="633.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Hall</text>
+    <text class="room-label" data-room-label="west_studio" x="266.25" y="293.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Studio</text>
+    <text class="room-label" data-room-label="east_suite" x="733.75" y="293.75" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Suite</text>
+    <text class="room-label" data-room-label="north_lounge" x="500.00" y="166.25" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">North Lounge</text>
+    <text class="courtyard-label" data-courtyard-label="atrium" x="500.00" y="400.00" font-size="14" fill="#27ae60" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">Atrium</text>
 
   <!-- Dimensions -->
 

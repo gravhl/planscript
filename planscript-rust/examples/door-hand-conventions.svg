@@ -65,10 +65,10 @@
     <line x1="940.00" y1="466.00" x2="940.00" y2="334.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text x="170.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hall</text>
-    <text x="445.00" y="537.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Suite</text>
-    <text x="445.00" y="262.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Studio</text>
-    <text x="775.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Lounge</text>
+  <text class="room-label" data-room-label="hall" x="170.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hall</text>
+    <text class="room-label" data-room-label="suite" x="445.00" y="537.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Suite</text>
+    <text class="room-label" data-room-label="studio" x="445.00" y="262.50" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Studio</text>
+    <text class="room-label" data-room-label="lounge" x="775.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Lounge</text>
 
   <!-- Dimensions -->
 

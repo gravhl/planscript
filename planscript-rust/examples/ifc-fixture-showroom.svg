@@ -64,8 +64,8 @@
     <path class="door-swing" d="M 793.33 400.00 A 66.00 66.00 0 0 0 859.33 334.00" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
 
   <!-- Labels -->
-  <text x="426.67" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Fixture Showroom</text>
-    <text x="866.67" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Staging</text>
+  <text class="room-label" data-room-label="gallery" x="426.67" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Fixture Showroom</text>
+    <text class="room-label" data-room-label="staging" x="866.67" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Staging</text>
     <text class="fixture-label" data-object-label="ifc_basin1" x="133.33" y="630.33" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">IFC Basin</text>
     <text class="fixture-label" data-object-label="ifc_window1" x="426.67" y="212.33" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">IFC Window</text>
     <text class="fixture-label" data-object-label="ifc_column1" x="683.33" y="593.67" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">IFC Column</text>
