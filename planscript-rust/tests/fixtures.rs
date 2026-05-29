@@ -458,7 +458,7 @@ fn compiles_and_draws_us_kitchen_builtins() {
             use builtin.kitchen.stovetop.size_30in
             in kitchen
             attach north wall
-            at 2.5
+            at 1.0
             facing south
             label "Cooktop"
           }
@@ -480,6 +480,8 @@ fn compiles_and_draws_us_kitchen_builtins() {
             facing west
             label "Fridge"
           }
+
+          assert object_no_overlap
         }
     "#;
 

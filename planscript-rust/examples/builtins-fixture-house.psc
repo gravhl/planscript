@@ -73,13 +73,22 @@ plan "Built-In Fixture House" {
     label "Kitchen Sink"
   }
 
-  object range1 {
-    use builtin.kitchen.range.size_30in
+  object cooktop_counter1 {
+    use builtin.kitchen.counter.size_36in
     in kitchen
     attach north wall
     at 3.0
     facing south
-    label "Range"
+    label "Cooktop Counter"
+  }
+
+  object cooktop1 {
+    use builtin.kitchen.stovetop.size_30in
+    in kitchen
+    attach north wall
+    at 3.0
+    facing south
+    label "Cooktop"
   }
 
   object fridge1 {

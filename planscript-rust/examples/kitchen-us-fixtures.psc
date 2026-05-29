@@ -37,16 +37,16 @@ plan "US Kitchen Fixtures" {
     attach north wall
     at 1.7
     facing south
-    label "36 in Counter"
+    label "Stovetop Counter"
   }
 
   object cooktop30 {
     use builtin.kitchen.stovetop.size_30in
     in kitchen
     attach north wall
-    at 2.7
+    at 1.7
     facing south
-    label "30 in Cooktop"
+    label "30 in Stovetop"
   }
 
   object counter48 {

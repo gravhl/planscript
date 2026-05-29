@@ -1,5 +1,7 @@
 use crate::ast::{Assertion, CardinalDirection, EdgeSide, OrientationTarget, Point};
-use crate::geometry::{calculate_polygon_area, GeometryIr, OpeningPlacementType, WallSegment};
+use crate::geometry::{
+    calculate_polygon_area, GeometryIr, OpeningPlacementType, ResolvedObject, WallSegment,
+};
 use crate::lowering::{LoweredProgram, SiteInfo};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -320,7 +322,10 @@ fn validate_object_no_overlap(geometry: &GeometryIr) -> Vec<ValidationError> {
         for j in (i + 1)..geometry.objects.len() {
             let a = &geometry.objects[i];
             let b = &geometry.objects[j];
-            if a.room == b.room && polygons_overlap(&a.polygon.points, &b.polygon.points) {
+            if a.room == b.room
+                && polygons_overlap(&a.polygon.points, &b.polygon.points)
+                && !is_allowed_embedded_object_overlap(a, b)
+            {
                 errors.push(
                     ValidationError::new(
                         ErrorCode::ObjectsOverlap,
@@ -334,6 +339,25 @@ fn validate_object_no_overlap(geometry: &GeometryIr) -> Vec<ValidationError> {
         }
     }
     errors
+}
+
+fn is_allowed_embedded_object_overlap(a: &ResolvedObject, b: &ResolvedObject) -> bool {
+    if is_counter_host(&a.catalog_id) && is_cooktop_insert(&b.catalog_id) {
+        return polygon_inside_polygon(&b.polygon.points, &a.polygon.points);
+    }
+    if is_counter_host(&b.catalog_id) && is_cooktop_insert(&a.catalog_id) {
+        return polygon_inside_polygon(&a.polygon.points, &b.polygon.points);
+    }
+    false
+}
+
+fn is_counter_host(catalog_id: &str) -> bool {
+    catalog_id.starts_with("builtin.kitchen.counter.")
+}
+
+fn is_cooktop_insert(catalog_id: &str) -> bool {
+    catalog_id.starts_with("builtin.kitchen.cooktop.")
+        || catalog_id.starts_with("builtin.kitchen.stovetop.")
 }
 
 fn validate_object_clearances(geometry: &GeometryIr) -> Vec<ValidationError> {
@@ -362,6 +386,9 @@ fn validate_object_clearances(geometry: &GeometryIr) -> Vec<ValidationError> {
             }
             for other in &geometry.objects {
                 if other.name == object.name || other.room != object.room {
+                    continue;
+                }
+                if is_allowed_embedded_object_overlap(object, other) {
                     continue;
                 }
                 if polygons_overlap(&clearance.polygon.points, &other.polygon.points) {
