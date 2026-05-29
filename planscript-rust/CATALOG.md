@@ -67,7 +67,7 @@ Initial built-ins include:
 
 These items are generic PlanScript-owned assets. They include BIM alignment fields like `ifcClass` and `ifcPredefinedType`, but are not copied from manufacturer files.
 
-US nominal kitchen sizes are stored in meters internally while preserving inch-based IDs for authoring. Counter modules use 25.5 in depth and 36 in height; refrigerator variants distinguish standard-depth and counter-depth footprints; cooktop and stovetop IDs are aliases for stove tops that sit in counter space.
+US nominal kitchen sizes are stored in meters internally while preserving inch-based IDs for authoring. Counter modules use 25.5 in depth and 36 in height; refrigerator variants distinguish standard-depth and counter-depth footprints; cooktop and stovetop IDs are aliases for stove tops that sit in counter space. A cooktop/stovetop can be placed at the same wall station as a counter module; `object_no_overlap` treats it as an embedded insert when the cooktop footprint is fully inside the counter.
 
 ## `.psobj.json` Format
 
