@@ -1006,6 +1006,10 @@ fn clearances(values: &[(ClearanceSide, f64)]) -> HashMap<ClearanceSide, f64> {
     values.iter().copied().collect()
 }
 
+fn inches(value: f64) -> f64 {
+    value * 0.0254
+}
+
 fn builtin_item(
     id: &str,
     name: &str,
@@ -1050,7 +1054,7 @@ fn builtin_item(
 
 pub fn builtin_items() -> Vec<CatalogItem> {
     use ClearanceSide::{Back, Front, Left, Right};
-    vec![
+    let mut items = vec![
         builtin_item(
             "builtin.sanitary.toilet.floor_mounted",
             "Floor Mounted Toilet",
@@ -1183,5 +1187,102 @@ pub fn builtin_items() -> Vec<CatalogItem> {
             Some("TABLE"),
             &[(Front, 0.75), (Back, 0.75), (Left, 0.75), (Right, 0.75)],
         ),
-    ]
+    ];
+
+    items.extend(kitchen_counter_items());
+    items.extend(kitchen_refrigerator_items());
+    items.extend(kitchen_cooktop_items());
+    items.extend(kitchen_range_items());
+    items
+}
+
+fn kitchen_counter_items() -> Vec<CatalogItem> {
+    [12, 15, 18, 21, 24, 27, 30, 33, 36, 42, 48]
+        .into_iter()
+        .map(|width| {
+            builtin_item(
+                &format!("builtin.kitchen.counter.size_{width}in"),
+                &format!("{width} in Counter Space"),
+                "kitchen",
+                inches(width as f64),
+                inches(25.5),
+                Some(inches(36.0)),
+                "IfcFurnishingElement",
+                None,
+                &[],
+            )
+        })
+        .collect()
+}
+
+fn kitchen_refrigerator_items() -> Vec<CatalogItem> {
+    let mut items = Vec::new();
+    for noun in ["fridge", "refrigerator"] {
+        for width in [24, 30, 33, 36] {
+            items.push(builtin_item(
+                &format!("builtin.kitchen.{noun}.standard_{width}in"),
+                &format!("{width} in Standard Depth Refrigerator"),
+                "kitchen",
+                inches(width as f64),
+                inches(32.0),
+                Some(inches(70.0)),
+                "IfcElectricAppliance",
+                Some("REFRIGERATOR"),
+                &[(ClearanceSide::Front, inches(36.0))],
+            ));
+        }
+        for width in [30, 33, 36] {
+            items.push(builtin_item(
+                &format!("builtin.kitchen.{noun}.counter_depth_{width}in"),
+                &format!("{width} in Counter Depth Refrigerator"),
+                "kitchen",
+                inches(width as f64),
+                inches(25.0),
+                Some(inches(70.0)),
+                "IfcElectricAppliance",
+                Some("REFRIGERATOR"),
+                &[(ClearanceSide::Front, inches(36.0))],
+            ));
+        }
+    }
+    items
+}
+
+fn kitchen_cooktop_items() -> Vec<CatalogItem> {
+    let mut items = Vec::new();
+    for noun in ["cooktop", "stovetop"] {
+        for width in [15, 24, 30, 36, 48] {
+            items.push(builtin_item(
+                &format!("builtin.kitchen.{noun}.size_{width}in"),
+                &format!("{width} in Cooktop"),
+                "kitchen",
+                inches(width as f64),
+                inches(21.0),
+                Some(inches(4.0)),
+                "IfcElectricAppliance",
+                Some("COOKER"),
+                &[(ClearanceSide::Front, inches(30.0))],
+            ));
+        }
+    }
+    items
+}
+
+fn kitchen_range_items() -> Vec<CatalogItem> {
+    [24, 30, 36, 48]
+        .into_iter()
+        .map(|width| {
+            builtin_item(
+                &format!("builtin.kitchen.range.size_{width}in"),
+                &format!("{width} in Range"),
+                "kitchen",
+                inches(width as f64),
+                inches(29.0),
+                Some(inches(36.0)),
+                "IfcElectricAppliance",
+                Some("COOKER"),
+                &[(ClearanceSide::Front, inches(36.0))],
+            )
+        })
+        .collect()
 }

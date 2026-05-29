@@ -38,6 +38,10 @@ fn assert_close(actual: f64, expected: f64, epsilon: f64) {
     );
 }
 
+fn inches(value: f64) -> f64 {
+    value * 0.0254
+}
+
 #[derive(Debug, Clone, Copy)]
 struct SvgRect {
     min_x: f64,
@@ -374,6 +378,122 @@ fn builtins_include_bim_semantics() {
         toilet.bim.as_ref().unwrap().ifc_predefined_type.as_deref(),
         Some("TOILETPAN")
     );
+}
+
+#[test]
+fn builtins_include_common_us_kitchen_sizes() {
+    let catalog = Catalog::builtins();
+
+    for width in [12, 15, 18, 21, 24, 27, 30, 33, 36, 42, 48] {
+        let id = format!("builtin.kitchen.counter.size_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(25.5), 1e-9);
+    }
+
+    for width in [24, 30, 33, 36] {
+        let id = format!("builtin.kitchen.fridge.standard_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(32.0), 1e-9);
+
+        let id = format!("builtin.kitchen.refrigerator.standard_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(32.0), 1e-9);
+    }
+
+    for width in [30, 33, 36] {
+        let id = format!("builtin.kitchen.fridge.counter_depth_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(25.0), 1e-9);
+
+        let id = format!("builtin.kitchen.refrigerator.counter_depth_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(25.0), 1e-9);
+    }
+
+    for width in [15, 24, 30, 36, 48] {
+        let id = format!("builtin.kitchen.cooktop.size_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(21.0), 1e-9);
+
+        let id = format!("builtin.kitchen.stovetop.size_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(21.0), 1e-9);
+    }
+
+    for width in [24, 30, 36, 48] {
+        let id = format!("builtin.kitchen.range.size_{width}in");
+        let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(29.0), 1e-9);
+    }
+}
+
+#[test]
+fn compiles_and_draws_us_kitchen_builtins() {
+    let source = r#"
+        plan "US Kitchen Builtins" {
+          footprint rect (0,0) (10,5)
+          room kitchen {
+            rect (0,0) (10,5)
+            label "Kitchen"
+          }
+
+          object counter1 {
+            use builtin.kitchen.counter.size_36in
+            in kitchen
+            attach north wall
+            at 1.0
+            facing south
+            label "Counter"
+          }
+
+          object cooktop1 {
+            use builtin.kitchen.stovetop.size_30in
+            in kitchen
+            attach north wall
+            at 2.5
+            facing south
+            label "Cooktop"
+          }
+
+          object range1 {
+            use builtin.kitchen.range.size_30in
+            in kitchen
+            attach north wall
+            at 4.0
+            facing south
+            label "Range"
+          }
+
+          object fridge1 {
+            use builtin.kitchen.fridge.counter_depth_36in
+            in kitchen
+            attach east wall
+            at 1.0
+            facing west
+            label "Fridge"
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let geometry = result.geometry.expect("geometry");
+    assert_eq!(geometry.objects.len(), 4);
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r#"class="fixture fixture-counter""#));
+    assert!(svg.contains(r#"class="fixture-detail fixture-counter-front-edge""#));
+    assert!(svg.contains(r#"class="fixture fixture-cooktop""#));
+    assert!(svg.contains(r#"class="fixture-detail fixture-cooktop-glass""#));
+    assert!(svg.contains(r#"class="fixture fixture-range""#));
+    assert!(svg.contains(r#"class="fixture fixture-fridge""#));
 }
 
 #[test]

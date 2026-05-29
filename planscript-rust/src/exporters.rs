@@ -410,21 +410,7 @@ fn render_builtin_fixture_svg(
     t: Transform,
     opts: &SvgOptions,
 ) -> Option<String> {
-    let kind = match object.catalog_id.as_str() {
-        "builtin.sanitary.toilet.floor_mounted" => "toilet",
-        "builtin.sanitary.sink.wall_hung" => "bath-sink",
-        "builtin.sanitary.shower.size_900x900" => "shower",
-        "builtin.sanitary.tub.size_1700" => "tub",
-        "builtin.kitchen.sink" => "kitchen-sink",
-        "builtin.kitchen.range.size_600" => "range",
-        "builtin.kitchen.fridge.size_900" => "fridge",
-        "builtin.laundry.washer" => "washer",
-        "builtin.laundry.dryer" => "dryer",
-        "builtin.furniture.bed.queen" => "bed",
-        "builtin.furniture.sofa.three_seat" => "sofa",
-        "builtin.furniture.table.dining_6" => "dining-table",
-        _ => return None,
-    };
+    let kind = builtin_fixture_kind(&object.catalog_id)?;
 
     let dims = object_local_dimensions(object);
     let mut parts = vec![fixture_base_path(object, kind, t, opts)];
@@ -434,7 +420,9 @@ fn render_builtin_fixture_svg(
         "shower" => render_shower_details(object, dims, t, opts, &mut parts),
         "tub" => render_tub_details(object, dims, t, opts, &mut parts),
         "kitchen-sink" => render_kitchen_sink_details(object, dims, t, opts, &mut parts),
+        "counter" => render_counter_details(object, dims, t, opts, &mut parts),
         "range" => render_range_details(object, dims, t, opts, &mut parts),
+        "cooktop" => render_cooktop_details(object, dims, t, opts, &mut parts),
         "fridge" => render_fridge_details(object, dims, t, opts, &mut parts),
         "washer" => render_appliance_drum_details(object, dims, t, opts, &mut parts, "washer"),
         "dryer" => render_appliance_drum_details(object, dims, t, opts, &mut parts, "dryer"),
@@ -453,6 +441,30 @@ fn render_builtin_fixture_svg(
         escape_xml(&object.catalog_id),
         parts.join("\n      ")
     ))
+}
+
+fn builtin_fixture_kind(catalog_id: &str) -> Option<&'static str> {
+    match catalog_id {
+        "builtin.sanitary.toilet.floor_mounted" => Some("toilet"),
+        "builtin.sanitary.sink.wall_hung" => Some("bath-sink"),
+        "builtin.sanitary.shower.size_900x900" => Some("shower"),
+        "builtin.sanitary.tub.size_1700" => Some("tub"),
+        "builtin.kitchen.sink" => Some("kitchen-sink"),
+        "builtin.kitchen.range.size_600" => Some("range"),
+        "builtin.kitchen.fridge.size_900" => Some("fridge"),
+        "builtin.laundry.washer" => Some("washer"),
+        "builtin.laundry.dryer" => Some("dryer"),
+        "builtin.furniture.bed.queen" => Some("bed"),
+        "builtin.furniture.sofa.three_seat" => Some("sofa"),
+        "builtin.furniture.table.dining_6" => Some("dining-table"),
+        _ if catalog_id.starts_with("builtin.kitchen.counter.") => Some("counter"),
+        _ if catalog_id.starts_with("builtin.kitchen.range.") => Some("range"),
+        _ if catalog_id.starts_with("builtin.kitchen.cooktop.") => Some("cooktop"),
+        _ if catalog_id.starts_with("builtin.kitchen.stovetop.") => Some("cooktop"),
+        _ if catalog_id.starts_with("builtin.kitchen.fridge.") => Some("fridge"),
+        _ if catalog_id.starts_with("builtin.kitchen.refrigerator.") => Some("fridge"),
+        _ => None,
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -733,7 +745,101 @@ fn render_range_details(
     opts: &SvgOptions,
     out: &mut Vec<String>,
 ) {
-    for (x, y) in [(0.32, 0.35), (0.68, 0.35), (0.32, 0.66), (0.68, 0.66)] {
+    render_burners(object, d, t, opts, out);
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.12,
+        d.min_y + d.depth * 0.18,
+        d.max_x - d.width * 0.12,
+        d.min_y + d.depth * 0.18,
+        "fixture-detail fixture-control-line",
+        t,
+        opts,
+    ));
+}
+
+fn render_counter_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.04,
+        d.min_y + d.depth * 0.12,
+        d.max_x - d.width * 0.04,
+        d.min_y + d.depth * 0.12,
+        "fixture-detail fixture-counter-backsplash",
+        t,
+        opts,
+    ));
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.04,
+        d.max_y - d.depth * 0.08,
+        d.max_x - d.width * 0.04,
+        d.max_y - d.depth * 0.08,
+        "fixture-detail fixture-counter-front-edge",
+        t,
+        opts,
+    ));
+
+    let seams = (d.width / 0.61).round().max(1.0) as usize;
+    for index in 1..seams {
+        let x = d.min_x + d.width * index as f64 / seams as f64;
+        out.push(fixture_line(
+            object,
+            x,
+            d.min_y + d.depth * 0.16,
+            x,
+            d.max_y - d.depth * 0.10,
+            "fixture-detail fixture-counter-seam",
+            t,
+            opts,
+        ));
+    }
+}
+
+fn render_cooktop_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_rect(
+        object,
+        d.min_x + d.width * 0.08,
+        d.min_y + d.depth * 0.12,
+        d.max_x - d.width * 0.08,
+        d.max_y - d.depth * 0.12,
+        "fixture-detail fixture-cooktop-glass",
+        t,
+        opts,
+    ));
+    render_burners(object, d, t, opts, out);
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.18,
+        d.min_y + d.depth * 0.20,
+        d.max_x - d.width * 0.18,
+        d.min_y + d.depth * 0.20,
+        "fixture-detail fixture-control-line",
+        t,
+        opts,
+    ));
+}
+
+fn render_burners(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    for (x, y) in burner_positions(d.width) {
         out.push(fixture_ellipse(
             object,
             d.min_x + d.width * x,
@@ -745,16 +851,23 @@ fn render_range_details(
             opts,
         ));
     }
-    out.push(fixture_line(
-        object,
-        d.min_x + d.width * 0.12,
-        d.min_y + d.depth * 0.18,
-        d.max_x - d.width * 0.12,
-        d.min_y + d.depth * 0.18,
-        "fixture-detail fixture-control-line",
-        t,
-        opts,
-    ));
+}
+
+fn burner_positions(width: f64) -> Vec<(f64, f64)> {
+    if width < 0.50 {
+        vec![(0.50, 0.36), (0.50, 0.68)]
+    } else if width > 1.05 {
+        vec![
+            (0.22, 0.34),
+            (0.50, 0.34),
+            (0.78, 0.34),
+            (0.22, 0.68),
+            (0.50, 0.68),
+            (0.78, 0.68),
+        ]
+    } else {
+        vec![(0.32, 0.35), (0.68, 0.35), (0.32, 0.66), (0.68, 0.66)]
+    }
 }
 
 fn render_fridge_details(
