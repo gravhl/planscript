@@ -42,35 +42,41 @@ plan "Generated Plan" {
     on shared_edge
     at 50%
     width 0.9
+    swing lh
   }
   opening door d2 {
     between entry and kitchen
     on shared_edge
     at 50%
     width 0.9
+    swing rh
   }
   opening door d3 {
     between living and master
     on shared_edge
     at 50%
     width 0.9
+    swing lhr
   }
   opening door d4 {
     between living and kitchen
     on shared_edge
     at 50%
     width 0.9
+    swing rhr
   }
   opening door d5 {
     between ensuite and master
     on shared_edge
     at 50%
     width 0.9
+    swing lh
   }
   opening door d6 {
     on entry.edge south
     at 50%
     width 1
+    swing rhr
   }
   opening window w7 {
     on living.edge north

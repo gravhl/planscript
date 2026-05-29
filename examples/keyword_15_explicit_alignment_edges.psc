@@ -34,9 +34,9 @@ plan "Explicit Alignment Edges" {
     label "Side"
   }
 
-  opening door d_base_porch { between base and porch on shared_edge at 50% width 0.9 }
-  opening door d_base_loft { between base and loft on shared_edge at 50% width 0.9 }
-  opening door d_base_side { between base and side on shared_edge at 50% width 0.9 }
+  opening door d_base_porch { between base and porch on shared_edge at 50% width 0.9 swing lh }
+  opening door d_base_loft { between base and loft on shared_edge at 50% width 0.9 swing rh }
+  opening door d_base_side { between base and side on shared_edge at 50% width 0.9 swing lhr }
   opening window w_side { on side.edge west at 50% width 1.2 }
 
   assert no_overlap rooms

@@ -86,17 +86,18 @@ plan "Orientation-Aware House" {
     on entry.edge south
     at 50%
     width 1.0
+    swing rhr
   }
   
   # Interior connections
-  opening door d_entry_living { between entry and living on shared_edge at 50% }
-  opening door d_living_dining { between living and dining on shared_edge at 50% }
-  opening door d_dining_kitchen { between dining and kitchen on shared_edge at 50% }
-  opening door d_kitchen_laundry { between kitchen and laundry on shared_edge at 50% }
-  opening door d_entry_garage { between entry and garage on shared_edge at 50% }
-  opening door d_master_dining { between master and dining on shared_edge at 50% }
-  opening door d_bedroom_kitchen { between bedroom2 and kitchen on shared_edge at 50% }
-  opening door d_bath_laundry { between bath and laundry on shared_edge at 50% }
+  opening door d_entry_living { between entry and living on shared_edge at 50% swing lh }
+  opening door d_living_dining { between living and dining on shared_edge at 50% swing rh }
+  opening door d_dining_kitchen { between dining and kitchen on shared_edge at 50% swing lhr }
+  opening door d_kitchen_laundry { between kitchen and laundry on shared_edge at 50% swing rhr }
+  opening door d_entry_garage { between entry and garage on shared_edge at 50% swing lh }
+  opening door d_master_dining { between master and dining on shared_edge at 50% swing rh }
+  opening door d_bedroom_kitchen { between bedroom2 and kitchen on shared_edge at 50% swing lhr }
+  opening door d_bath_laundry { between bath and laundry on shared_edge at 50% swing rhr }
   
   # === Windows - Strategic Placement for Light ===
   

@@ -54,12 +54,26 @@
 
   <!-- Openings (doors/windows) -->
   <line x1="478.75" y1="697.50" x2="521.25" y2="697.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="521.25" y1="697.50" x2="521.25" y2="740.00" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 478.75 697.50 A 42.50 42.50 0 0 0 521.25 740.00" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="298.12" y1="485.00" x2="361.88" y2="485.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="298.12" y1="485.00" x2="298.12" y2="421.25" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 361.88 485.00 A 63.75 63.75 0 0 0 298.12 421.25" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="313.00" y1="442.50" x2="347.00" y2="442.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="347.00" y1="442.50" x2="347.00" y2="408.50" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 313.00 442.50 A 34.00 34.00 0 0 1 347.00 408.50" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="313.00" y1="315.00" x2="347.00" y2="315.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="313.00" y1="315.00" x2="313.00" y2="349.00" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 347.00 315.00 A 34.00 34.00 0 0 1 313.00 349.00" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="653.00" y1="315.00" x2="687.00" y2="315.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="653.00" y1="315.00" x2="653.00" y2="281.00" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 687.00 315.00 A 34.00 34.00 0 0 0 653.00 281.00" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="415.00" y1="397.87" x2="415.00" y2="359.63" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="415.00" y1="359.63" x2="376.75" y2="359.63" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 415.00 397.87 A 38.25 38.25 0 0 1 376.75 359.63" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="585.00" y1="397.87" x2="585.00" y2="359.63" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="585.00" y1="359.63" x2="546.75" y2="359.63" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 585.00 397.87 A 38.25 38.25 0 0 1 546.75 359.63" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="308.75" y1="697.50" x2="436.25" y2="697.50" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
     <line x1="563.75" y1="697.50" x2="691.25" y2="697.50" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
     <line x1="276.88" y1="102.50" x2="383.12" y2="102.50" stroke="#3498db" stroke-width="3" stroke-linecap="round" />

@@ -37,7 +37,11 @@
 
   <!-- Openings (doors/windows) -->
   <line x1="588.00" y1="571.60" x2="588.00" y2="492.40" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="588.00" y1="492.40" x2="667.20" y2="492.40" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 588.00 571.60 A 79.20 79.20 0 0 0 667.20 492.40" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="588.00" y1="303.20" x2="588.00" y2="232.80" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="588.00" y1="303.20" x2="658.40" y2="303.20" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 588.00 232.80 A 70.40 70.40 0 0 1 658.40 303.20" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="60.00" y1="466.00" x2="60.00" y2="334.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->

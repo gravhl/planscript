@@ -37,10 +37,10 @@ plan "Polygon Footprint Gallery" {
     label "Gallery"
   }
 
-  opening door d_entry { on entry.edge south at 50% width 1.0 }
-  opening door d_entry_connector { between entry and connector on shared_edge at 50% width 0.9 }
-  opening door d_connector_office { between connector and office on shared_edge at 50% width 0.9 }
-  opening door d_entry_gallery { between entry and gallery on shared_edge at 50% width 0.9 }
+  opening door d_entry { on entry.edge south at 50% width 1.0 swing rhr }
+  opening door d_entry_connector { between entry and connector on shared_edge at 50% width 0.9 swing lh }
+  opening door d_connector_office { between connector and office on shared_edge at 50% width 0.9 swing rh }
+  opening door d_entry_gallery { between entry and gallery on shared_edge at 50% width 0.9 swing lhr }
   opening window w_gallery { on gallery.edge north at 50% width 2.0 }
 
   assert no_overlap rooms

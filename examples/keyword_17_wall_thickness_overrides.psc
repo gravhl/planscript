@@ -25,6 +25,7 @@ plan "Wall Thickness Overrides" {
     on shared_edge
     at 50%
     width 0.9
+    swing lh
   }
 
   opening window w_core {

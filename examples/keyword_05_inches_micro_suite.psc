@@ -32,8 +32,9 @@ plan "Inches Micro Suite" {
     label "Closet"
   }
 
-  opening door d_lounge { on lounge.edge south at 50% }
-  opening door d_bath { between lounge and bath on shared_edge at 50% }
+  opening door d_lounge { on lounge.edge south at 50% swing rhr }
+  opening door d_bath { between lounge and bath on shared_edge at 50% swing lh }
+  opening door d_closet { between bath and closet on shared_edge at 50% swing rh }
   opening window w_lounge { on lounge.edge north at 50% }
 
   assert no_overlap rooms

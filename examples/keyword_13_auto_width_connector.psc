@@ -24,8 +24,8 @@ plan "Auto Width Connector" {
     label "Connector"
   }
 
-  opening door d_left_connector { between left_room and connector on shared_edge at 50% width 0.9 }
-  opening door d_connector_right { between connector and right_room on shared_edge at 50% width 0.9 }
+  opening door d_left_connector { between left_room and connector on shared_edge at 50% width 0.9 swing lh }
+  opening door d_connector_right { between connector and right_room on shared_edge at 50% width 0.9 swing rh }
   opening window w_connector { on connector.edge north at 50% width 2.0 }
 
   assert no_overlap rooms

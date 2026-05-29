@@ -77,48 +77,56 @@ plan "Casa con Patio" {
     between entry and living
     on shared_edge
     at 50%
+    swing lh
   }
 
   opening door d_living_dining {
     between living and dining
     on shared_edge
     at 50%
+    swing rh
   }
 
   opening door d_entry_kitchen {
     between entry and kitchen
     on shared_edge
     at 50%
+    swing lhr
   }
 
   opening door d_kitchen_laundry {
     between kitchen and laundry
     on shared_edge
     at 50%
+    swing rhr
   }
 
   opening door d_dining_bedroom1 {
     between dining and bedroom1
     on shared_edge
     at 50%
+    swing lh
   }
 
   opening door d_bedroom1_bath1 {
     between bedroom1 and bath1
     on shared_edge
     at 50%
+    swing rh
   }
 
   opening door d_master_bath {
     between master and master_bath
     on shared_edge
     at 50%
+    swing lhr
   }
 
   opening door d_bath_closet {
     between master_bath and closet
     on shared_edge
     at 50%
+    swing rhr
   }
 
   # === Exterior Door ===
@@ -126,6 +134,7 @@ plan "Casa con Patio" {
     on entry.edge south
     at 50%
     width 1.0
+    swing rhr
   }
 
   # === Windows (exterior walls) ===

@@ -24,14 +24,14 @@ plan "Openings Swing Sill" {
     on foyer.edge south
     at 50%
     width 1.0
-    swing foyer
+    swing rhr
   }
 
   opening door d_living {
     between foyer and living
     on shared_edge
     at 4.0
-    swing living
+    swing lh
   }
 
   opening window w_low {

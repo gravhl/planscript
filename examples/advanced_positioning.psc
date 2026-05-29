@@ -107,6 +107,7 @@ plan "Advanced Positioning Demo" {
     on living.edge south
     at 50%
     width 1.0
+    swing rhr
   }
 
   # Living to hallway
@@ -115,6 +116,7 @@ plan "Advanced Positioning Demo" {
     on shared_edge
     at 50%
     width 1.5
+    swing lh
   }
 
   # Hallway to master bath
@@ -123,6 +125,7 @@ plan "Advanced Positioning Demo" {
     on shared_edge
     at 50%
     width 0.8
+    swing rh
   }
 
   # Master bath to master bedroom
@@ -131,6 +134,7 @@ plan "Advanced Positioning Demo" {
     on shared_edge
     at 50%
     width 0.8
+    swing lhr
   }
 
   # Hallway to closet2
@@ -139,6 +143,7 @@ plan "Advanced Positioning Demo" {
     on shared_edge
     at 50%
     width 0.8
+    swing rhr
   }
 
   # Closet to bedroom2
@@ -147,6 +152,7 @@ plan "Advanced Positioning Demo" {
     on shared_edge
     at 50%
     width 0.8
+    swing lh
   }
 
   # Corridor connections
@@ -154,12 +160,14 @@ plan "Advanced Positioning Demo" {
     between corridor and master_bath
     on shared_edge
     at 50%
+    swing rh
   }
 
   opening door d_corr_closet {
     between corridor and closet2
     on shared_edge
     at 50%
+    swing lhr
   }
 
   # ============================================

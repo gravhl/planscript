@@ -65,14 +65,32 @@
 
   <!-- Openings (doors/windows) -->
   <line x1="409.33" y1="659.53" x2="409.33" y2="639.13" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="409.33" y1="639.13" x2="429.73" y2="639.13" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 409.33 659.53 A 20.40 20.40 0 0 0 429.73 639.13" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="590.67" y1="659.53" x2="590.67" y2="639.13" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="590.67" y1="659.53" x2="611.07" y2="659.53" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 590.67 639.13 A 20.40 20.40 0 0 1 611.07 659.53" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="331.13" y1="558.67" x2="351.53" y2="558.67" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="331.13" y1="558.67" x2="331.13" y2="579.07" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 351.53 558.67 A 20.40 20.40 0 0 1 331.13 579.07" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="331.13" y1="400.00" x2="351.53" y2="400.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="351.53" y1="400.00" x2="351.53" y2="420.40" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 331.13 400.00 A 20.40 20.40 0 0 0 351.53 420.40" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="648.47" y1="558.67" x2="668.87" y2="558.67" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="648.47" y1="558.67" x2="648.47" y2="538.27" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 668.87 558.67 A 20.40 20.40 0 0 0 648.47 538.27" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="648.47" y1="400.00" x2="668.87" y2="400.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="668.87" y1="400.00" x2="668.87" y2="379.60" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 648.47 400.00 A 20.40 20.40 0 0 1 668.87 379.60" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="500.00" y1="160.87" x2="500.00" y2="140.47" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="500.00" y1="140.47" x2="479.60" y2="140.47" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 500.00 160.87 A 20.40 20.40 0 0 1 479.60 140.47" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="590.67" y1="160.87" x2="590.67" y2="140.47" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="590.67" y1="160.87" x2="570.27" y2="160.87" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 590.67 140.47 A 20.40 20.40 0 0 0 570.27 160.87" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="330.00" y1="740.00" x2="352.67" y2="740.00" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="352.67" y1="740.00" x2="352.67" y2="762.67" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 330.00 740.00 A 22.67 22.67 0 0 0 352.67 762.67" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="483.00" y1="740.00" x2="517.00" y2="740.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
     <line x1="726.67" y1="666.33" x2="726.67" y2="632.33" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
     <line x1="347.00" y1="60.00" x2="381.00" y2="60.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />

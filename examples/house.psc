@@ -54,6 +54,7 @@ plan "Example House" {
     between living and hall
     on shared_edge
     at 60%
+    swing lh
   }
 
   # Door between living and kitchen (uses default door_width)
@@ -62,6 +63,7 @@ plan "Example House" {
     between living and kitchen
     on shared_edge
     at 50%
+    swing rh
   }
 
   # Door between hallway and master bedroom (uses default door_width)
@@ -69,6 +71,15 @@ plan "Example House" {
     between hall and bedroom
     on shared_edge
     at 50%
+    swing lh
+  }
+
+  # Door between master bedroom and bathroom
+  opening door d4 {
+    between bedroom and bath
+    on shared_edge
+    at 50%
+    swing rh
   }
 
   # Window on living room south wall (uses default window_width)

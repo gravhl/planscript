@@ -13,8 +13,8 @@ plan "Comments And Compact Syntax" {
   room kitchen { rect (6, 0) (10, 3) label "Kitchen" }
   room bath { rect (6, 3) (10, 6) label "Bath" }
 
-  opening door d_living_kitchen { between living and kitchen on shared_edge at 50% width 0.9 }
-  opening door d_living_bath { between living and bath on shared_edge at 50% width 0.8 }
+  opening door d_living_kitchen { between living and kitchen on shared_edge at 50% width 0.9 swing lh }
+  opening door d_living_bath { between living and bath on shared_edge at 50% width 0.8 swing rh }
   opening window w_living { on living.edge west at 50% width 1.5 sill 0.9 }
 
   assert no_overlap rooms

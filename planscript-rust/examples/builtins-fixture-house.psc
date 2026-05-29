@@ -134,6 +134,42 @@ plan "Built-In Fixture House" {
     label "Dining"
   }
 
+  opening door d_bath_kitchen {
+    between bath and kitchen
+    on shared_edge
+    at 50%
+    swing lh
+  }
+
+  opening door d_bath_laundry {
+    between bath and laundry
+    on shared_edge
+    at 50%
+    swing rh
+  }
+
+  opening door d_kitchen_bedroom {
+    between kitchen and bedroom
+    on shared_edge
+    at 50%
+    swing lh
+  }
+
+  opening double door d_kitchen_living {
+    between kitchen and living
+    on shared_edge
+    at 50%
+    swing rh
+  }
+
+  opening door d_bedroom_living {
+    between bedroom and living
+    on shared_edge
+    at 50%
+    width 1.0
+    swing rhr
+  }
+
   assert objects_inside_rooms
   assert object_no_overlap
   assert object_clearances

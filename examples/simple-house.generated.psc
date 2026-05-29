@@ -38,24 +38,28 @@ plan "Generated Plan" {
     on shared_edge
     at 50%
     width 0.9
+    swing lh
   }
   opening door d2 {
     between bedroom2 and master
     on shared_edge
     at 50%
     width 0.9
+    swing rh
   }
   opening door d3 {
     between bath and master
     on shared_edge
     at 50%
     width 0.9
+    swing lhr
   }
   opening door d4 {
     between bath and bedroom2
     on shared_edge
     at 50%
     width 0.9
+    swing rhr
   }
   opening window w5 {
     on living.edge north

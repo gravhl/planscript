@@ -10,43 +10,50 @@
   <rect width="1000" height="800" fill="#ffffff" />
 
   <!-- Footprint (boundary) -->
-  <path d="M 75.00 740.00 L 925.00 740.00 L 925.00 60.00 L 75.00 60.00 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+  <path d="M 60.00 670.77 L 940.00 670.77 L 940.00 129.23 L 60.00 129.23 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
 
   <!-- Rooms -->
-  <path d="M 75.00 740.00 L 925.00 740.00 L 925.00 60.00 L 75.00 60.00 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+  <path d="M 60.00 670.77 L 736.92 670.77 L 736.92 129.23 L 60.00 129.23 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 736.92 670.77 L 940.00 670.77 L 940.00 129.23 L 736.92 129.23 Z" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
 
   <!-- Courtyards -->
 
 
   <!-- Objects / Fixtures -->
-  <path class="object-clearance" d="M 190.60 571.70 L 190.60 636.30 L 318.10 636.30 L 318.10 571.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 75.00 537.70 L 75.00 571.70 L 190.60 571.70 L 190.60 537.70 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 75.00 636.30 L 75.00 670.30 L 190.60 670.30 L 190.60 636.30 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 291.75 136.50 L 198.25 136.50 L 198.25 255.50 L 291.75 255.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 317.25 60.00 L 291.75 60.00 L 291.75 136.50 L 317.25 136.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 198.25 60.00 L 172.75 60.00 L 172.75 136.50 L 198.25 136.50 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 508.50 553.00 L 661.50 553.00 L 661.50 434.00 L 508.50 434.00 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path data-object="wc1" data-catalog-id="builtin.sanitary.toilet.floor_mounted" d="M 75.00 571.70 L 75.00 636.30 L 190.60 636.30 L 190.60 571.70 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-    <circle data-object-origin="wc1" cx="75.00" cy="604.00" r="2.5" fill="#8a6d3b" />
-    <path data-object="lav1" data-catalog-id="builtin.sanitary.sink.wall_hung" d="M 291.75 60.00 L 198.25 60.00 L 198.25 136.50 L 291.75 136.50 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-    <circle data-object-origin="lav1" cx="245.00" cy="60.00" r="2.5" fill="#8a6d3b" />
-    <path data-object="shower1" data-catalog-id="builtin.sanitary.shower.size_900x900" d="M 508.50 706.00 L 661.50 706.00 L 661.50 553.00 L 508.50 553.00 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-    <circle data-object-origin="shower1" cx="585.00" cy="706.00" r="2.5" fill="#8a6d3b" />
+  <path class="object-clearance" d="M 152.06 536.74 L 152.06 588.18 L 253.60 588.18 L 253.60 536.74 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 60.00 509.66 L 60.00 536.74 L 152.06 536.74 L 152.06 509.66 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 60.00 588.18 L 60.00 615.26 L 152.06 615.26 L 152.06 588.18 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 232.62 190.15 L 158.15 190.15 L 158.15 284.92 L 232.62 284.92 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 252.92 129.23 L 232.62 129.23 L 232.62 190.15 L 252.92 190.15 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 158.15 129.23 L 137.85 129.23 L 137.85 190.15 L 158.15 190.15 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 405.23 521.85 L 527.08 521.85 L 527.08 427.08 L 405.23 427.08 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path data-object="wc1" data-catalog-id="builtin.sanitary.toilet.floor_mounted" d="M 60.00 536.74 L 60.00 588.18 L 152.06 588.18 L 152.06 536.74 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="wc1" cx="60.00" cy="562.46" r="2.5" fill="#8a6d3b" />
+    <path data-object="lav1" data-catalog-id="builtin.sanitary.sink.wall_hung" d="M 232.62 129.23 L 158.15 129.23 L 158.15 190.15 L 232.62 190.15 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="lav1" cx="195.38" cy="129.23" r="2.5" fill="#8a6d3b" />
+    <path data-object="shower1" data-catalog-id="builtin.sanitary.shower.size_900x900" d="M 405.23 643.69 L 527.08 643.69 L 527.08 521.85 L 405.23 521.85 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+    <circle data-object-origin="shower1" cx="466.15" cy="643.69" r="2.5" fill="#8a6d3b" />
 
   <!-- Walls -->
-  <line x1="75.00" y1="740.00" x2="925.00" y2="740.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
-    <line x1="925.00" y1="740.00" x2="925.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
-    <line x1="75.00" y1="60.00" x2="925.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
-    <line x1="75.00" y1="740.00" x2="75.00" y2="60.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+  <line x1="736.92" y1="670.77" x2="736.92" y2="129.23" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="670.77" x2="736.92" y2="670.77" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="129.23" x2="736.92" y2="129.23" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="670.77" x2="60.00" y2="129.23" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="736.92" y1="670.77" x2="940.00" y2="670.77" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="940.00" y1="670.77" x2="940.00" y2="129.23" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="736.92" y1="129.23" x2="940.00" y2="129.23" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
 
   <!-- Openings (doors/windows) -->
-
+  <line x1="736.92" y1="460.92" x2="736.92" y2="339.08" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="736.92" y1="339.08" x2="858.77" y2="339.08" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 736.92 460.92 A 121.85 121.85 0 0 0 858.77 339.08" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
 
   <!-- Labels -->
-  <text x="500.00" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
-    <text x="132.80" y="604.00" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">WC</text>
-    <text x="245.00" y="98.25" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
-    <text x="585.00" y="629.50" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
+  <text x="398.46" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text x="838.46" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hall</text>
+    <text x="106.03" y="562.46" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">WC</text>
+    <text x="195.38" y="159.69" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
+    <text x="466.15" y="582.77" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
 
   <!-- Dimensions -->
 
