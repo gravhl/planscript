@@ -122,6 +122,11 @@ fn compiles_builtin_fixture_layout() {
     assert_eq!(geometry.objects.len(), 3);
     assert!(geometry.objects[0].clearance_polygons.len() >= 1);
     assert!(result.json.expect("json").contains("\"objects\""));
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r#"class="fixture fixture-toilet""#));
+    assert!(svg.contains(r#"class="fixture-detail fixture-toilet-bowl""#));
+    assert!(svg.contains(r#"class="fixture-detail fixture-sink-basin""#));
+    assert!(svg.contains(r#"class="fixture-detail fixture-shower-slope""#));
 }
 
 #[test]
