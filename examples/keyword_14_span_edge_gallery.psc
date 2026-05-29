@@ -25,9 +25,9 @@ plan "Span Edge Gallery" {
     label "Storage"
   }
 
-  opening door d_west_gallery { between studio_west and gallery on shared_edge at 50% width 0.9 }
-  opening door d_east_gallery { between studio_east and gallery on shared_edge at 50% width 0.9 }
-  opening door d_west_storage { between studio_west and storage on shared_edge at 50% width 0.9 }
+  opening door d_west_gallery { between studio_west and gallery on shared_edge at 50% width 0.9 swing lh }
+  opening door d_east_gallery { between studio_east and gallery on shared_edge at 50% width 0.9 swing rh }
+  opening door d_west_storage { between studio_west and storage on shared_edge at 50% width 0.9 swing lhr }
   opening window w_gallery { on gallery.edge north at 8 width 3.0 }
 
   assert no_overlap rooms

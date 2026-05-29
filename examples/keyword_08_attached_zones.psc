@@ -55,7 +55,11 @@ plan "Attached Zones" {
     }
   }
 
-  opening door d_front { on entry.edge south at 50% }
+  opening door d_front { on entry.edge south at 50% swing rhr }
+  opening door d_entry_living { between entry and living on shared_edge at 50% swing lh }
+  opening door d_living_dining { between living and dining on shared_edge at 50% swing rh }
+  opening door d_dining_bedroom { between dining and bedroom on shared_edge at 50% swing lh }
+  opening door d_bedroom_bath { between bedroom and bath on shared_edge at 50% swing rh }
   opening window w_bedroom { on bedroom.edge east at 50% }
 
   assert no_overlap rooms

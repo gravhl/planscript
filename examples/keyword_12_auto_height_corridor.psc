@@ -24,8 +24,8 @@ plan "Auto Height Corridor" {
     label "Hall"
   }
 
-  opening door d_living_hall { between living and hall on shared_edge at 50% width 0.9 }
-  opening door d_hall_bedroom { between hall and bedroom on shared_edge at 50% width 0.9 }
+  opening door d_living_hall { between living and hall on shared_edge at 50% width 0.9 swing lh }
+  opening door d_hall_bedroom { between hall and bedroom on shared_edge at 50% width 0.9 swing rh }
   opening window w_bedroom { on bedroom.edge north at 50% width 1.5 }
 
   assert no_overlap rooms

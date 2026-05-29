@@ -35,9 +35,9 @@ plan "Polygon Courtyard Atrium" {
     label "Atrium"
   }
 
-  opening door d_south_west { between south_hall and west_studio on shared_edge at 50% width 0.9 }
-  opening door d_south_east { between south_hall and east_suite on shared_edge at 50% width 0.9 }
-  opening door d_west_north { between west_studio and north_lounge on shared_edge at 50% width 0.9 }
+  opening door d_south_west { between south_hall and west_studio on shared_edge at 50% width 0.9 swing lh }
+  opening door d_south_east { between south_hall and east_suite on shared_edge at 50% width 0.9 swing rh }
+  opening door d_west_north { between west_studio and north_lounge on shared_edge at 50% width 0.9 swing lhr }
   opening window w_lounge { on north_lounge.edge north at 50% width 2.0 sill 0.8 }
 
   assert no_overlap rooms

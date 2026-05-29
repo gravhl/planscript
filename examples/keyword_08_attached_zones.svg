@@ -47,6 +47,20 @@
 
   <!-- Openings (doors/windows) -->
   <line x1="446.83" y1="656.67" x2="479.83" y2="656.67" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="479.83" y1="656.67" x2="479.83" y2="689.67" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 446.83 656.67 A 33.00 33.00 0 0 0 479.83 689.67" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="410.17" y1="546.67" x2="443.17" y2="546.67" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="410.17" y1="546.67" x2="410.17" y2="513.67" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 443.17 546.67 A 33.00 33.00 0 0 0 410.17 513.67" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="500.00" y1="471.50" x2="500.00" y2="438.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="500.00" y1="471.50" x2="533.00" y2="471.50" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 500.00 438.50 A 33.00 33.00 0 0 1 533.00 471.50" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="646.67" y1="471.50" x2="646.67" y2="438.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="646.67" y1="438.50" x2="679.67" y2="438.50" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 646.67 471.50 A 33.00 33.00 0 0 0 679.67 438.50" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="830.00" y1="471.50" x2="830.00" y2="438.50" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="830.00" y1="471.50" x2="863.00" y2="471.50" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 830.00 438.50 A 33.00 33.00 0 0 1 863.00 471.50" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
     <line x1="830.00" y1="482.50" x2="830.00" y2="427.50" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->

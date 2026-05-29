@@ -140,18 +140,21 @@ plan "House with Zones" {
     on entry.edge south
     at 50%
     width 1.0
+    swing rhr
   }
 
   opening door d_garage {
     on garage.edge south
     at 50%
     width 5.0
+    swing lh
   }
 
   opening door d_entry_garage {
     between entry and garage
     on shared_edge
     at 50%
+    swing rh
   }
 
   # Access to social
@@ -160,6 +163,7 @@ plan "House with Zones" {
     on shared_edge
     at 50%
     width 1.2
+    swing lh
   }
 
   # Social zone doors
@@ -168,6 +172,7 @@ plan "House with Zones" {
     on shared_edge
     at 50%
     width 2.0
+    swing rh
   }
 
   opening door d_dining_kitchen {
@@ -175,6 +180,7 @@ plan "House with Zones" {
     on shared_edge
     at 50%
     width 1.5
+    swing lhr
   }
 
   # Social to private
@@ -182,6 +188,7 @@ plan "House with Zones" {
     between living and master
     on shared_edge
     at 50%
+    swing rhr
   }
 
   # Private zone doors
@@ -190,18 +197,21 @@ plan "House with Zones" {
     on shared_edge
     at 50%
     width 0.8
+    swing lh
   }
 
   opening door d_bath_bed2 {
     between master_bath and bedroom2
     on shared_edge
     at 50%
+    swing rh
   }
 
   opening door d_bed2_bed3 {
     between bedroom2 and bedroom3
     on shared_edge
     at 50%
+    swing lhr
   }
 
   # ============================================

@@ -31,9 +31,9 @@ plan "Centered Suite" {
     label "Closet"
   }
 
-  opening door d_suite { on suite.edge north at 50% }
-  opening door d_bath { between suite and bath on shared_edge at 50% }
-  opening door d_closet { between suite and closet on shared_edge at 50% }
+  opening door d_suite { on suite.edge north at 50% swing rhr }
+  opening door d_bath { between suite and bath on shared_edge at 50% swing lh }
+  opening door d_closet { between suite and closet on shared_edge at 50% swing rh }
   opening window w_suite { on suite.edge west at 3 width 1.5 }
 
   assert no_overlap rooms

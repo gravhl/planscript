@@ -28,9 +28,9 @@ plan "Feet Cabin" {
     label "Bath"
   }
 
-  opening door d_front { on great_room.edge south at 50% }
-  opening door d_bed { between great_room and bedroom on shared_edge at 50% }
-  opening door d_bath { between great_room and bath on shared_edge at 50% }
+  opening door d_front { on great_room.edge south at 50% swing rhr }
+  opening door d_bed { between great_room and bedroom on shared_edge at 50% swing lh }
+  opening door d_bath { between great_room and bath on shared_edge at 50% swing rh }
   opening window w_great { on great_room.edge west at 12 width 6 }
 
   assert no_overlap rooms

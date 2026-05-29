@@ -36,9 +36,9 @@ plan "Centimeter Apartment" {
     label "Bedroom"
   }
 
-  opening door d_living_kitchen { between living and kitchen on shared_edge at 50% }
-  opening door d_kitchen_bath { between kitchen and bath on shared_edge at 50% }
-  opening door d_living_bedroom { between living and bedroom on shared_edge at 50% }
+  opening door d_living_kitchen { between living and kitchen on shared_edge at 50% swing lh }
+  opening door d_kitchen_bath { between kitchen and bath on shared_edge at 50% swing rh }
+  opening door d_living_bedroom { between living and bedroom on shared_edge at 50% swing lhr }
   opening window w_bedroom { on bedroom.edge north at 50% }
 
   assert no_overlap rooms

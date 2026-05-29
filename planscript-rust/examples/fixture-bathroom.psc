@@ -1,11 +1,16 @@
 units m
 
 plan "Fixture Bathroom" {
-  footprint rect (0, 0) (5, 4)
+  footprint rect (0, 0) (6.5, 4)
 
   room bath {
     rect (0, 0) (5, 4)
     label "Bath"
+  }
+
+  room hall {
+    rect (5, 0) (6.5, 4)
+    label "Hall"
   }
 
   object wc1 {
@@ -32,6 +37,13 @@ plan "Fixture Bathroom" {
     at (3.0, 0.2)
     facing north
     label "Shower"
+  }
+
+  opening door d_bath_hall {
+    between bath and hall
+    on shared_edge
+    at 50%
+    swing lh
   }
 
   assert objects_inside_rooms

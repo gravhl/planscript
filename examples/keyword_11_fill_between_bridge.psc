@@ -22,8 +22,8 @@ plan "Fill Between Bridge" {
     label "Bridge"
   }
 
-  opening door d_west_bridge { between west_room and bridge on shared_edge at 50% width 0.9 }
-  opening door d_bridge_east { between bridge and east_room on shared_edge at 50% width 0.9 }
+  opening door d_west_bridge { between west_room and bridge on shared_edge at 50% width 0.9 swing lh }
+  opening door d_bridge_east { between bridge and east_room on shared_edge at 50% width 0.9 swing rh }
   opening window w_west { on west_room.edge west at 4 width 1.4 }
   opening window w_east { on east_room.edge east at 4 width 1.4 }
 

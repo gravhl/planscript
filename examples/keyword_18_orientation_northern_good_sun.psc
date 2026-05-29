@@ -30,9 +30,9 @@ plan "Northern Good Sun" {
     label "Foyer"
   }
 
-  opening door d_entry { on foyer.edge east at 50% width 1.0 }
-  opening door d_living_foyer { between living and foyer on shared_edge at 50% }
-  opening door d_bed_living { between bedroom and living on shared_edge at 50% }
+  opening door d_entry { on foyer.edge east at 50% width 1.0 swing rhr }
+  opening door d_living_foyer { between living and foyer on shared_edge at 50% swing lh }
+  opening door d_bed_living { between bedroom and living on shared_edge at 50% swing rh }
   opening window w_living_south { on living.edge south at 50% width 2.5 }
   opening window w_foyer_east { on foyer.edge east at 2.0 width 1.2 }
   opening window w_bed_west { on bedroom.edge west at 50% width 1.5 }

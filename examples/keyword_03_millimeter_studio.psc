@@ -29,8 +29,9 @@ plan "Millimeter Studio" {
     label "Storage"
   }
 
-  opening door d_entry { on studio.edge south at 4000 width 900 }
-  opening door d_bath { between studio and bath on shared_edge at 50% width 850 }
+  opening door d_entry { on studio.edge south at 4000 width 900 swing rhr }
+  opening door d_bath { between studio and bath on shared_edge at 50% width 850 swing lh }
+  opening door d_storage { between bath and storage on shared_edge at 50% width 850 swing rh }
   opening window w_studio { on studio.edge west at 3000 width 1200 sill 900 }
 
   assert no_overlap rooms

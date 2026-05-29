@@ -37,12 +37,21 @@ plan "Meters Axis Grid" {
   opening door d_front {
     on studio.edge south
     at 50%
+    swing rhr
   }
 
   opening door d_service {
     between studio and service
     on shared_edge
     at 50%
+    swing lh
+  }
+
+  opening door d_nook {
+    between studio and nook
+    on shared_edge
+    at 50%
+    swing rh
   }
 
   opening window w_nook {

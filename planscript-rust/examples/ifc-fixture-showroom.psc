@@ -3,11 +3,16 @@ catalog "./catalog/buildingsmart-open"
 units m
 
 plan "IFC Fixture Showroom" {
-  footprint rect (0, 0) (10, 6)
+  footprint rect (0, 0) (12, 6)
 
   room gallery {
     rect (0, 0) (10, 6)
     label "Fixture Showroom"
+  }
+
+  room staging {
+    rect (10, 0) (12, 6)
+    label "Staging"
   }
 
   object ifc_basin1 {
@@ -51,6 +56,13 @@ plan "IFC Fixture Showroom" {
     at 5.0
     facing north
     label "Built-In Sofa"
+  }
+
+  opening double door d_gallery_staging {
+    between gallery and staging
+    on shared_edge
+    at 50%
+    swing lh
   }
 
   assert objects_inside_rooms
