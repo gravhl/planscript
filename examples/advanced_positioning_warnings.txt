@@ -1,0 +1,2 @@
+Warnings:
+  - Door "d_living_hall" swing intersects wall "wall_2" between rooms "master_bath" and "hallway"; consider changing the swing hand/reverse, width, or position.

@@ -7,6 +7,7 @@ pub mod lowering;
 pub mod parser;
 pub mod solver;
 pub mod validation;
+pub mod warnings;
 
 pub use catalog::{
     builtin_items, candidate_ifc_item, candidate_ifc_item_from_file, candidate_ifc_item_from_spec,

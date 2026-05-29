@@ -269,3 +269,37 @@ fn rejects_door_width_that_exceeds_wall() {
         .iter()
         .any(|error| error.code.as_deref() == Some("E311")));
 }
+
+#[test]
+fn warns_when_door_swing_intersects_wall_but_still_renders() {
+    let source = r#"
+        units m
+
+        plan {
+          footprint rect (0,0) (4,5)
+          room living { rect (0,0) (4,4) }
+          room hall { rect (0,4) (4,5) }
+
+          opening door d_living_hall {
+            between living and hall
+            on shared_edge
+            at 50%
+            width 1.5
+            swing lh
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert!(result.svg.is_some(), "warning should not block SVG output");
+    assert!(
+        result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("d_living_hall")
+                && warning.contains("swing intersects wall")),
+        "{:?}",
+        result.warnings
+    );
+}

@@ -189,6 +189,7 @@ fn run_compile(args: &[String]) -> Result<(), String> {
             "\nCompilation failed with {} error(s).",
             result.errors.len()
         );
+        print_compile_warnings(&result.warnings);
         return Err(String::new());
     }
 
@@ -209,7 +210,19 @@ fn run_compile(args: &[String]) -> Result<(), String> {
         println!("  Walls: {}", geometry.walls.len());
         println!("  Openings: {}", geometry.openings.len());
     }
+    print_compile_warnings(&result.warnings);
     Ok(())
+}
+
+fn print_compile_warnings(warnings: &[String]) {
+    if warnings.is_empty() {
+        return;
+    }
+
+    println!("Warnings:");
+    for warning in warnings {
+        println!("  - {warning}");
+    }
 }
 
 fn run_catalog(args: &[String]) -> Result<(), String> {
@@ -550,6 +563,7 @@ fn run_solve(args: &[String]) -> Result<(), String> {
                         fs::write(&path, svg).map_err(|e| format!("{path}: error: {e}"))?;
                         println!("  SVG written to: {path}");
                     }
+                    print_compile_warnings(&compiled.warnings);
                 } else {
                     return Err(format!(
                         "Failed to compile generated PlanScript: {}",

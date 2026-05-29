@@ -30,20 +30,43 @@ build_psc_dir() {
     if [ -f "$psc_file" ]; then
       local base_name
       local svg_file
+      local warnings_file
       base_name=$(basename "$psc_file" .psc)
       svg_file="$dir/$base_name.svg"
+      warnings_file="$dir/${base_name}_warnings.txt"
 
       echo "  $base_name.psc -> $base_name.svg"
-      "$CLI" compile "$psc_file" --svg "$svg_file"
+      compile_with_warning_capture "$psc_file" "$svg_file" "$warnings_file"
     fi
   done
+}
+
+compile_with_warning_capture() {
+  local psc_file="$1"
+  local svg_file="$2"
+  local warnings_file="$3"
+  local output
+  shift 3
+
+  if ! output=$("$CLI" compile "$psc_file" --svg "$svg_file" "$@" 2>&1); then
+    printf '%s\n' "$output"
+    return 1
+  fi
+
+  printf '%s\n' "$output"
+  : > "$warnings_file"
+  printf '%s\n' "$output" | awk '/^Warnings:/{capture=1} capture{print}' > "$warnings_file"
 }
 
 build_psc_dir "$EXAMPLES_DIR"
 
 if [ -f "$EXAMPLES_DIR/house.psc" ]; then
   echo "  house.psc -> house-with-dimensions.svg"
-  "$CLI" compile "$EXAMPLES_DIR/house.psc" --svg "$EXAMPLES_DIR/house-with-dimensions.svg" --dimensions
+  compile_with_warning_capture \
+    "$EXAMPLES_DIR/house.psc" \
+    "$EXAMPLES_DIR/house-with-dimensions.svg" \
+    "$EXAMPLES_DIR/house_warnings.txt" \
+    --dimensions
 fi
 
 build_psc_dir "$RUST_EXAMPLES_DIR"
