@@ -4,6 +4,7 @@ use crate::exporters::{export_json, export_svg, JsonExportOptions, SvgExportOpti
 use crate::geometry::{generate_geometry, GeometryIr};
 use crate::lowering::lower_with_catalog;
 use crate::parser::try_parse;
+use crate::warnings::layout_warnings;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -49,6 +50,8 @@ pub struct CompileOptions {
 pub struct CompileResult {
     pub success: bool,
     pub errors: Vec<CompileError>,
+    #[serde(default)]
+    pub warnings: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ast: Option<Program>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -75,6 +78,7 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
                     code: None,
                     details: None,
                 }],
+                warnings: Vec::new(),
                 ast: None,
                 geometry: None,
                 svg: None,
@@ -97,6 +101,7 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
                     code: None,
                     details: None,
                 }],
+                warnings: Vec::new(),
                 ast: Some(ast),
                 geometry: None,
                 svg: None,
@@ -123,6 +128,7 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
                     code: None,
                     details,
                 }],
+                warnings: Vec::new(),
                 ast: Some(ast),
                 geometry: None,
                 svg: None,
@@ -132,6 +138,7 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
     };
 
     let geometry = generate_geometry(&lowered);
+    let warnings = layout_warnings(&geometry);
     let validation_errors = crate::validation::validate(&lowered, &geometry);
     if !validation_errors.is_empty() {
         return CompileResult {
@@ -146,6 +153,7 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
                     details: error.details,
                 })
                 .collect(),
+            warnings,
             ast: Some(ast),
             geometry: Some(geometry),
             svg: None,
@@ -184,6 +192,7 @@ pub fn compile(source: &str, options: CompileOptions) -> CompileResult {
     CompileResult {
         success: true,
         errors: Vec::new(),
+        warnings,
         ast: Some(ast),
         geometry: Some(geometry),
         svg,
