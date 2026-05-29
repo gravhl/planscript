@@ -1246,20 +1246,334 @@ fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -
             ));
         }
     }
+    out.extend(generate_object_labels_svg(geometry, t, opts));
+    out.join("\n    ")
+}
+
+#[derive(Debug, Clone, Copy)]
+struct LabelRect {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct LabelCandidate {
+    x: f64,
+    y: f64,
+    rotation: f64,
+    rect: LabelRect,
+    preference: f64,
+}
+
+fn generate_object_labels_svg(
+    geometry: &GeometryIr,
+    t: Transform,
+    opts: &SvgOptions,
+) -> Vec<String> {
+    let font_size = (opts.label_font_size * 0.72).max(7.0);
+    let obstacles = label_obstacles(geometry, t);
+    let mut placed = Vec::new();
+    let mut out = Vec::new();
+
     for object in &geometry.objects {
-        if let Some(label) = &object.label {
-            let center = transform_point(polygon_center(&object.polygon.points), t);
-            out.push(format!(
-                r#"<text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">{}</text>"#,
-                center.x,
-                center.y,
-                number((opts.label_font_size * 0.72).max(7.0)),
-                opts.object_stroke_color,
-                escape_xml(label)
-            ));
+        let Some(label) = &object.label else {
+            continue;
+        };
+        let object_rect = rect_for_points(&transform_polygon(&object.polygon.points, t));
+        let candidate = best_label_candidate(
+            label,
+            font_size,
+            object_rect,
+            &obstacles,
+            &placed,
+            opts.width,
+            opts.height,
+        );
+        placed.push(candidate.rect);
+
+        let transform = if candidate.rotation.abs() > f64::EPSILON {
+            format!(
+                r#" transform="rotate({:.0}, {:.2}, {:.2})""#,
+                candidate.rotation, candidate.x, candidate.y
+            )
+        } else {
+            String::new()
+        };
+        out.push(format!(
+            r#"<text class="fixture-label" data-object-label="{}" x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif"{}>{}</text>"#,
+            escape_xml(&object.name),
+            candidate.x,
+            candidate.y,
+            number(font_size),
+            opts.object_stroke_color,
+            transform,
+            escape_xml(label)
+        ));
+    }
+
+    out
+}
+
+fn best_label_candidate(
+    label: &str,
+    font_size: f64,
+    object_rect: LabelRect,
+    obstacles: &[LabelRect],
+    placed: &[LabelRect],
+    canvas_width: f64,
+    canvas_height: f64,
+) -> LabelCandidate {
+    let candidates = label_candidates(label, font_size, object_rect);
+    candidates
+        .into_iter()
+        .min_by(|a, b| {
+            let a_score = label_score(a, obstacles, placed, canvas_width, canvas_height);
+            let b_score = label_score(b, obstacles, placed, canvas_width, canvas_height);
+            a_score
+                .partial_cmp(&b_score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .expect("label candidates")
+}
+
+fn label_candidates(label: &str, font_size: f64, object_rect: LabelRect) -> Vec<LabelCandidate> {
+    let text_width = estimate_text_width(label, font_size);
+    let text_height = font_size * 1.15;
+    let gap = (font_size * 0.45).max(4.0);
+    let cx = (object_rect.min_x + object_rect.max_x) / 2.0;
+    let cy = (object_rect.min_y + object_rect.max_y) / 2.0;
+
+    let mut out = Vec::new();
+    let horizontal = [
+        (cx, object_rect.max_y + gap + text_height / 2.0, 0.0, 0.0),
+        (cx, object_rect.min_y - gap - text_height / 2.0, 0.0, 1.0),
+        (
+            object_rect.min_x + text_width / 2.0,
+            object_rect.max_y + gap + text_height / 2.0,
+            0.0,
+            2.0,
+        ),
+        (
+            object_rect.max_x - text_width / 2.0,
+            object_rect.max_y + gap + text_height / 2.0,
+            0.0,
+            2.2,
+        ),
+        (
+            object_rect.min_x + text_width / 2.0,
+            object_rect.min_y - gap - text_height / 2.0,
+            0.0,
+            3.0,
+        ),
+        (
+            object_rect.max_x - text_width / 2.0,
+            object_rect.min_y - gap - text_height / 2.0,
+            0.0,
+            3.2,
+        ),
+    ];
+    for (x, y, rotation, preference) in horizontal {
+        out.push(label_candidate(
+            x,
+            y,
+            rotation,
+            text_width,
+            text_height,
+            preference,
+        ));
+    }
+
+    let rotated_width = text_height;
+    let rotated_height = text_width;
+    let vertical = [
+        (object_rect.max_x + gap + rotated_width / 2.0, cy, 90.0, 4.0),
+        (
+            object_rect.min_x - gap - rotated_width / 2.0,
+            cy,
+            -90.0,
+            4.2,
+        ),
+        (
+            object_rect.max_x + gap + rotated_width / 2.0,
+            object_rect.min_y + rotated_height / 2.0,
+            90.0,
+            5.0,
+        ),
+        (
+            object_rect.max_x + gap + rotated_width / 2.0,
+            object_rect.max_y - rotated_height / 2.0,
+            90.0,
+            5.2,
+        ),
+        (
+            object_rect.min_x - gap - rotated_width / 2.0,
+            object_rect.min_y + rotated_height / 2.0,
+            -90.0,
+            5.4,
+        ),
+        (
+            object_rect.min_x - gap - rotated_width / 2.0,
+            object_rect.max_y - rotated_height / 2.0,
+            -90.0,
+            5.6,
+        ),
+    ];
+    for (x, y, rotation, preference) in vertical {
+        out.push(LabelCandidate {
+            x,
+            y,
+            rotation,
+            rect: LabelRect {
+                min_x: x - rotated_width / 2.0,
+                max_x: x + rotated_width / 2.0,
+                min_y: y - rotated_height / 2.0,
+                max_y: y + rotated_height / 2.0,
+            },
+            preference,
+        });
+    }
+
+    out
+}
+
+fn label_candidate(
+    x: f64,
+    y: f64,
+    rotation: f64,
+    width: f64,
+    height: f64,
+    preference: f64,
+) -> LabelCandidate {
+    LabelCandidate {
+        x,
+        y,
+        rotation,
+        rect: LabelRect {
+            min_x: x - width / 2.0,
+            max_x: x + width / 2.0,
+            min_y: y - height / 2.0,
+            max_y: y + height / 2.0,
+        },
+        preference,
+    }
+}
+
+fn label_score(
+    candidate: &LabelCandidate,
+    obstacles: &[LabelRect],
+    placed: &[LabelRect],
+    canvas_width: f64,
+    canvas_height: f64,
+) -> f64 {
+    let mut score = candidate.preference;
+    score += overflow_penalty(candidate.rect, canvas_width, canvas_height) * 1000.0;
+    for obstacle in obstacles {
+        score += overlap_area(candidate.rect, *obstacle) * 250.0;
+    }
+    for label in placed {
+        score += overlap_area(candidate.rect, *label) * 800.0;
+    }
+    score
+}
+
+fn label_obstacles(geometry: &GeometryIr, t: Transform) -> Vec<LabelRect> {
+    let mut obstacles = Vec::new();
+    for object in &geometry.objects {
+        obstacles.push(rect_for_points(&transform_polygon(&object.polygon.points, t)).inflate(2.0));
+    }
+    for wall in &geometry.walls {
+        let start = transform_point(wall.start, t);
+        let end = transform_point(wall.end, t);
+        obstacles.push(rect_for_line(start, end).inflate(3.0));
+    }
+    for opening in &geometry.openings {
+        if let Some(wall) = geometry
+            .walls
+            .iter()
+            .find(|wall| wall.id == opening.wall_id)
+        {
+            let dx = wall.end.x - wall.start.x;
+            let dy = wall.end.y - wall.start.y;
+            let wall_length = (dx * dx + dy * dy).sqrt();
+            if wall_length <= 0.0 {
+                continue;
+            }
+            let ratio = opening.position / wall_length;
+            let center = Point {
+                x: wall.start.x + dx * ratio,
+                y: wall.start.y + dy * ratio,
+            };
+            let ux = dx / wall_length;
+            let uy = dy / wall_length;
+            let half = opening.width / 2.0;
+            let p1 = transform_point(
+                Point {
+                    x: center.x - ux * half,
+                    y: center.y - uy * half,
+                },
+                t,
+            );
+            let p2 = transform_point(
+                Point {
+                    x: center.x + ux * half,
+                    y: center.y + uy * half,
+                },
+                t,
+            );
+            obstacles.push(rect_for_line(p1, p2).inflate(5.0));
         }
     }
-    out.join("\n    ")
+    obstacles
+}
+
+impl LabelRect {
+    fn inflate(self, amount: f64) -> Self {
+        Self {
+            min_x: self.min_x - amount,
+            max_x: self.max_x + amount,
+            min_y: self.min_y - amount,
+            max_y: self.max_y + amount,
+        }
+    }
+}
+
+fn rect_for_points(points: &[Point]) -> LabelRect {
+    let (min_x, max_x, min_y, max_y) = bounds(points);
+    LabelRect {
+        min_x,
+        max_x,
+        min_y,
+        max_y,
+    }
+}
+
+fn rect_for_line(a: Point, b: Point) -> LabelRect {
+    LabelRect {
+        min_x: a.x.min(b.x),
+        max_x: a.x.max(b.x),
+        min_y: a.y.min(b.y),
+        max_y: a.y.max(b.y),
+    }
+}
+
+fn overlap_area(a: LabelRect, b: LabelRect) -> f64 {
+    let width = (a.max_x.min(b.max_x) - a.min_x.max(b.min_x)).max(0.0);
+    let height = (a.max_y.min(b.max_y) - a.min_y.max(b.min_y)).max(0.0);
+    width * height
+}
+
+fn overflow_penalty(rect: LabelRect, canvas_width: f64, canvas_height: f64) -> f64 {
+    let left = (-rect.min_x).max(0.0);
+    let right = (rect.max_x - canvas_width).max(0.0);
+    let top = (-rect.min_y).max(0.0);
+    let bottom = (rect.max_y - canvas_height).max(0.0);
+    left + right + top + bottom
+}
+
+fn estimate_text_width(label: &str, font_size: f64) -> f64 {
+    label.chars().count() as f64 * font_size * 0.56
 }
 
 fn generate_dimensions_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -> String {
