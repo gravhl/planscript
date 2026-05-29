@@ -127,6 +127,9 @@ fn compiles_builtin_fixture_layout() {
     assert!(svg.contains(r#"class="fixture-detail fixture-toilet-bowl""#));
     assert!(svg.contains(r#"class="fixture-detail fixture-sink-basin""#));
     assert!(svg.contains(r#"class="fixture-detail fixture-shower-slope""#));
+    assert!(svg.contains(r#"class="fixture-label" data-object-label="wc1""#));
+    assert!(svg.contains(r#"class="fixture-label" data-object-label="lav1""#));
+    assert!(svg.contains(r#"class="fixture-label" data-object-label="sh1""#));
 }
 
 #[test]
