@@ -1,6 +1,7 @@
 use crate::ast::{CardinalDirection, DoorSwing, Point, Program};
 use crate::geometry::{
-    GeometryIr, OpeningPlacementType, Polygon, ResolvedCourtyard, ResolvedRoom, WallSegment,
+    GeometryIr, OpeningPlacementType, Polygon, ResolvedCourtyard, ResolvedObject, ResolvedRoom,
+    WallSegment,
 };
 use crate::lowering::SiteInfo;
 use serde::{Deserialize, Serialize};
@@ -288,6 +289,16 @@ fn transform_polygon(points: &[Point], t: Transform) -> Vec<Point> {
     points.iter().map(|p| transform_point(*p, t)).collect()
 }
 
+fn rotate_point(point: Point, rotation_degrees: f64) -> Point {
+    let radians = rotation_degrees.to_radians();
+    let cos = radians.cos();
+    let sin = radians.sin();
+    Point {
+        x: point.x * cos - point.y * sin,
+        y: point.x * sin + point.y * cos,
+    }
+}
+
 fn points_to_path(points: &[Point]) -> String {
     if points.is_empty() {
         return String::new();
@@ -365,15 +376,7 @@ fn generate_objects_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) 
         }
     }
     for object in &geometry.objects {
-        let points = transform_polygon(&object.polygon.points, t);
-        out.push(format!(
-            r#"<path data-object="{}" data-catalog-id="{}" d="{}" fill="{}" stroke="{}" stroke-width="1.5" />"#,
-            escape_xml(&object.name),
-            escape_xml(&object.catalog_id),
-            points_to_path(&points),
-            opts.object_fill_color,
-            opts.object_stroke_color
-        ));
+        out.push(render_object_svg(object, t, opts));
         let origin = transform_point(object.origin, t);
         out.push(format!(
             r#"<circle data-object-origin="{}" cx="{:.2}" cy="{:.2}" r="2.5" fill="{}" />"#,
@@ -384,6 +387,644 @@ fn generate_objects_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) 
         ));
     }
     out.join("\n    ")
+}
+
+fn render_object_svg(object: &ResolvedObject, t: Transform, opts: &SvgOptions) -> String {
+    if let Some(fixture) = render_builtin_fixture_svg(object, t, opts) {
+        return fixture;
+    }
+
+    let points = transform_polygon(&object.polygon.points, t);
+    format!(
+        r#"<path data-object="{}" data-catalog-id="{}" d="{}" fill="{}" stroke="{}" stroke-width="1.5" />"#,
+        escape_xml(&object.name),
+        escape_xml(&object.catalog_id),
+        points_to_path(&points),
+        opts.object_fill_color,
+        opts.object_stroke_color
+    )
+}
+
+fn render_builtin_fixture_svg(
+    object: &ResolvedObject,
+    t: Transform,
+    opts: &SvgOptions,
+) -> Option<String> {
+    let kind = match object.catalog_id.as_str() {
+        "builtin.sanitary.toilet.floor_mounted" => "toilet",
+        "builtin.sanitary.sink.wall_hung" => "bath-sink",
+        "builtin.sanitary.shower.size_900x900" => "shower",
+        "builtin.sanitary.tub.size_1700" => "tub",
+        "builtin.kitchen.sink" => "kitchen-sink",
+        "builtin.kitchen.range.size_600" => "range",
+        "builtin.kitchen.fridge.size_900" => "fridge",
+        "builtin.laundry.washer" => "washer",
+        "builtin.laundry.dryer" => "dryer",
+        "builtin.furniture.bed.queen" => "bed",
+        "builtin.furniture.sofa.three_seat" => "sofa",
+        "builtin.furniture.table.dining_6" => "dining-table",
+        _ => return None,
+    };
+
+    let dims = object_local_dimensions(object);
+    let mut parts = vec![fixture_base_path(object, kind, t, opts)];
+    match kind {
+        "toilet" => render_toilet_details(object, dims, t, opts, &mut parts),
+        "bath-sink" => render_bath_sink_details(object, dims, t, opts, &mut parts),
+        "shower" => render_shower_details(object, dims, t, opts, &mut parts),
+        "tub" => render_tub_details(object, dims, t, opts, &mut parts),
+        "kitchen-sink" => render_kitchen_sink_details(object, dims, t, opts, &mut parts),
+        "range" => render_range_details(object, dims, t, opts, &mut parts),
+        "fridge" => render_fridge_details(object, dims, t, opts, &mut parts),
+        "washer" => render_appliance_drum_details(object, dims, t, opts, &mut parts, "washer"),
+        "dryer" => render_appliance_drum_details(object, dims, t, opts, &mut parts, "dryer"),
+        "bed" => render_bed_details(object, dims, t, opts, &mut parts),
+        "sofa" => render_sofa_details(object, dims, t, opts, &mut parts),
+        "dining-table" => render_dining_table_details(object, dims, t, opts, &mut parts),
+        _ => {}
+    }
+
+    Some(format!(
+        r#"<g class="fixture fixture-{}" data-object="{}" data-catalog-id="{}">
+      {}
+    </g>"#,
+        kind,
+        escape_xml(&object.name),
+        escape_xml(&object.catalog_id),
+        parts.join("\n      ")
+    ))
+}
+
+#[derive(Debug, Clone, Copy)]
+struct ObjectDimensions {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+    width: f64,
+    depth: f64,
+}
+
+fn object_local_dimensions(object: &ResolvedObject) -> ObjectDimensions {
+    let mut local = object
+        .polygon
+        .points
+        .iter()
+        .map(|point| {
+            rotate_point(
+                Point {
+                    x: point.x - object.origin.x,
+                    y: point.y - object.origin.y,
+                },
+                -object.rotation,
+            )
+        })
+        .collect::<Vec<_>>();
+    if local.is_empty() {
+        local.push(Point { x: -0.25, y: 0.0 });
+        local.push(Point { x: 0.25, y: 0.5 });
+    }
+    let (min_x, max_x, min_y, max_y) = bounds(&local);
+    ObjectDimensions {
+        min_x,
+        max_x,
+        min_y,
+        max_y,
+        width: (max_x - min_x).max(0.001),
+        depth: (max_y - min_y).max(0.001),
+    }
+}
+
+fn fixture_base_path(
+    object: &ResolvedObject,
+    kind: &str,
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
+    let points = transform_polygon(&object.polygon.points, t);
+    format!(
+        r#"<path class="fixture-base fixture-{}" d="{}" fill="{}" stroke="{}" stroke-width="1.5" />"#,
+        kind,
+        points_to_path(&points),
+        opts.object_fill_color,
+        opts.object_stroke_color
+    )
+}
+
+fn render_toilet_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    let cx = (d.min_x + d.max_x) / 2.0;
+    out.push(fixture_rect(
+        object,
+        cx - d.width * 0.36,
+        d.min_y + d.depth * 0.05,
+        cx + d.width * 0.36,
+        d.min_y + d.depth * 0.22,
+        "fixture-detail fixture-toilet-tank",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        d.min_y + d.depth * 0.52,
+        d.width * 0.33,
+        d.depth * 0.26,
+        "fixture-detail fixture-toilet-bowl",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        d.min_y + d.depth * 0.53,
+        d.width * 0.18,
+        d.depth * 0.13,
+        "fixture-detail fixture-toilet-water",
+        t,
+        opts,
+    ));
+}
+
+fn render_bath_sink_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    let cx = (d.min_x + d.max_x) / 2.0;
+    let cy = d.min_y + d.depth * 0.48;
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        cy,
+        d.width * 0.34,
+        d.depth * 0.30,
+        "fixture-detail fixture-sink-basin",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        cy,
+        d.width * 0.22,
+        d.depth * 0.18,
+        "fixture-detail fixture-sink-inner",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        d.min_y + d.depth * 0.50,
+        d.width * 0.035,
+        d.width * 0.035,
+        "fixture-detail fixture-drain",
+        t,
+        opts,
+    ));
+    out.push(fixture_line(
+        object,
+        cx,
+        d.min_y + d.depth * 0.12,
+        cx,
+        d.min_y + d.depth * 0.30,
+        "fixture-detail fixture-faucet",
+        t,
+        opts,
+    ));
+}
+
+fn render_shower_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.12,
+        d.min_y + d.depth * 0.12,
+        d.max_x - d.width * 0.12,
+        d.max_y - d.depth * 0.12,
+        "fixture-detail fixture-shower-slope",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        d.max_x - d.width * 0.22,
+        d.min_y + d.depth * 0.22,
+        d.width * 0.055,
+        d.width * 0.055,
+        "fixture-detail fixture-drain",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        d.min_x + d.width * 0.20,
+        d.max_y - d.depth * 0.18,
+        d.width * 0.06,
+        d.width * 0.06,
+        "fixture-detail fixture-shower-head",
+        t,
+        opts,
+    ));
+}
+
+fn render_tub_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_rect(
+        object,
+        d.min_x + d.width * 0.08,
+        d.min_y + d.depth * 0.12,
+        d.max_x - d.width * 0.08,
+        d.max_y - d.depth * 0.12,
+        "fixture-detail fixture-tub-basin",
+        t,
+        opts,
+    ));
+    out.push(fixture_ellipse(
+        object,
+        d.max_x - d.width * 0.18,
+        d.min_y + d.depth * 0.50,
+        d.width * 0.035,
+        d.width * 0.035,
+        "fixture-detail fixture-drain",
+        t,
+        opts,
+    ));
+}
+
+fn render_kitchen_sink_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    let gap = d.width * 0.04;
+    let basin_w = d.width * 0.33;
+    let y1 = d.min_y + d.depth * 0.18;
+    let y2 = d.max_y - d.depth * 0.18;
+    let cx = (d.min_x + d.max_x) / 2.0;
+    out.push(fixture_rect(
+        object,
+        cx - gap - basin_w,
+        y1,
+        cx - gap,
+        y2,
+        "fixture-detail fixture-sink-basin",
+        t,
+        opts,
+    ));
+    out.push(fixture_rect(
+        object,
+        cx + gap,
+        y1,
+        cx + gap + basin_w,
+        y2,
+        "fixture-detail fixture-sink-basin",
+        t,
+        opts,
+    ));
+    for x in [cx - gap - basin_w / 2.0, cx + gap + basin_w / 2.0] {
+        out.push(fixture_ellipse(
+            object,
+            x,
+            (y1 + y2) / 2.0,
+            d.width * 0.025,
+            d.width * 0.025,
+            "fixture-detail fixture-drain",
+            t,
+            opts,
+        ));
+    }
+    out.push(fixture_line(
+        object,
+        cx,
+        d.min_y + d.depth * 0.07,
+        cx,
+        d.min_y + d.depth * 0.22,
+        "fixture-detail fixture-faucet",
+        t,
+        opts,
+    ));
+}
+
+fn render_range_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    for (x, y) in [(0.32, 0.35), (0.68, 0.35), (0.32, 0.66), (0.68, 0.66)] {
+        out.push(fixture_ellipse(
+            object,
+            d.min_x + d.width * x,
+            d.min_y + d.depth * y,
+            d.width * 0.10,
+            d.width * 0.10,
+            "fixture-detail fixture-burner",
+            t,
+            opts,
+        ));
+    }
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.12,
+        d.min_y + d.depth * 0.18,
+        d.max_x - d.width * 0.12,
+        d.min_y + d.depth * 0.18,
+        "fixture-detail fixture-control-line",
+        t,
+        opts,
+    ));
+}
+
+fn render_fridge_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    let x = d.min_x + d.width * 0.52;
+    out.push(fixture_line(
+        object,
+        x,
+        d.min_y + d.depth * 0.08,
+        x,
+        d.max_y - d.depth * 0.08,
+        "fixture-detail fixture-door-split",
+        t,
+        opts,
+    ));
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.62,
+        d.min_y + d.depth * 0.25,
+        d.min_x + d.width * 0.62,
+        d.max_y - d.depth * 0.25,
+        "fixture-detail fixture-handle",
+        t,
+        opts,
+    ));
+}
+
+fn render_appliance_drum_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+    kind: &str,
+) {
+    let cx = (d.min_x + d.max_x) / 2.0;
+    let cy = d.min_y + d.depth * 0.55;
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        cy,
+        d.width * 0.24,
+        d.width * 0.24,
+        &format!("fixture-detail fixture-{kind}-drum"),
+        t,
+        opts,
+    ));
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.12,
+        d.min_y + d.depth * 0.16,
+        d.max_x - d.width * 0.12,
+        d.min_y + d.depth * 0.16,
+        &format!("fixture-detail fixture-{kind}-controls"),
+        t,
+        opts,
+    ));
+}
+
+fn render_bed_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_rect(
+        object,
+        d.min_x + d.width * 0.08,
+        d.min_y + d.depth * 0.08,
+        d.max_x - d.width * 0.08,
+        d.max_y - d.depth * 0.08,
+        "fixture-detail fixture-mattress",
+        t,
+        opts,
+    ));
+    for x1 in [d.min_x + d.width * 0.12, d.min_x + d.width * 0.52] {
+        out.push(fixture_rect(
+            object,
+            x1,
+            d.min_y + d.depth * 0.10,
+            x1 + d.width * 0.36,
+            d.min_y + d.depth * 0.26,
+            "fixture-detail fixture-pillow",
+            t,
+            opts,
+        ));
+    }
+}
+
+fn render_sofa_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_rect(
+        object,
+        d.min_x + d.width * 0.05,
+        d.min_y + d.depth * 0.08,
+        d.max_x - d.width * 0.05,
+        d.min_y + d.depth * 0.25,
+        "fixture-detail fixture-sofa-back",
+        t,
+        opts,
+    ));
+    out.push(fixture_rect(
+        object,
+        d.min_x + d.width * 0.05,
+        d.min_y + d.depth * 0.25,
+        d.max_x - d.width * 0.05,
+        d.max_y - d.depth * 0.10,
+        "fixture-detail fixture-sofa-seat",
+        t,
+        opts,
+    ));
+    for x in [0.36, 0.64] {
+        out.push(fixture_line(
+            object,
+            d.min_x + d.width * x,
+            d.min_y + d.depth * 0.28,
+            d.min_x + d.width * x,
+            d.max_y - d.depth * 0.12,
+            "fixture-detail fixture-sofa-cushion",
+            t,
+            opts,
+        ));
+    }
+}
+
+fn render_dining_table_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    let cx = (d.min_x + d.max_x) / 2.0;
+    let cy = (d.min_y + d.max_y) / 2.0;
+    out.push(fixture_ellipse(
+        object,
+        cx,
+        cy,
+        d.width * 0.34,
+        d.depth * 0.28,
+        "fixture-detail fixture-table-top",
+        t,
+        opts,
+    ));
+    let chair_w = d.width * 0.11;
+    let chair_d = d.depth * 0.16;
+    for x in [0.25, 0.50, 0.75] {
+        out.push(fixture_rect(
+            object,
+            d.min_x + d.width * x - chair_w / 2.0,
+            d.min_y + d.depth * 0.06,
+            d.min_x + d.width * x + chair_w / 2.0,
+            d.min_y + d.depth * 0.06 + chair_d,
+            "fixture-detail fixture-chair",
+            t,
+            opts,
+        ));
+        out.push(fixture_rect(
+            object,
+            d.min_x + d.width * x - chair_w / 2.0,
+            d.max_y - d.depth * 0.06 - chair_d,
+            d.min_x + d.width * x + chair_w / 2.0,
+            d.max_y - d.depth * 0.06,
+            "fixture-detail fixture-chair",
+            t,
+            opts,
+        ));
+    }
+}
+
+fn fixture_rect(
+    object: &ResolvedObject,
+    x1: f64,
+    y1: f64,
+    x2: f64,
+    y2: f64,
+    class_name: &str,
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
+    fixture_path(
+        object,
+        &[
+            Point { x: x1, y: y1 },
+            Point { x: x2, y: y1 },
+            Point { x: x2, y: y2 },
+            Point { x: x1, y: y2 },
+        ],
+        class_name,
+        t,
+        opts,
+    )
+}
+
+fn fixture_ellipse(
+    object: &ResolvedObject,
+    cx: f64,
+    cy: f64,
+    rx: f64,
+    ry: f64,
+    class_name: &str,
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
+    let points = (0..24)
+        .map(|i| {
+            let angle = i as f64 / 24.0 * std::f64::consts::PI * 2.0;
+            Point {
+                x: cx + angle.cos() * rx,
+                y: cy + angle.sin() * ry,
+            }
+        })
+        .collect::<Vec<_>>();
+    fixture_path(object, &points, class_name, t, opts)
+}
+
+fn fixture_path(
+    object: &ResolvedObject,
+    local_points: &[Point],
+    class_name: &str,
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
+    let points = local_points
+        .iter()
+        .map(|point| transform_point(local_to_plan(object, *point), t))
+        .collect::<Vec<_>>();
+    format!(
+        r##"<path class="{}" d="{}" fill="#ffffff" fill-opacity="0.42" stroke="{}" stroke-width="1" />"##,
+        class_name,
+        points_to_path(&points),
+        opts.object_stroke_color
+    )
+}
+
+fn fixture_line(
+    object: &ResolvedObject,
+    x1: f64,
+    y1: f64,
+    x2: f64,
+    y2: f64,
+    class_name: &str,
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
+    let p1 = transform_point(local_to_plan(object, Point { x: x1, y: y1 }), t);
+    let p2 = transform_point(local_to_plan(object, Point { x: x2, y: y2 }), t);
+    format!(
+        r#"<line class="{}" x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" stroke-linecap="round" />"#,
+        class_name, p1.x, p1.y, p2.x, p2.y, opts.object_stroke_color
+    )
+}
+
+fn local_to_plan(object: &ResolvedObject, point: Point) -> Point {
+    let rotated = rotate_point(point, object.rotation);
+    Point {
+        x: object.origin.x + rotated.x,
+        y: object.origin.y + rotated.y,
+    }
 }
 
 fn generate_walls_svg(walls: &[WallSegment], t: Transform, opts: &SvgOptions) -> String {
