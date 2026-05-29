@@ -29,7 +29,7 @@
     <path class="object-clearance" d="M 178.70 498.60 L 141.30 498.60 L 141.30 546.20 L 178.70 546.20 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 188.90 468.00 L 178.70 468.00 L 178.70 498.60 L 188.90 498.60 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 141.30 468.00 L 131.10 468.00 L 131.10 498.60 L 141.30 498.60 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 279.00 665.20 L 340.20 665.20 L 340.20 617.60 L 279.00 617.60 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 279.00 678.80 L 340.20 678.80 L 340.20 631.20 L 279.00 631.20 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 313.00 607.40 L 313.00 491.80 L 265.40 491.80 L 265.40 607.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 459.20 508.80 L 404.80 508.80 L 404.80 559.80 L 459.20 559.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 588.40 512.20 L 547.60 512.20 L 547.60 573.40 L 588.40 573.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
@@ -60,12 +60,12 @@
     </g>
     <circle data-object-origin="lav1" cx="160.00" cy="468.00" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-shower" data-object="shower1" data-catalog-id="builtin.sanitary.shower.size_900x900">
-      <path class="fixture-base fixture-shower" d="M 279.00 726.40 L 340.20 726.40 L 340.20 665.20 L 279.00 665.20 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-      <line class="fixture-detail fixture-shower-slope" x1="286.34" y1="719.06" x2="332.86" y2="672.54" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
-      <path class="fixture-detail fixture-drain" d="M 330.10 712.94 L 329.99 712.06 L 329.65 711.25 L 329.12 710.56 L 328.42 710.02 L 327.61 709.68 L 326.74 709.57 L 325.86 709.68 L 325.05 710.02 L 324.36 710.56 L 323.82 711.25 L 323.48 712.06 L 323.37 712.94 L 323.48 713.81 L 323.82 714.62 L 324.36 715.32 L 325.05 715.85 L 325.86 716.19 L 326.74 716.30 L 327.61 716.19 L 328.42 715.85 L 329.12 715.32 L 329.65 714.62 L 329.99 713.81 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-shower-head" d="M 294.91 676.22 L 294.79 675.27 L 294.42 674.38 L 293.84 673.62 L 293.08 673.04 L 292.19 672.67 L 291.24 672.54 L 290.29 672.67 L 289.40 673.04 L 288.64 673.62 L 288.06 674.38 L 287.69 675.27 L 287.57 676.22 L 287.69 677.17 L 288.06 678.05 L 288.64 678.81 L 289.40 679.40 L 290.29 679.76 L 291.24 679.89 L 292.19 679.76 L 293.08 679.40 L 293.84 678.81 L 294.42 678.05 L 294.79 677.17 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-base fixture-shower" d="M 279.00 740.00 L 340.20 740.00 L 340.20 678.80 L 279.00 678.80 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-shower-slope" x1="286.34" y1="732.66" x2="332.86" y2="686.14" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <path class="fixture-detail fixture-drain" d="M 330.10 726.54 L 329.99 725.66 L 329.65 724.85 L 329.12 724.16 L 328.42 723.62 L 327.61 723.28 L 326.74 723.17 L 325.86 723.28 L 325.05 723.62 L 324.36 724.16 L 323.82 724.85 L 323.48 725.66 L 323.37 726.54 L 323.48 727.41 L 323.82 728.22 L 324.36 728.92 L 325.05 729.45 L 325.86 729.79 L 326.74 729.90 L 327.61 729.79 L 328.42 729.45 L 329.12 728.92 L 329.65 728.22 L 329.99 727.41 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-shower-head" d="M 294.91 689.82 L 294.79 688.87 L 294.42 687.98 L 293.84 687.22 L 293.08 686.64 L 292.19 686.27 L 291.24 686.14 L 290.29 686.27 L 289.40 686.64 L 288.64 687.22 L 288.06 687.98 L 287.69 688.87 L 287.57 689.82 L 287.69 690.77 L 288.06 691.65 L 288.64 692.41 L 289.40 693.00 L 290.29 693.36 L 291.24 693.49 L 292.19 693.36 L 293.08 693.00 L 293.84 692.41 L 294.42 691.65 L 294.79 690.77 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
     </g>
-    <circle data-object-origin="shower1" cx="309.60" cy="726.40" r="2.5" fill="#8a6d3b" />
+    <circle data-object-origin="shower1" cx="309.60" cy="740.00" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-tub" data-object="tub1" data-catalog-id="builtin.sanitary.tub.size_1700">
       <path class="fixture-base fixture-tub" d="M 364.00 607.40 L 364.00 491.80 L 313.00 491.80 L 313.00 607.40 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
       <path class="fixture-detail fixture-tub-basin" d="M 357.88 598.15 L 357.88 501.05 L 319.12 501.05 L 319.12 598.15 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
@@ -180,7 +180,7 @@
     <text x="772.00" y="264.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
     <text class="fixture-label" data-object-label="wc1" x="115.12" y="695.25" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">WC</text>
     <text class="fixture-label" data-object-label="lav1" x="160.00" y="508.93" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
-    <text class="fixture-label" data-object-label="shower1" x="309.60" y="654.87" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
+    <text class="fixture-label" data-object-label="shower1" x="309.60" y="750.33" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
     <text class="fixture-label" data-object-label="tub1" x="338.50" y="617.73" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Tub</text>
     <text class="fixture-label" data-object-label="kitchen_sink1" x="432.00" y="519.13" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen Sink</text>
     <text class="fixture-label" data-object-label="range1" x="568.00" y="522.53" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Range</text>

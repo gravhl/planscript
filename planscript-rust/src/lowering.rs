@@ -1,5 +1,5 @@
 use crate::ast::*;
-use crate::catalog::{Catalog, CatalogItem};
+use crate::catalog::{prefers_wall_placement, Catalog, CatalogItem};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
@@ -827,6 +827,15 @@ fn object_origin(
         return Ok(point_on_room_edge(
             room_bounds,
             attach.edge,
+            &default_position,
+        ));
+    }
+
+    if prefers_wall_placement(item) {
+        let default_position = Position::Percentage { value: 50.0 };
+        return Ok(point_on_room_edge(
+            room_bounds,
+            opposite_edge(facing),
             &default_position,
         ));
     }

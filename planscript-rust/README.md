@@ -40,6 +40,8 @@ assert object_no_overlap
 assert object_clearances
 ```
 
+Wall-backed fixture categories such as sanitary, kitchen, and laundry default to a wall placement when no `at` or `attach` is supplied. Explicit coordinate placement is still allowed, but if one of these fixtures is only slightly inset from the wall, compilation emits a layout warning and still generates output.
+
 Built-in fixture IDs are legally clean generic objects created for PlanScript. They include BIM semantics such as IFC class and predefined type, but they do not depend on external BIM files.
 
 External catalog items use `.psobj.json`:

@@ -1,10 +1,15 @@
-use crate::ast::{DoorSwing, Point};
-use crate::geometry::{GeometryIr, OpeningPlacement, OpeningPlacementType, WallSegment};
+use crate::ast::{DoorSwing, EdgeSide, Point};
+use crate::catalog::prefers_wall_placement_for;
+use crate::geometry::{
+    GeometryIr, OpeningPlacement, OpeningPlacementType, ResolvedRoom, WallSegment,
+};
 use std::collections::HashSet;
 use std::f64::consts::PI;
 
 const EPS: f64 = 1e-6;
 const ARC_STEPS: usize = 12;
+const WALL_BACKED_ON_WALL_TOLERANCE: f64 = 0.02;
+const WALL_BACKED_NEAR_WALL_DISTANCE: f64 = 0.35;
 
 pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
     let mut warnings = Vec::new();
@@ -46,7 +51,84 @@ pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
         }
     }
 
+    warnings.extend(wall_backed_fixture_warnings(geometry));
     warnings
+}
+
+fn wall_backed_fixture_warnings(geometry: &GeometryIr) -> Vec<String> {
+    let mut warnings = Vec::new();
+
+    for object in &geometry.objects {
+        if !prefers_wall_placement_for(&object.category, &object.catalog_id) {
+            continue;
+        }
+
+        let Some(room) = geometry.rooms.iter().find(|room| room.name == object.room) else {
+            continue;
+        };
+
+        let Some((wall, gap)) = wall_backed_gap(room, &object.polygon.points, object.facing) else {
+            continue;
+        };
+
+        if gap > WALL_BACKED_ON_WALL_TOLERANCE && gap <= WALL_BACKED_NEAR_WALL_DISTANCE {
+            warnings.push(format!(
+                "Object \"{}\" is {:.2}m from the {} wall of room \"{}\"; wall-backed fixtures should attach to the wall. Use \"attach {} wall\" with an \"at\" distance or move it farther into the room.",
+                object.name,
+                gap,
+                wall,
+                room.name,
+                wall
+            ));
+        }
+    }
+
+    warnings
+}
+
+fn wall_backed_gap(
+    room: &ResolvedRoom,
+    object_points: &[Point],
+    facing: EdgeSide,
+) -> Option<(&'static str, f64)> {
+    let room_bounds = bounds(&room.polygon.points)?;
+    let object_bounds = bounds(object_points)?;
+    match facing {
+        EdgeSide::North => Some(("south", object_bounds.min_y - room_bounds.min_y)),
+        EdgeSide::South => Some(("north", room_bounds.max_y - object_bounds.max_y)),
+        EdgeSide::East => Some(("west", object_bounds.min_x - room_bounds.min_x)),
+        EdgeSide::West => Some(("east", room_bounds.max_x - object_bounds.max_x)),
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct Bounds {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+}
+
+fn bounds(points: &[Point]) -> Option<Bounds> {
+    let first = points.first()?;
+    let mut min_x = first.x;
+    let mut max_x = first.x;
+    let mut min_y = first.y;
+    let mut max_y = first.y;
+
+    for point in points.iter().skip(1) {
+        min_x = min_x.min(point.x);
+        max_x = max_x.max(point.x);
+        min_y = min_y.min(point.y);
+        max_y = max_y.max(point.y);
+    }
+
+    Some(Bounds {
+        min_x,
+        max_x,
+        min_y,
+        max_y,
+    })
 }
 
 #[derive(Debug, Clone, Copy)]

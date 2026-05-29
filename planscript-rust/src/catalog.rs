@@ -198,6 +198,24 @@ impl Catalog {
     }
 }
 
+pub fn is_wall_backed_category(category: &str) -> bool {
+    matches!(
+        category.trim().to_ascii_lowercase().as_str(),
+        "sanitary" | "kitchen" | "laundry" | "plumbing" | "appliance" | "fixture" | "fixtures"
+    )
+}
+
+pub fn prefers_wall_placement_for(category: &str, id: &str) -> bool {
+    is_wall_backed_category(category)
+        || id.starts_with("builtin.sanitary.")
+        || id.starts_with("builtin.kitchen.")
+        || id.starts_with("builtin.laundry.")
+}
+
+pub fn prefers_wall_placement(item: &CatalogItem) -> bool {
+    prefers_wall_placement_for(&item.category, &item.id)
+}
+
 pub fn resolve_catalog_path(path: &str, base_dir: Option<&Path>) -> PathBuf {
     let raw = PathBuf::from(path);
     if raw.is_absolute() {

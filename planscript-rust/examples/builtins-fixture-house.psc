@@ -49,7 +49,8 @@ plan "Built-In Fixture House" {
   object shower1 {
     use builtin.sanitary.shower.size_900x900
     in bath
-    at (3.2, 0.2)
+    attach south wall
+    at 3.2
     facing north
     label "Shower"
   }

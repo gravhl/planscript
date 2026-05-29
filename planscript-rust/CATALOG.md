@@ -31,6 +31,8 @@ Supported placement fields:
 - `mirror x` or `mirror y` mirrors local geometry.
 - `clearance <front|back|left|right> <value>` overrides catalog clearance.
 
+Sanitary, kitchen, laundry, plumbing, appliance, and fixture categories are treated as wall-backed by default. If no `at` or `attach` is supplied, the compiler places the fixture against the wall opposite its facing direction, centered on that wall. If explicit coordinates place a wall-backed fixture near, but not on, that wall, compilation returns a non-fatal layout warning.
+
 ## Built-In Catalog
 
 Built-ins ship with the Rust compiler and are always available:

@@ -1208,16 +1208,33 @@ plan "Studio Apartment" {
 
 ## Syntax Summary
 
+### Objects and Fixtures
+
+```planscript
+object lav1 {
+  use builtin.sanitary.sink.wall_hung
+  in bath
+  attach north wall
+  at 1.0
+  facing south
+  label "Sink"
+}
+```
+
+Objects reference built-in or external catalog items. Sanitary, kitchen, laundry, plumbing, appliance, and fixture catalog categories default to wall placement when no `at` or `attach` is supplied. Explicit coordinate placement is allowed, but a wall-backed fixture placed near the wall without touching it produces a non-fatal layout warning.
+
 ### Keywords
 
 ```
 units, origin, defaults, site, plan, footprint, zone, room, courtyard, opening, assert,
+object, use, facing, rotate, mirror, clearance,
 rect, polygon, at, size, attach, align, gap, span, from, to, label,
 door, window, between, and, on, shared_edge, width, height, sill,
 north_of, south_of, east_of, west_of,
 north, south, east, west,
 top, bottom, left, right, center,
 no_overlap, inside, all_rooms, min_room_area,
+objects_inside_rooms, object_no_overlap, object_clearances,
 orientation, has_window, near, away_from, garden_view,
 morning_sun, afternoon_sun, street, hemisphere,
 my, with, extend, fill, auto,

@@ -94,7 +94,8 @@ fn compiles_builtin_fixture_layout() {
           object sh1 {
             use builtin.sanitary.shower.size_900x900
             in bath
-            at (3.0, 0.2)
+            attach south wall
+            at 3.0
             facing north
             label "Shower"
           }
@@ -121,6 +122,12 @@ fn compiles_builtin_fixture_layout() {
     let geometry = result.geometry.expect("geometry");
     assert_eq!(geometry.objects.len(), 3);
     assert!(geometry.objects[0].clearance_polygons.len() >= 1);
+    let shower = geometry
+        .objects
+        .iter()
+        .find(|object| object.name == "sh1")
+        .expect("shower object");
+    assert_close(shower.origin.y, 0.0, 1e-9);
     assert!(result.json.expect("json").contains("\"objects\""));
     let svg = result.svg.expect("svg");
     assert!(svg.contains(r#"class="fixture fixture-toilet""#));
@@ -130,6 +137,128 @@ fn compiles_builtin_fixture_layout() {
     assert!(svg.contains(r#"class="fixture-label" data-object-label="wc1""#));
     assert!(svg.contains(r#"class="fixture-label" data-object-label="lav1""#));
     assert!(svg.contains(r#"class="fixture-label" data-object-label="sh1""#));
+}
+
+#[test]
+fn fixture_labels_do_not_move_fixture_geometry() {
+    let source_with_label = r#"
+        plan "Fixture Label Geometry" {
+          footprint rect (0,0) (5,4)
+          room bath { rect (0,0) (5,4) }
+          object sh1 {
+            use builtin.sanitary.shower.size_900x900
+            in bath
+            attach south wall
+            at 3.0
+            facing north
+            label "Shower"
+          }
+        }
+    "#;
+    let source_without_label = r#"
+        plan "Fixture Label Geometry" {
+          footprint rect (0,0) (5,4)
+          room bath { rect (0,0) (5,4) }
+          object sh1 {
+            use builtin.sanitary.shower.size_900x900
+            in bath
+            attach south wall
+            at 3.0
+            facing north
+          }
+        }
+    "#;
+
+    let with_label = compile(source_with_label, CompileOptions::default());
+    let without_label = compile(source_without_label, CompileOptions::default());
+    assert!(with_label.success, "{:?}", with_label.errors);
+    assert!(without_label.success, "{:?}", without_label.errors);
+
+    let with_object = with_label
+        .geometry
+        .expect("geometry")
+        .objects
+        .into_iter()
+        .find(|object| object.name == "sh1")
+        .expect("labeled shower");
+    let without_object = without_label
+        .geometry
+        .expect("geometry")
+        .objects
+        .into_iter()
+        .find(|object| object.name == "sh1")
+        .expect("unlabeled shower");
+
+    assert_eq!(with_object.origin, without_object.origin);
+    assert_eq!(with_object.facing, without_object.facing);
+    assert_eq!(with_object.rotation, without_object.rotation);
+    assert_eq!(with_object.polygon, without_object.polygon);
+    assert_eq!(
+        with_object.clearance_polygons,
+        without_object.clearance_polygons
+    );
+}
+
+#[test]
+fn wall_backed_fixtures_default_to_room_wall() {
+    let source = r#"
+        plan "Default Fixture Wall" {
+          footprint rect (0,0) (5,4)
+          room bath { rect (0,0) (5,4) }
+          object lav1 {
+            use builtin.sanitary.sink.wall_hung
+            in bath
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert_eq!(result.warnings, Vec::<String>::new());
+
+    let geometry = result.geometry.expect("geometry");
+    let sink = geometry
+        .objects
+        .iter()
+        .find(|object| object.name == "lav1")
+        .expect("sink object");
+    assert_close(sink.origin.x, 2.5, 1e-9);
+    assert_close(sink.origin.y, 0.0, 1e-9);
+    let min_y = sink
+        .polygon
+        .points
+        .iter()
+        .map(|point| point.y)
+        .fold(f64::INFINITY, f64::min);
+    assert_close(min_y, 0.0, 1e-9);
+}
+
+#[test]
+fn warns_when_wall_backed_fixture_is_near_wall_but_not_attached() {
+    let source = r#"
+        plan "Fixture Near Wall" {
+          footprint rect (0,0) (5,4)
+          room bath { rect (0,0) (5,4) }
+          object sh1 {
+            use builtin.sanitary.shower.size_900x900
+            in bath
+            at (3.0, 0.2)
+            facing north
+            label "Shower"
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert!(result.svg.is_some(), "warning should not block SVG output");
+    assert!(
+        result.warnings.iter().any(|warning| warning.contains("sh1")
+            && warning.contains("0.20m")
+            && warning.contains("south wall")),
+        "{:?}",
+        result.warnings
+    );
 }
 
 #[test]
