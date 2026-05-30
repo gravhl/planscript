@@ -6,9 +6,11 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 EXAMPLES_DIR="$PROJECT_DIR/examples"
-CLI="$PROJECT_DIR/dist/cli.js"
+RUST_MANIFEST="$PROJECT_DIR/planscript-rust/Cargo.toml"
+CLI="$PROJECT_DIR/planscript-rust/target/debug/planscript-rust"
 
 echo "Building examples from intent files..."
+cargo build --manifest-path "$RUST_MANIFEST"
 
 for intent_file in "$EXAMPLES_DIR"/*.intent.json; do
   if [ -f "$intent_file" ]; then
@@ -17,7 +19,7 @@ for intent_file in "$EXAMPLES_DIR"/*.intent.json; do
     svg_file="$EXAMPLES_DIR/$base_name.svg"
     
     echo "  $base_name.intent.json -> $base_name.psc, $base_name.svg"
-    node "$CLI" "$intent_file" --out "$psc_file" --svg "$svg_file"
+    "$CLI" solve "$intent_file" --out "$psc_file" --svg "$svg_file"
   fi
 done
 
