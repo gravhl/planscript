@@ -1,6 +1,6 @@
 # Deterministic Floor Plan DSL (DFP-DSL)
 
-> **Implementation note:** The final product direction is Rust. `planscript-rust/` is the canonical compiler and solver implementation; the TypeScript implementation is deprecated reference material.
+> **Implementation note:** PlanScript is Rust-only. `planscript-rust/` is the canonical compiler and solver implementation.
 
 ## 1. Project Overview
 
@@ -277,7 +277,7 @@ Compilation **fails** if any assertion fails.
 ```
 DSL Source
    ↓
-Parser (PEG / ANTLR)
+Rust parser
    ↓
 AST
    ↓
@@ -352,9 +352,9 @@ plan "Example House" {
 
 ### Language & Compiler
 
-* **TypeScript** (fast iteration, great tooling)
-* **PEG.js / Nearley / ANTLR**
-* Immutable AST structures
+* **Rust** (single canonical implementation)
+* Hand-written deterministic parser
+* Typed AST structures
 
 ### Geometry
 
@@ -364,7 +364,7 @@ plan "Example House" {
 ### Export
 
 * SVG: native
-* DXF: `dxf-writer` or custom emitter
+* DXF: custom emitter or Rust CAD export crate
 * JSON: internal IR
 
 ### Validation

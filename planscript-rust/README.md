@@ -1,8 +1,6 @@
 # PlanScript Rust
 
-Native Rust implementation of the PlanScript compiler and intent solver.
-
-The Rust crate is the forward path for PlanScript. The earlier TypeScript implementation is deprecated.
+Native Rust implementation of the PlanScript compiler, intent solver, catalog, validation, and exporters.
 
 ## Commands
 
@@ -93,7 +91,7 @@ Single doors default to `door_width` from `defaults` or `0.9m`. Double doors def
 
 ## Library
 
-The crate exposes the same main pipeline shape as the TypeScript implementation:
+The crate exposes the main PlanScript pipeline:
 
 - `parse`
 - `lower`

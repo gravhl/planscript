@@ -1,5 +1,0 @@
-{
-  "tspegjs": {
-    "customHeader": "import type * as AST from '../ast/types.js';"
-  }
-}

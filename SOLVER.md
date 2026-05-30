@@ -1,4 +1,4 @@
-## Advanced Greedy Floor-Plan Solver Spec (TypeScript)
+## Advanced Greedy Floor-Plan Solver Spec (Rust)
 
 **Goal:** Convert a *zoning + constraints* intent model into a valid **PlanScript** floor plan (rect/polygon rooms + openings + windows) using an **advanced greedy** placement engine (with limited backtracking), *not* an LLM.
 
@@ -44,106 +44,20 @@ Key idea: separate **hard constraints** (must pass) vs **soft constraints** (opt
 
 # 3. Input Model (Intent JSON)
 
-### 3.1 Types
+### 3.1 JSON Shape
 
-```ts
-type Units = "m" | "cm";
+The canonical intent data structures are implemented in `planscript-rust/src/solver.rs` and serialized with Serde. The JSON input shape is:
 
-type Footprint =
-  | { kind: "rect"; min: [number, number]; max: [number, number] }
-  | { kind: "polygon"; points: Array<[number, number]> };
-
-type ZoneId = string; // e.g., "front", "middle", "back", "left", "right"
-
-type BandSpec = {
-  id: ZoneId;                 // "left", "center", "right"
-  minWidth?: number;          // optional; solver can derive
-  targetWidth?: number;       // optional
-  maxWidth?: number;          // optional
-};
-
-type DepthSpec = {
-  id: ZoneId;                 // "front", "middle", "back"
-  minDepth?: number;
-  targetDepth?: number;
-  maxDepth?: number;
-};
-
-type RoomId = string;
-
-type RoomSpec = {
-  id: RoomId;
-  label?: string;
-
-  // Geometry targets (solver tries to match)
-  minArea: number;
-  targetArea?: number;
-  minWidth?: number;
-  minHeight?: number;
-  maxWidth?: number;
-  maxHeight?: number;
-  aspect?: { min: number; max: number }; // w/h
-
-  // Placement intent
-  preferredBands?: ZoneId[];  // e.g., ["left"]
-  preferredDepths?: ZoneId[]; // e.g., ["back"]
-  mustTouchExterior?: boolean; // bedrooms, living
-  mustTouchGardenEdge?: boolean; // great_room to north edge
-
-  // Adjacency
-  adjacentTo?: RoomId[];
-  avoidAdjacentTo?: RoomId[];
-
-  // Connectivity
-  needsAccessFrom?: RoomId[]; // e.g., ["hall", "foyer"]
-  isCirculation?: boolean;    // hall/corridor
-
-  // Category helps defaults (windows, doors, scoring)
-  type: "bedroom" | "bath" | "kitchen" | "dining" | "living" | "office" | "garage" | "laundry" | "hall" | "other";
-};
-
-type OpeningDefaults = {
-  doorWidth: number;     // e.g., 0.9
-  windowWidth: number;   // e.g., 1.8
-  exteriorDoorWidth?: number; // e.g., 1.1
-};
-
-type LayoutIntent = {
-  units: Units;
-  footprint: Footprint;
-
-  // Optional decomposition hints (strongly recommended)
-  bands?: BandSpec[];    // e.g., left/center/right
-  depths?: DepthSpec[];  // e.g., front/middle/back
-
-  // Global anchors
-  frontEdge: "south" | "north" | "east" | "west";   // defines entry side
-  gardenEdge?: "north" | "south" | "east" | "west"; // typically opposite front
-
-  defaults: OpeningDefaults;
-
-  rooms: RoomSpec[];
-
-  // Hard constraints
-  hard: {
-    noOverlap: true;
-    insideFootprint: true;
-    allRoomsConnected?: boolean; // via doors through circulation graph
-  };
-
-  // Soft constraints weights (tunable)
-  weights?: Partial<Record<
-    | "respectPreferredZones"
-    | "adjacencySatisfaction"
-    | "minimizeHallArea"
-    | "maximizeGardenGlazing"
-    | "bathroomClustering"
-    | "compactness"
-    | "minimizeExteriorWallBreaks",
-    number
-  >>;
-};
-```
+- `units`: `"m"` or `"cm"`
+- `footprint`: rectangle `{ "kind": "rect", "min": [x, y], "max": [x, y] }` or polygon `{ "kind": "polygon", "points": [[x, y], ...] }`
+- `bands`: optional left/center/right decomposition hints with min, target, or max widths
+- `depths`: optional front/middle/back decomposition hints with min, target, or max depths
+- `frontEdge`: `"south"`, `"north"`, `"east"`, or `"west"`
+- `gardenEdge`: optional garden-facing edge
+- `defaults`: door, window, and exterior door widths
+- `rooms`: room specs with id, type, area/size constraints, placement hints, adjacency, access, and circulation flags
+- `hard`: required validation constraints such as no overlap, inside footprint, and connectivity
+- `weights`: optional soft-constraint weights for scoring valid candidates
 
 ### 3.2 Minimal example input (human/LLM generates this)
 
@@ -186,26 +100,27 @@ type LayoutIntent = {
 
 ## 4.1 Geometry primitives
 
-```ts
-type Point = { x: number; y: number };
-type Rect = { x1: number; y1: number; x2: number; y2: number }; // axis-aligned
-type Edge = { a: Point; b: Point; orientation: "h" | "v" };
+```rust
+struct Point {
+    x: f64,
+    y: f64,
+}
 
-type PlacedRoom = {
-  id: RoomId;
-  rect: Rect;
-  label?: string;
-  type: RoomSpec["type"];
-  band?: ZoneId;
-  depth?: ZoneId;
-};
+struct Rect {
+    x1: f64,
+    y1: f64,
+    x2: f64,
+    y2: f64,
+}
 
-type PlanState = {
-  footprint: Footprint;
-  placed: Map<RoomId, PlacedRoom>;
-  unplaced: RoomId[];
-  openings: any[]; // door/window IR
-};
+struct PlacedRoom {
+    id: String,
+    rect: Rect,
+    label: Option<String>,
+    room_type: RoomType,
+    band: Option<String>,
+    depth: Option<String>,
+}
 ```
 
 ## 4.2 Constraint evaluation
@@ -433,31 +348,17 @@ Important: match your PlanScript polygon syntax:
 
 ---
 
-# 11. Recommended Implementation (TypeScript)
+# 11. Implementation
 
-## 11.1 Why TypeScript
+The canonical implementation is Rust in `planscript-rust/src/solver.rs`.
 
-* Excellent for AST + geometry data
-* Fast iteration
-* Strong typing for constraint engine
-* Great test tooling
+## 11.1 Rust Approach
 
-## 11.2 Libraries
-
-* **Geometry**
-
-  * `polygon-clipping` (boolean ops) — useful if you later support polygon footprint
-  * `martinez-polygon-clipping` (alternative)
-  * For rect-only v1, implement intersection yourself (fast and robust)
-
-* **Graph**
-
-  * `graphlib` (optional) for connectivity graph; or write a small BFS
-
-* **DXF/SVG export** (if needed later)
-
-  * DXF: `dxf-writer`
-  * SVG: custom string emitter is easiest
+* Typed intent structs with Serde JSON parsing
+* Deterministic candidate generation and scoring
+* Lightweight in-crate geometry primitives for rect and polygon handling
+* Small graph/search helpers for connectivity and access checks
+* Emission through the same Rust PlanScript compiler pipeline used by hand-authored `.psc` files
 
 # 12. Determinism Guarantees
 
@@ -475,14 +376,14 @@ To keep output deterministic:
 Example:
 
 ```bash
-plansolve intent.json --out plan.ps --format planscript
+planscript-rust solve intent.json --out plan.psc --svg plan.svg
 ```
 
 Options:
 
-* `--seed` (optional)
-* `--variants N` generate N candidates and pick best by scoring
-* `--debug` emit intermediate JSON + score breakdown
+* `--variants N` accepted for CLI compatibility
+* `--inspect` emits solver decisions, rejection reasons, and score breakdown
+* `--svg <file>` compiles the generated PlanScript and writes SVG output
 
 ---
 
@@ -512,4 +413,3 @@ This makes results dramatically less “box-packed” without heavy optimization
 
   * known cases (3BR house)
   * randomized fuzz (no overlaps, inside footprint)
-

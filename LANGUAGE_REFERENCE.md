@@ -39,19 +39,19 @@ This document provides a complete specification of the PlanScript language for d
 ### Installation
 
 ```bash
-npm install -g planscript
+cargo build --manifest-path planscript-rust/Cargo.toml
 ```
 
-Or use directly with npx (no installation required):
+Or run directly through Cargo:
 
 ```bash
-npx planscript myplan.psc --svg output.svg
+cargo run --manifest-path planscript-rust/Cargo.toml -- compile myplan.psc --svg output.svg
 ```
 
 ### CLI Usage
 
 ```bash
-planscript <input.psc> [options]
+planscript-rust compile <input.psc> [options]
 ```
 
 **Options:**
@@ -69,19 +69,16 @@ planscript <input.psc> [options]
 
 ```bash
 # Compile and generate SVG
-planscript house.psc --svg house.svg
+planscript-rust compile house.psc --svg house.svg
 
 # Include dimension lines
-planscript house.psc --svg house.svg --dimensions
+planscript-rust compile house.psc --svg house.svg --dimensions
 
 # Generate both SVG and JSON
-planscript house.psc --svg house.svg --json house.json
+planscript-rust compile house.psc --svg house.svg --json house.json
 
 # Validate only (check for errors without generating output)
-planscript house.psc --no-svg
-
-# Use npx without installing
-npx planscript examples/house.psc --svg output.svg
+planscript-rust compile house.psc --no-svg
 ```
 
 ### Validation Output
