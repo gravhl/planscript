@@ -7,13 +7,18 @@ pub enum FloorMaterialScope {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FloorPatternKind {
-    Solid,
-    Planks,
-    Grid,
-    Diagonal,
+    Carpet,
+    Concrete,
+    DeckBoards,
+    Gravel,
+    Mulch,
+    NaturalStone,
+    ResilientSheet,
     RunningBond,
-    Dots,
-    Speckles,
+    SmoothConcrete,
+    SquareTile,
+    Turf,
+    WoodFloor,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -78,7 +83,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Indoor,
         fill: "#f2dfbf",
         stroke: "#b98d56",
-        pattern: FloorPatternKind::Planks,
+        pattern: FloorPatternKind::WoodFloor,
     },
     FloorMaterialSpec {
         id: "tile",
@@ -86,7 +91,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Indoor,
         fill: "#eef1f2",
         stroke: "#aeb8bc",
-        pattern: FloorPatternKind::Grid,
+        pattern: FloorPatternKind::SquareTile,
     },
     FloorMaterialSpec {
         id: "carpet",
@@ -94,7 +99,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Indoor,
         fill: "#e7dfd3",
         stroke: "#b9aa98",
-        pattern: FloorPatternKind::Dots,
+        pattern: FloorPatternKind::Carpet,
     },
     FloorMaterialSpec {
         id: "concrete",
@@ -102,7 +107,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Both,
         fill: "#e4e6e4",
         stroke: "#a5aaa5",
-        pattern: FloorPatternKind::Diagonal,
+        pattern: FloorPatternKind::Concrete,
     },
     FloorMaterialSpec {
         id: "polished_concrete",
@@ -110,7 +115,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Indoor,
         fill: "#edf0ef",
         stroke: "#b8c0bd",
-        pattern: FloorPatternKind::Solid,
+        pattern: FloorPatternKind::SmoothConcrete,
     },
     FloorMaterialSpec {
         id: "vinyl",
@@ -118,7 +123,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Indoor,
         fill: "#f0eadc",
         stroke: "#c7b98f",
-        pattern: FloorPatternKind::Grid,
+        pattern: FloorPatternKind::ResilientSheet,
     },
     FloorMaterialSpec {
         id: "stone",
@@ -126,7 +131,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Both,
         fill: "#dedbd2",
         stroke: "#989388",
-        pattern: FloorPatternKind::Speckles,
+        pattern: FloorPatternKind::NaturalStone,
     },
     FloorMaterialSpec {
         id: "wood_deck",
@@ -134,7 +139,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Outdoor,
         fill: "#d8b47a",
         stroke: "#8f6632",
-        pattern: FloorPatternKind::Planks,
+        pattern: FloorPatternKind::DeckBoards,
     },
     FloorMaterialSpec {
         id: "composite_deck",
@@ -142,7 +147,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Outdoor,
         fill: "#c9b7a5",
         stroke: "#78695d",
-        pattern: FloorPatternKind::Planks,
+        pattern: FloorPatternKind::DeckBoards,
     },
     FloorMaterialSpec {
         id: "pavers",
@@ -158,7 +163,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Outdoor,
         fill: "#d7d7cf",
         stroke: "#8b8b80",
-        pattern: FloorPatternKind::Speckles,
+        pattern: FloorPatternKind::Gravel,
     },
     FloorMaterialSpec {
         id: "grass",
@@ -166,7 +171,7 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Outdoor,
         fill: "#d7ead1",
         stroke: "#6da55f",
-        pattern: FloorPatternKind::Dots,
+        pattern: FloorPatternKind::Turf,
     },
     FloorMaterialSpec {
         id: "mulch",
@@ -174,6 +179,6 @@ const FLOOR_MATERIALS: &[FloorMaterialSpec] = &[
         scope: FloorMaterialScope::Outdoor,
         fill: "#c7a06b",
         stroke: "#7d5131",
-        pattern: FloorPatternKind::Speckles,
+        pattern: FloorPatternKind::Mulch,
     },
 ];

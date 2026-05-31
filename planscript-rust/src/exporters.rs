@@ -530,82 +530,98 @@ fn floor_pattern_def(spec: FloorMaterialSpec, draft_mode: bool) -> String {
     let id = floor_pattern_id(spec.id);
     let fill = if draft_mode { "#ffffff" } else { spec.fill };
     let stroke = if draft_mode { "#111111" } else { spec.stroke };
+    let strong = if draft_mode { "0.82" } else { "0.56" };
+    let medium = if draft_mode { "0.66" } else { "0.42" };
+    let light = if draft_mode { "0.48" } else { "0.28" };
     match spec.pattern {
-        FloorPatternKind::Solid if draft_mode => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{fill}" />
-      <path d="M 0 12 L 12 0" stroke="{stroke}" stroke-width="0.55" opacity="0.55" />
-    </pattern>"#
-        ),
-        FloorPatternKind::Solid => {
-            format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{fill}" />
-    </pattern>"#
-            )
-        }
-        FloorPatternKind::Planks => {
-            let opacity = if draft_mode { "0.85" } else { "0.55" };
-            format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="18" height="18">
+        FloorPatternKind::Carpet => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="18" height="18">
       <rect width="18" height="18" fill="{fill}" />
-      <path d="M 0 6 H 18 M 0 12 H 18 M 9 0 V 6 M 4 6 V 12 M 13 12 V 18" stroke="{stroke}" stroke-width="0.7" opacity="{opacity}" />
+      <path d="M 3 4 l 2 1 M 10 3 l 3 -1 M 15 8 l -2 2 M 5 12 l 3 1 M 12 15 l 2 -2" stroke="{stroke}" stroke-width="0.55" stroke-linecap="round" opacity="{medium}" />
+      <circle cx="6" cy="7" r="0.45" fill="{stroke}" opacity="{light}" />
+      <circle cx="14" cy="13" r="0.45" fill="{stroke}" opacity="{light}" />
     </pattern>"#,
-            )
-        }
-        FloorPatternKind::Grid => {
-            let opacity = if draft_mode { "0.85" } else { "0.5" };
-            format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="14" height="14">
-      <rect width="14" height="14" fill="{fill}" />
-      <path d="M 14 0 V 14 M 0 14 H 14" stroke="{stroke}" stroke-width="0.65" opacity="{opacity}" />
+        ),
+        FloorPatternKind::Concrete => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="26" height="26">
+      <rect width="26" height="26" fill="{fill}" />
+      <path d="M 4 5 l 3 -1 l -1 3 z M 17 4 l 4 2 M 8 15 l 3 3 M 20 16 l -3 4 M 4 22 l 4 -1" fill="none" stroke="{stroke}" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="round" opacity="{medium}" />
+      <circle cx="15" cy="12" r="0.7" fill="{stroke}" opacity="{light}" />
+      <circle cx="23" cy="23" r="0.55" fill="{stroke}" opacity="{light}" />
     </pattern>"#,
-            )
-        }
-        FloorPatternKind::Diagonal => {
-            let opacity = if draft_mode { "0.85" } else { "0.4" };
-            format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{fill}" />
-      <path d="M -3 12 L 12 -3 M 3 15 L 15 3" stroke="{stroke}" stroke-width="0.6" opacity="{opacity}" />
+        ),
+        FloorPatternKind::DeckBoards => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="48" height="24">
+      <rect width="48" height="24" fill="{fill}" />
+      <path d="M 0 8 H 48 M 0 16 H 48" stroke="{stroke}" stroke-width="0.8" opacity="{strong}" />
+      <path d="M 24 0 V 8 M 12 8 V 16 M 36 16 V 24" stroke="{stroke}" stroke-width="0.65" opacity="{medium}" />
     </pattern>"#,
-            )
-        }
+        ),
+        FloorPatternKind::Gravel => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="22" height="18">
+      <rect width="22" height="18" fill="{fill}" />
+      <circle cx="4" cy="5" r="1.2" fill="none" stroke="{stroke}" stroke-width="0.55" opacity="{medium}" />
+      <circle cx="12" cy="3" r="0.85" fill="none" stroke="{stroke}" stroke-width="0.55" opacity="{medium}" />
+      <circle cx="18" cy="10" r="1.05" fill="none" stroke="{stroke}" stroke-width="0.55" opacity="{medium}" />
+      <circle cx="7" cy="14" r="0.75" fill="none" stroke="{stroke}" stroke-width="0.55" opacity="{medium}" />
+      <circle cx="14" cy="15" r="0.45" fill="{stroke}" opacity="{light}" />
+    </pattern>"#,
+        ),
+        FloorPatternKind::Mulch => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="22" height="18">
+      <rect width="22" height="18" fill="{fill}" />
+      <path d="M 3 4 l 5 2 M 12 3 l 4 -2 M 17 8 l -5 3 M 5 13 l 6 1 M 15 15 l 4 -3" stroke="{stroke}" stroke-width="0.85" stroke-linecap="round" opacity="{medium}" />
+    </pattern>"#,
+        ),
+        FloorPatternKind::NaturalStone => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="34" height="24">
+      <rect width="34" height="24" fill="{fill}" />
+      <path d="M 0 10 L 8 6 L 17 9 L 25 4 L 34 8 M 0 20 L 10 17 L 19 21 L 27 15 L 34 18 M 9 6 L 7 17 M 18 9 L 19 21 M 26 4 L 27 15" fill="none" stroke="{stroke}" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="round" opacity="{medium}" />
+    </pattern>"#,
+        ),
+        FloorPatternKind::ResilientSheet => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="32" height="32">
+      <rect width="32" height="32" fill="{fill}" />
+      <path d="M 32 0 V 32 M 0 32 H 32" stroke="{stroke}" stroke-width="0.6" opacity="{medium}" />
+      <path d="M 0 0 L 32 32" stroke="{stroke}" stroke-width="0.45" opacity="{light}" />
+    </pattern>"#,
+        ),
         FloorPatternKind::RunningBond => {
-            let opacity = if draft_mode { "0.85" } else { "0.5" };
             format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="24" height="16">
-      <rect width="24" height="16" fill="{fill}" />
-      <path d="M 0 8 H 24 M 12 0 V 8 M 0 8 V 16 M 24 8 V 16" stroke="{stroke}" stroke-width="0.65" opacity="{opacity}" />
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="32" height="16">
+      <rect width="32" height="16" fill="{fill}" />
+      <path d="M 0 8 H 32 M 16 0 V 8 M 0 8 V 16 M 32 8 V 16" stroke="{stroke}" stroke-width="0.7" opacity="{strong}" />
     </pattern>"#,
             )
         }
-        FloorPatternKind::Dots => {
-            let first_opacity = if draft_mode { "0.75" } else { "0.45" };
-            let second_opacity = if draft_mode { "0.6" } else { "0.35" };
-            format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{fill}" />
-      <circle cx="3" cy="3" r="0.8" fill="{stroke}" opacity="{first_opacity}" />
-      <circle cx="9" cy="8" r="0.8" fill="{stroke}" opacity="{second_opacity}" />
+        FloorPatternKind::SmoothConcrete => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="36" height="36">
+      <rect width="36" height="36" fill="{fill}" />
+      <path d="M 36 0 V 36 M 0 36 H 36" stroke="{stroke}" stroke-width="0.55" opacity="{light}" />
+      <circle cx="11" cy="12" r="0.45" fill="{stroke}" opacity="{light}" />
+      <circle cx="27" cy="25" r="0.4" fill="{stroke}" opacity="{light}" />
     </pattern>"#,
-            )
-        }
-        FloorPatternKind::Speckles => {
-            let first_opacity = if draft_mode { "0.75" } else { "0.45" };
-            let second_opacity = if draft_mode { "0.6" } else { "0.35" };
-            let third_opacity = if draft_mode { "0.68" } else { "0.4" };
-            let fourth_opacity = if draft_mode { "0.55" } else { "0.3" };
-            format!(
-                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="16" height="16">
-      <rect width="16" height="16" fill="{fill}" />
-      <circle cx="4" cy="5" r="0.7" fill="{stroke}" opacity="{first_opacity}" />
-      <circle cx="10" cy="3" r="0.55" fill="{stroke}" opacity="{second_opacity}" />
-      <circle cx="13" cy="11" r="0.65" fill="{stroke}" opacity="{third_opacity}" />
-      <circle cx="6" cy="13" r="0.5" fill="{stroke}" opacity="{fourth_opacity}" />
+        ),
+        FloorPatternKind::SquareTile => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="22" height="22">
+      <rect width="22" height="22" fill="{fill}" />
+      <path d="M 22 0 V 22 M 0 22 H 22" stroke="{stroke}" stroke-width="0.65" opacity="{strong}" />
     </pattern>"#,
-            )
-        }
+        ),
+        FloorPatternKind::Turf => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="22" height="18">
+      <rect width="22" height="18" fill="{fill}" />
+      <path d="M 4 13 l 2 -5 l 2 5 M 13 9 l 2 -5 l 2 5 M 17 16 l 2 -4 l 2 4 M 6 5 l 1.5 -3 l 1.5 3" fill="none" stroke="{stroke}" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="round" opacity="{medium}" />
+    </pattern>"#,
+        ),
+        FloorPatternKind::WoodFloor => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="42" height="18">
+      <rect width="42" height="18" fill="{fill}" />
+      <path d="M 0 6 H 42 M 0 12 H 42" stroke="{stroke}" stroke-width="0.7" opacity="{strong}" />
+      <path d="M 21 0 V 6 M 7 6 V 12 M 31 12 V 18" stroke="{stroke}" stroke-width="0.55" opacity="{medium}" />
+      <path d="M 4 3 C 10 1, 14 5, 20 3 M 24 15 C 30 13, 34 17, 39 15" fill="none" stroke="{stroke}" stroke-width="0.45" stroke-linecap="round" opacity="{light}" />
+    </pattern>"#,
+        ),
     }
 }
 
