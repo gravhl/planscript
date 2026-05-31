@@ -1,0 +1,4 @@
+Warnings:
+  - Door "d_garage" swing intersects wall "wall_2" between rooms "garage" and "living"; consider changing the swing hand/reverse, width, or position.
+  - Door "d_garage" swing intersects wall "wall_3" between rooms "garage" and "dining"; consider changing the swing hand/reverse, width, or position.
+  - Door "d_garage" swing intersects wall "wall_4" between rooms "living" and "dining"; consider changing the swing hand/reverse, width, or position.
