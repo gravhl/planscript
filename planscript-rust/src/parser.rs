@@ -497,6 +497,12 @@ impl Parser {
                 defaults.door_width = Some(self.expect_number()?);
             } else if self.consume_keyword("window_width") {
                 defaults.window_width = Some(self.expect_number()?);
+            } else if self.consume_keyword("floor") {
+                defaults.floor = Some(self.parse_material_id()?);
+            } else if self.consume_keyword("indoor_floor") {
+                defaults.floor = Some(self.parse_material_id()?);
+            } else if self.consume_keyword("outdoor_floor") {
+                defaults.outdoor_floor = Some(self.parse_material_id()?);
             } else {
                 return Err(self.error_here("Expected defaults item"));
             }
@@ -566,10 +572,12 @@ impl Parser {
         let mut zones = Vec::new();
         let mut rooms = Vec::new();
         let mut courtyards = Vec::new();
+        let mut outdoor_areas = Vec::new();
         let mut objects = Vec::new();
         let mut openings = Vec::new();
         let mut wall_overrides = Vec::new();
         let mut assertions = Vec::new();
+        let mut legend = None;
 
         while !self.consume_symbol("}") {
             if self.check_keyword("footprint") {
@@ -578,6 +586,8 @@ impl Parser {
                 zones.push(self.parse_zone()?);
             } else if self.check_keyword("courtyard") {
                 courtyards.push(self.parse_courtyard()?);
+            } else if self.check_keyword("outdoor") {
+                outdoor_areas.push(self.parse_outdoor_area()?);
             } else if self.check_keyword("room") {
                 rooms.push(self.parse_room()?);
             } else if self.check_keyword("object") {
@@ -588,6 +598,8 @@ impl Parser {
                 wall_overrides.push(self.parse_wall_override()?);
             } else if self.check_keyword("assert") {
                 assertions.push(self.parse_assertion()?);
+            } else if self.check_keyword("legend") {
+                legend = Some(self.parse_legend()?);
             } else {
                 return Err(self.error_here("Expected plan content"));
             }
@@ -601,10 +613,12 @@ impl Parser {
             zones,
             rooms,
             courtyards,
+            outdoor_areas,
             objects,
             openings,
             wall_overrides,
             assertions,
+            legend,
         })
     }
 
@@ -689,6 +703,96 @@ impl Parser {
         })
     }
 
+    fn parse_outdoor_area(&mut self) -> Result<OutdoorAreaDefinition, ParseError> {
+        self.expect_keyword("outdoor")?;
+        let raw_kind = self.expect_ident()?;
+        let kind = OutdoorAreaKind::from_token(&raw_kind)
+            .ok_or_else(|| self.error_here(format!("Unknown outdoor area kind '{raw_kind}'")))?;
+        let name = self.expect_ident()?;
+        self.expect_symbol("{")?;
+        let mut label = None;
+        let mut geometry = None;
+        let mut floor = None;
+
+        while !self.consume_symbol("}") {
+            if self.consume_keyword("label") {
+                label = Some(self.expect_string()?);
+            } else if self.consume_keyword("floor") {
+                floor = Some(self.parse_material_id()?);
+            } else if self.consume_keyword("polygon") {
+                geometry = Some(OutdoorGeometry::OutdoorPolygon {
+                    points: self.parse_point_list()?,
+                });
+            } else if self.consume_keyword("rect") {
+                geometry = Some(self.parse_outdoor_rect_geometry()?);
+            } else {
+                return Err(self.error_here("Expected outdoor area content"));
+            }
+        }
+
+        Ok(OutdoorAreaDefinition {
+            node_type: node_type("OutdoorAreaDefinition"),
+            kind,
+            name,
+            label,
+            geometry: geometry
+                .ok_or_else(|| self.error_here("Outdoor area is missing geometry"))?,
+            floor,
+        })
+    }
+
+    fn parse_outdoor_rect_geometry(&mut self) -> Result<OutdoorGeometry, ParseError> {
+        if self.consume_keyword("at") {
+            let at = self.parse_point()?;
+            self.expect_keyword("size")?;
+            return Ok(OutdoorGeometry::OutdoorRectAtSize {
+                at,
+                size: self.parse_point()?,
+            });
+        }
+
+        if self.consume_keyword("center") {
+            let center = self.parse_point()?;
+            self.expect_keyword("size")?;
+            return Ok(OutdoorGeometry::OutdoorRectCenterSize {
+                center,
+                size: self.parse_point()?,
+            });
+        }
+
+        Ok(OutdoorGeometry::OutdoorRect {
+            p1: self.parse_point()?,
+            p2: self.parse_point()?,
+        })
+    }
+
+    fn parse_legend(&mut self) -> Result<LegendDeclaration, ParseError> {
+        self.expect_keyword("legend")?;
+        self.expect_symbol("{")?;
+        let mut floor_materials = FloorMaterialLegendMode::Auto;
+        while !self.consume_symbol("}") {
+            if self.consume_keyword("floor_materials") {
+                floor_materials = self.parse_floor_material_legend_mode()?;
+            } else {
+                return Err(self.error_here("Expected legend content"));
+            }
+        }
+        Ok(LegendDeclaration {
+            node_type: node_type("LegendDeclaration"),
+            floor_materials,
+        })
+    }
+
+    fn parse_floor_material_legend_mode(&mut self) -> Result<FloorMaterialLegendMode, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "auto" => Ok(FloorMaterialLegendMode::Auto),
+            "show" => Ok(FloorMaterialLegendMode::Show),
+            "hide" => Ok(FloorMaterialLegendMode::Hide),
+            _ => Err(self.error_here(format!("Unknown floor material legend mode '{raw}'"))),
+        }
+    }
+
     fn parse_room(&mut self) -> Result<RoomDefinition, ParseError> {
         self.expect_keyword("room")?;
         let name = self.expect_ident()?;
@@ -699,6 +803,7 @@ impl Parser {
         let mut align = None;
         let mut gap = None;
         let mut extend = None;
+        let mut floor = None;
         let mut fill_width = None;
         let mut fill_height = None;
 
@@ -713,6 +818,8 @@ impl Parser {
                 gap = Some(self.parse_gap()?);
             } else if self.check_keyword("extend") {
                 extend = Some(self.parse_extend()?);
+            } else if self.consume_keyword("floor") {
+                floor = Some(self.parse_material_id()?);
             } else if self.consume_keyword("width") {
                 fill_width = Some(self.expect_number()?);
             } else if self.consume_keyword("height") {
@@ -733,6 +840,7 @@ impl Parser {
             name,
             label,
             geometry,
+            floor,
             attach,
             align,
             gap,
@@ -1139,6 +1247,10 @@ impl Parser {
             parts.push(self.expect_ident()?);
         }
         Ok(parts.join("."))
+    }
+
+    fn parse_material_id(&mut self) -> Result<String, ParseError> {
+        Ok(self.parse_catalog_id()?.to_ascii_lowercase())
     }
 
     fn parse_mirror_axis(&mut self) -> Result<MirrorAxis, ParseError> {

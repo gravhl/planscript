@@ -129,6 +129,136 @@ fn exports_pretty_json() {
 }
 
 #[test]
+fn compiles_floor_materials_outdoor_areas_and_legend() {
+    let source = r#"
+        defaults {
+          floor hardwood
+          outdoor_floor pavers
+        }
+
+        plan "Floors" {
+          footprint rect (0,0) (8,6)
+          legend {
+            floor_materials auto
+          }
+
+          room living {
+            rect (0,0) (8,6)
+            floor tile
+            label "Living"
+          }
+
+          outdoor deck rear_deck {
+            rect (0,-3) (8,0)
+            floor wood_deck
+            label "Rear Deck"
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    assert_eq!(ast.plan.outdoor_areas.len(), 1);
+    assert!(ast.plan.legend.is_some());
+
+    let result = compile(
+        source,
+        CompileOptions {
+            emit_json: Some(true),
+            json_options: Some(JsonExportOptions {
+                pretty: Some(true),
+                include_ast: Some(false),
+            }),
+            ..Default::default()
+        },
+    );
+    assert!(result.success, "{:?}", result.errors);
+    let geometry = result.geometry.as_ref().expect("geometry");
+    assert_eq!(geometry.rooms[0].floor_material.as_deref(), Some("tile"));
+    assert_eq!(geometry.outdoor_areas.len(), 1);
+    assert_eq!(
+        geometry.outdoor_areas[0].floor_material.as_deref(),
+        Some("wood_deck")
+    );
+
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r#"class="floor-material-legend""#));
+    assert!(svg.contains("floor-material-tile"));
+    assert!(svg.contains("floor-material-wood-deck"));
+    assert!(svg.contains(r#"data-outdoor="rear_deck""#));
+
+    let json = result.json.expect("json");
+    assert!(json.contains("\"outdoorAreas\""));
+    assert!(json.contains("\"floorMaterial\": \"wood_deck\""));
+}
+
+#[test]
+fn omits_floor_legend_when_no_floor_materials_are_declared() {
+    let source = r#"
+        plan "No Floor Legend" {
+          footprint rect (0,0) (8,6)
+          room living { rect (0,0) (8,6) }
+          outdoor patio rear_patio {
+            rect (0,-3) (8,0)
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    assert!(!svg.contains(r#"class="floor-material-legend""#));
+    assert!(!svg.contains("floor-material-pavers"));
+}
+
+#[test]
+fn warns_on_unknown_or_mismatched_floor_materials() {
+    let source = r#"
+        plan "Floor Warnings" {
+          footprint rect (0,0) (8,6)
+          room living {
+            rect (0,0) (8,6)
+            floor grass
+          }
+          outdoor patio rear_patio {
+            rect (0,-3) (8,0)
+            floor carpet
+          }
+          outdoor deck side_deck {
+            rect (8,0) (10,4)
+            floor moon_dust
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert!(
+        result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("outdoor floor material \"grass\"")),
+        "{:?}",
+        result.warnings
+    );
+    assert!(
+        result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("indoor floor material \"carpet\"")),
+        "{:?}",
+        result.warnings
+    );
+    assert!(
+        result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("unknown floor material \"moon_dust\"")),
+        "{:?}",
+        result.warnings
+    );
+}
+
+#[test]
 fn area_matches_shoelace_geometry() {
     let points = [
         planscript::ast::Point { x: 0.0, y: 0.0 },

@@ -16,6 +16,7 @@ This document provides a complete specification of the PlanScript language for d
 - [Footprint](#footprint)
 - [Zones](#zones)
 - [Courtyards](#courtyards)
+- [Outdoor Areas](#outdoor-areas)
 - [Rooms](#rooms)
   - [Rectangle with Two Corners](#rectangle-with-two-corners)
   - [Rectangle with Position and Size](#rectangle-with-position-and-size)
@@ -23,6 +24,7 @@ This document provides a complete specification of the PlanScript language for d
   - [Rectangle with Span](#rectangle-with-span)
   - [Polygon Rooms](#polygon-rooms)
   - [Room Labels](#room-labels)
+- [Floor Material Legend](#floor-material-legend)
 - [Room References](#room-references)
 - [Openings](#openings)
   - [Doors](#doors)
@@ -110,7 +112,7 @@ A PlanScript file (`.psc`) has the following structure. All top-level declaratio
 ```planscript
 units <unit>              # Optional: set measurement units
 origin (<x>, <y>)         # Optional: set coordinate origin
-defaults { ... }          # Optional: default values for openings
+defaults { ... }          # Optional: default values for openings/materials
 site { ... }              # Optional: site orientation (for solar/street context)
 
 plan "<name>" {           # Required: the floor plan definition
@@ -118,6 +120,8 @@ plan "<name>" {           # Required: the floor plan definition
   zone ... { ... }        # Zero or more zones (grouped rooms)
   room ... { ... }        # Zero or more standalone rooms
   courtyard ... { ... }   # Zero or more courtyards (open spaces)
+  outdoor ... { ... }     # Zero or more exterior surfaces
+  legend { ... }          # Optional rendered legend configuration
   opening ... { ... }     # Zero or more openings (doors/windows)
   assert ...              # Zero or more validation assertions
 }
@@ -166,12 +170,14 @@ origin (0, 0)
 
 ## Defaults
 
-Sets default values for door and window widths. When set, the `width` property becomes optional in opening definitions.
+Sets default values for door/window widths and optional floor materials. When set, the `width` property becomes optional in opening definitions.
 
 ```planscript
 defaults {
   door_width <value>
   window_width <value>
+  floor <material>
+  outdoor_floor <material>
 }
 ```
 
@@ -180,8 +186,12 @@ defaults {
 defaults {
   door_width 0.9
   window_width 1.2
+  floor hardwood
+  outdoor_floor pavers
 }
 ```
+
+`floor` applies to rooms that do not set their own floor. `outdoor_floor` applies to outdoor areas that do not set their own floor.
 
 ---
 
@@ -487,6 +497,54 @@ This distinguishes them visually from enclosed rooms.
 
 ---
 
+## Outdoor Areas
+
+Outdoor areas define exterior surfaces around the building footprint. They do not generate interior walls. Use them for decks, patios, porches, walks, driveways, terraces, yards, and gardens.
+
+### Basic Syntax
+
+```planscript
+outdoor <kind> <id> {
+  rect (<x1>, <y1>) (<x2>, <y2>)
+  floor <material>
+  label "<display name>"
+}
+```
+
+Supported kinds:
+
+| Kind | Description |
+|------|-------------|
+| `deck` | Raised deck surface |
+| `patio` | Patio or slab surface |
+| `porch` | Uncovered porch |
+| `covered_porch` | Porch with dashed overhead cover outline |
+| `walkway` | Walk or path |
+| `driveway` | Vehicle drive surface |
+| `terrace` | Exterior terrace |
+| `yard` | Yard area |
+| `garden` | Garden area |
+
+Outdoor areas support `rect`, `rect at (...) size (...)`, `rect center (...) size (...)`, and `polygon`.
+
+### Example
+
+```planscript
+outdoor deck rear_deck {
+  rect (0, 12) (8, 16)
+  floor wood_deck
+  label "Rear Deck"
+}
+
+outdoor patio grill_patio {
+  rect (8, 12) (14, 16)
+  floor pavers
+  label "Patio"
+}
+```
+
+---
+
 ## Rooms
 
 Rooms define the interior spaces. Each room has a unique identifier and a shape.
@@ -687,6 +745,60 @@ room living {
   label "Living Room"
 }
 ```
+
+### Room Floor Materials
+
+Rooms can override the default indoor floor material:
+
+```planscript
+room kitchen {
+  rect (0, 0) (4, 4)
+  floor tile
+  label "Kitchen"
+}
+```
+
+Supported built-in floor materials:
+
+| Material | Typical Use |
+|----------|-------------|
+| `hardwood` | Indoor |
+| `tile` | Indoor |
+| `carpet` | Indoor |
+| `concrete` | Indoor or outdoor |
+| `polished_concrete` | Indoor |
+| `vinyl` | Indoor |
+| `stone` | Indoor or outdoor |
+| `wood_deck` | Outdoor |
+| `composite_deck` | Outdoor |
+| `pavers` | Outdoor |
+| `gravel` | Outdoor |
+| `grass` | Outdoor |
+| `mulch` | Outdoor |
+
+Outdoor-only materials used in rooms, indoor-only materials used outdoors, and unknown material names produce non-fatal layout warnings.
+
+---
+
+## Floor Material Legend
+
+Floor material legends are configurable inside the plan block:
+
+```planscript
+legend {
+  floor_materials auto
+}
+```
+
+Modes:
+
+| Mode | Behavior |
+|------|----------|
+| `auto` | Show the legend only when declared floor materials are present |
+| `show` | Force the legend when declared floor materials are present |
+| `hide` | Suppress the legend |
+
+If no room or outdoor area has a declared floor material, no legend is rendered.
 
 ---
 

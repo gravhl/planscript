@@ -1,5 +1,6 @@
 use crate::ast::{DoorSwing, EdgeSide, Point};
 use crate::catalog::prefers_wall_placement_for;
+use crate::flooring::floor_material_spec;
 use crate::geometry::{
     GeometryIr, OpeningPlacement, OpeningPlacementType, ResolvedRoom, WallSegment,
 };
@@ -52,6 +53,51 @@ pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
     }
 
     warnings.extend(wall_backed_fixture_warnings(geometry));
+    warnings.extend(floor_material_warnings(geometry));
+    warnings
+}
+
+fn floor_material_warnings(geometry: &GeometryIr) -> Vec<String> {
+    let mut warnings = Vec::new();
+
+    for room in &geometry.rooms {
+        let Some(material) = &room.floor_material else {
+            continue;
+        };
+        let Some(spec) = floor_material_spec(material) else {
+            warnings.push(format!(
+                "Room \"{}\" uses unknown floor material \"{}\"; rendering with a generic floor fill.",
+                room.name, material
+            ));
+            continue;
+        };
+        if !spec.allows_indoor() {
+            warnings.push(format!(
+                "Room \"{}\" uses outdoor floor material \"{}\"; choose an indoor material or confirm this is intentional.",
+                room.name, material
+            ));
+        }
+    }
+
+    for area in &geometry.outdoor_areas {
+        let Some(material) = &area.floor_material else {
+            continue;
+        };
+        let Some(spec) = floor_material_spec(material) else {
+            warnings.push(format!(
+                "Outdoor area \"{}\" uses unknown floor material \"{}\"; rendering with a generic floor fill.",
+                area.name, material
+            ));
+            continue;
+        };
+        if !spec.allows_outdoor() {
+            warnings.push(format!(
+                "Outdoor area \"{}\" uses indoor floor material \"{}\"; choose an outdoor material or confirm this is intentional.",
+                area.name, material
+            ));
+        }
+    }
+
     warnings
 }
 

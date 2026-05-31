@@ -13,6 +13,10 @@ pub struct LoweredRoom {
     pub polygon: Vec<Point>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub zone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor_material: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub floor_material_declared: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -22,6 +26,20 @@ pub struct LoweredCourtyard {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     pub polygon: Vec<Point>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LoweredOutdoorArea {
+    pub kind: OutdoorAreaKind,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub polygon: Vec<Point>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor_material: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub floor_material_declared: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -47,13 +65,21 @@ pub struct LoweredObject {
     pub clearance_polygons: Vec<LoweredObjectClearance>,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Defaults {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub door_width: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window_width: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outdoor_floor: Option<String>,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -74,11 +100,13 @@ pub struct LoweredProgram {
     pub footprint: Vec<Point>,
     pub rooms: Vec<LoweredRoom>,
     pub courtyards: Vec<LoweredCourtyard>,
+    pub outdoor_areas: Vec<LoweredOutdoorArea>,
     pub objects: Vec<LoweredObject>,
     pub openings: Vec<Opening>,
     pub wall_overrides: Vec<WallThicknessOverride>,
     pub assertions: Vec<Assertion>,
     pub defaults: Defaults,
+    pub floor_material_legend: FloorMaterialLegendMode,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteInfo>,
 }
@@ -130,6 +158,11 @@ pub fn lower_with_catalog(
 ) -> Result<LoweredProgram, LoweringError> {
     let plan = &program.plan;
     let footprint = lower_footprint(&plan.footprint);
+    let default_floor = program.defaults.as_ref().and_then(|d| d.floor.clone());
+    let default_outdoor_floor = program
+        .defaults
+        .as_ref()
+        .and_then(|d| d.outdoor_floor.clone());
     let mut resolved = HashMap::<String, LoweredRoom>::new();
     let mut ordered = Vec::<LoweredRoom>::new();
     let mut zone_bounds = HashMap::<String, ZoneBounds>::new();
@@ -141,13 +174,15 @@ pub fn lower_with_catalog(
             label: room.label.clone(),
             polygon,
             zone: None,
+            floor_material: room.floor.clone().or_else(|| default_floor.clone()),
+            floor_material_declared: room.floor.is_some() || default_floor.is_some(),
         };
         resolved.insert(lowered.name.clone(), lowered.clone());
         ordered.push(lowered);
     }
 
     for zone in &plan.zones {
-        let zone_rooms = lower_zone(zone, &resolved, &mut zone_bounds)?;
+        let zone_rooms = lower_zone(zone, &resolved, &mut zone_bounds, default_floor.as_deref())?;
         for room in zone_rooms {
             resolved.insert(room.name.clone(), room.clone());
             ordered.push(room);
@@ -155,6 +190,11 @@ pub fn lower_with_catalog(
     }
 
     let courtyards = plan.courtyards.iter().map(lower_courtyard).collect();
+    let outdoor_areas = plan
+        .outdoor_areas
+        .iter()
+        .map(|area| lower_outdoor_area(area, default_outdoor_floor.as_deref()))
+        .collect();
     let objects = plan
         .objects
         .iter()
@@ -164,6 +204,8 @@ pub fn lower_with_catalog(
     let defaults = Defaults {
         door_width: program.defaults.as_ref().and_then(|d| d.door_width),
         window_width: program.defaults.as_ref().and_then(|d| d.window_width),
+        floor: default_floor,
+        outdoor_floor: default_outdoor_floor,
     };
 
     let site = program
@@ -176,11 +218,17 @@ pub fn lower_with_catalog(
         footprint,
         rooms: ordered,
         courtyards,
+        outdoor_areas,
         objects,
         openings: plan.openings.clone(),
         wall_overrides: plan.wall_overrides.clone(),
         assertions: plan.assertions.clone(),
         defaults,
+        floor_material_legend: plan
+            .legend
+            .as_ref()
+            .map(|legend| legend.floor_materials)
+            .unwrap_or(FloorMaterialLegendMode::Auto),
         site,
     })
 }
@@ -558,6 +606,7 @@ fn lower_zone(
     zone: &ZoneDefinition,
     resolved: &HashMap<String, LoweredRoom>,
     zone_bounds: &mut HashMap<String, ZoneBounds>,
+    default_floor: Option<&str>,
 ) -> Result<Vec<LoweredRoom>, LoweringError> {
     let mut local = HashMap::<String, LoweredRoom>::new();
     let mut local_order = Vec::new();
@@ -568,6 +617,11 @@ fn lower_zone(
             label: room.label.clone(),
             polygon,
             zone: Some(zone.name.clone()),
+            floor_material: room
+                .floor
+                .clone()
+                .or_else(|| default_floor.map(str::to_string)),
+            floor_material_declared: room.floor.is_some() || default_floor.is_some(),
         };
         local.insert(lowered.name.clone(), lowered.clone());
         local_order.push(lowered);
@@ -712,6 +766,31 @@ fn lower_courtyard(courtyard: &CourtyardDefinition) -> LoweredCourtyard {
         name: courtyard.name.clone(),
         label: courtyard.label.clone(),
         polygon,
+    }
+}
+
+fn lower_outdoor_area(
+    area: &OutdoorAreaDefinition,
+    default_outdoor_floor: Option<&str>,
+) -> LoweredOutdoorArea {
+    let polygon = match &area.geometry {
+        OutdoorGeometry::OutdoorPolygon { points } => points.clone(),
+        OutdoorGeometry::OutdoorRect { p1, p2 } => rect_diagonal_to_polygon(*p1, *p2),
+        OutdoorGeometry::OutdoorRectAtSize { at, size } => rect_at_size_to_polygon(*at, *size),
+        OutdoorGeometry::OutdoorRectCenterSize { center, size } => {
+            rect_center_size_to_polygon(*center, *size)
+        }
+    };
+    LoweredOutdoorArea {
+        kind: area.kind,
+        name: area.name.clone(),
+        label: area.label.clone(),
+        polygon,
+        floor_material: area
+            .floor
+            .clone()
+            .or_else(|| default_outdoor_floor.map(str::to_string)),
+        floor_material_declared: area.floor.is_some() || default_outdoor_floor.is_some(),
     }
 }
 

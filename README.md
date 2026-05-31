@@ -13,6 +13,7 @@ The canonical product lives in [`planscript-rust`](planscript-rust/). The reposi
 - Human and LLM friendly syntax with a small, repetitive vocabulary
 - Deterministic compiler pipeline: parse -> lower -> geometry -> validate -> export
 - Precise room, wall, door, window, and fixture geometry
+- Indoor floor materials, outdoor areas, SVG hatches, and auto floor legends
 - Built-in fixture catalog for common residential items
 - External `.psobj.json` catalog support and IFC import normalization
 - Intent solver for generating PlanScript from higher-level JSON requests
@@ -135,6 +136,33 @@ object wc1 {
 ```
 
 See [`planscript-rust/CATALOG.md`](planscript-rust/CATALOG.md) for catalog and IFC workflows.
+
+## Floor Materials and Outdoor Areas
+
+Rooms and outdoor areas can declare floor materials. SVG output uses matching hatches/patterns and renders a floor-material legend only when declared materials are present.
+
+```planscript
+defaults {
+  floor hardwood
+  outdoor_floor pavers
+}
+
+plan "Deck and Patio" {
+  footprint rect (0,0) (12,8)
+  legend { floor_materials auto }
+
+  room living {
+    rect (0,0) (12,8)
+    floor tile
+  }
+
+  outdoor deck rear_deck {
+    rect (0,8) (8,12)
+    floor wood_deck
+    label "Rear Deck"
+  }
+}
+```
 
 ## Examples
 
