@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 92.00 740.00 L 908.00 740.00 L 908.00 60.00 L 92.00 60.00 Z" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 364.00 604.00 L 636.00 604.00 L 636.00 196.00 L 364.00 196.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 92.00 604.00 L 364.00 604.00 L 364.00 400.00 L 92.00 400.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 92.00 400.00 L 364.00 400.00 L 364.00 196.00 L 92.00 196.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 636.00 604.00 L 908.00 604.00 L 908.00 400.00 L 636.00 400.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 636.00 400.00 L 908.00 400.00 L 908.00 196.00 L 636.00 196.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="636.00" y1="604.00" x2="636.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="400.00" x2="636.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="604.00" x2="364.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="400.00" x2="364.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="400.00" x2="364.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="400.00" x2="908.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="604.00" x2="636.00" y2="604.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="364.00" y1="196.00" x2="636.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="604.00" x2="364.00" y2="604.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="604.00" x2="92.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="196.00" x2="364.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="92.00" y1="400.00" x2="92.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="604.00" x2="908.00" y2="604.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="908.00" y1="604.00" x2="908.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="908.00" y1="400.00" x2="908.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="636.00" y1="196.00" x2="908.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="364.00" y1="532.60" x2="364.00" y2="471.40" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <g class="pocket-door" data-pocket-door="d_bath_left">
+      <line class="pocket-door-pocket" x1="367.00" y1="532.60" x2="367.00" y2="593.80" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="370.00" y1="536.60" x2="370.00" y2="589.80" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="375.00" y1="502.00" x2="375.00" y2="563.20" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="378.00,557.20 375.00,563.20 372.00,557.20" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <line x1="364.00" y1="325.20" x2="364.00" y2="270.80" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <g class="pocket-door" data-pocket-door="d_closet_right">
+      <line class="pocket-door-pocket" x1="367.00" y1="270.80" x2="367.00" y2="216.40" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="370.00" y1="266.80" x2="370.00" y2="220.40" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="375.00" y1="298.00" x2="375.00" y2="243.60" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="372.00,249.60 375.00,243.60 378.00,249.60" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <line x1="636.00" y1="532.60" x2="636.00" y2="471.40" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <g class="pocket-door" data-pocket-door="d_office_block">
+      <line class="pocket-door-pocket" x1="633.00" y1="471.40" x2="633.00" y2="410.20" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="630.00" y1="467.40" x2="630.00" y2="414.20" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="625.00" y1="502.00" x2="625.00" y2="440.80" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="622.00,446.80 625.00,440.80 628.00,446.80" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <line x1="636.00" y1="328.60" x2="636.00" y2="267.40" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <g class="pocket-door" data-pocket-door="d_laundry_default">
+      <line class="pocket-door-pocket" x1="633.00" y1="328.60" x2="633.00" y2="389.80" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="630.00" y1="332.60" x2="630.00" y2="385.80" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="625.00" y1="298.00" x2="625.00" y2="359.20" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="628.00,353.20 625.00,359.20 622.00,353.20" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <line x1="462.60" y1="604.00" x2="537.40" y2="604.00" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <g class="pocket-door" data-pocket-door="d_hall_entry">
+      <line class="pocket-door-pocket" x1="537.40" y1="607.00" x2="612.20" y2="607.00" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="541.40" y1="610.00" x2="608.20" y2="610.00" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="500.00" y1="615.00" x2="574.80" y2="615.00" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="568.80,612.00 574.80,615.00 568.80,618.00" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <line x1="92.00" y1="542.80" x2="92.00" y2="461.20" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="908.00" y1="345.60" x2="908.00" y2="250.40" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text class="room-label" data-room-label="hall" x="500.00" y="400.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hall</text>
+    <text class="room-label" data-room-label="bath" x="228.00" y="502.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text class="room-label" data-room-label="closet" x="228.00" y="298.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Closet</text>
+    <text class="room-label" data-room-label="office" x="772.00" y="502.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Office</text>
+    <text class="room-label" data-room-label="laundry" x="772.00" y="298.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Laundry</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>
