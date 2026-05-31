@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 60.00 693.33 L 940.00 693.33 L 940.00 106.67 L 60.00 106.67 Z" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 60.00 693.33 L 500.00 693.33 L 500.00 106.67 L 60.00 106.67 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 500.00 693.33 L 720.00 693.33 L 720.00 473.33 L 500.00 473.33 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 500.00 473.33 L 720.00 473.33 L 720.00 106.67 L 500.00 106.67 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="500.00" y1="693.33" x2="500.00" y2="473.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="473.33" x2="500.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="473.33" x2="720.00" y2="473.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="693.33" x2="500.00" y2="693.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="106.67" x2="500.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="693.33" x2="60.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="693.33" x2="720.00" y2="693.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="720.00" y1="693.33" x2="720.00" y2="473.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="720.00" y1="473.33" x2="720.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="106.67" x2="720.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="247.00" y1="693.33" x2="313.00" y2="693.33" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="313.00" y1="693.33" x2="313.00" y2="759.33" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 247.00 693.33 A 66.00 66.00 0 0 0 313.00 759.33" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="500.00" y1="616.33" x2="500.00" y2="550.33" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="500.00" y1="550.33" x2="566.00" y2="550.33" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 500.00 616.33 A 66.00 66.00 0 0 0 566.00 550.33" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="500.00" y1="323.00" x2="500.00" y2="257.00" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="500.00" y1="323.00" x2="566.00" y2="323.00" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 500.00 257.00 A 66.00 66.00 0 0 1 566.00 323.00" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="720.00" y1="341.33" x2="720.00" y2="238.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text class="room-label" data-room-label="studio" x="280.00" y="400.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Studio</text>
+    <text class="room-label" data-room-label="service" x="610.00" y="583.33" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Service</text>
+    <text class="room-label" data-room-label="nook" x="610.00" y="290.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Nook</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

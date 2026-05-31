@@ -95,7 +95,7 @@ plan "With Deck" {
 
 Supported materials include `hardwood`, `tile`, `carpet`, `concrete`, `polished_concrete`, `vinyl`, `stone`, `wood_deck`, `composite_deck`, `pavers`, `gravel`, `grass`, and `mulch`. Indoor/outdoor material mismatches produce non-fatal layout warnings.
 
-Draft mode is optional and color remains the default. Use `render { mode draft }` in PlanScript or pass `--draft` to the CLI to render SVGs with black-and-white architectural hatches.
+Draft mode is optional and color remains the default. Use `render { mode draft }` in PlanScript or pass `--draft` to the CLI to render SVGs with black-and-white architectural hatches. The repository example builder emits paired color and draft SVGs for every `.psc` example.
 
 ## Door Swing Conventions
 

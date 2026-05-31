@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 160.00 740.00 L 840.00 740.00 L 840.00 60.00 L 160.00 60.00 Z" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 160.00 740.00 L 840.00 740.00 L 840.00 527.50 L 160.00 527.50 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 160.00 527.50 L 372.50 527.50 L 372.50 60.00 L 160.00 60.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 627.50 527.50 L 840.00 527.50 L 840.00 60.00 L 627.50 60.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 372.50 272.50 L 627.50 272.50 L 627.50 60.00 L 372.50 60.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+
+  <!-- Courtyards -->
+  <path d="M 372.50 527.50 L 627.50 527.50 L 627.50 272.50 L 372.50 272.50 Z" fill="#ffffff" stroke="#333333" stroke-width="2" stroke-dasharray="4,2" />
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="160.00" y1="527.50" x2="372.50" y2="527.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="527.50" x2="840.00" y2="527.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="272.50" x2="372.50" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="272.50" x2="627.50" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="740.00" x2="840.00" y2="740.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="840.00" y1="740.00" x2="840.00" y2="527.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="527.50" x2="627.50" y2="527.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="740.00" x2="160.00" y2="527.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="527.50" x2="372.50" y2="272.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="60.00" x2="372.50" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="160.00" y1="527.50" x2="160.00" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="840.00" y1="527.50" x2="840.00" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="60.00" x2="840.00" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="627.50" y1="527.50" x2="627.50" y2="272.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="272.50" x2="627.50" y2="272.50" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="372.50" y1="60.00" x2="627.50" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="247.12" y1="527.50" x2="285.38" y2="527.50" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="247.12" y1="527.50" x2="247.12" y2="489.25" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 285.38 527.50 A 38.25 38.25 0 0 0 247.12 489.25" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="714.62" y1="527.50" x2="752.88" y2="527.50" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="752.88" y1="527.50" x2="752.88" y2="489.25" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 714.62 527.50 A 38.25 38.25 0 0 1 752.88 489.25" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="372.50" y1="185.38" x2="372.50" y2="147.12" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="372.50" y1="147.12" x2="334.25" y2="147.12" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 372.50 185.38 A 38.25 38.25 0 0 1 334.25 147.12" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="457.50" y1="60.00" x2="542.50" y2="60.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text class="room-label" data-room-label="south_hall" x="500.00" y="633.75" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Hall</text>
+    <text class="room-label" data-room-label="west_studio" x="266.25" y="293.75" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">West Studio</text>
+    <text class="room-label" data-room-label="east_suite" x="733.75" y="293.75" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">East Suite</text>
+    <text class="room-label" data-room-label="north_lounge" x="500.00" y="166.25" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">North Lounge</text>
+    <text class="courtyard-label" data-courtyard-label="atrium" x="500.00" y="400.00" font-size="14" fill="#333333" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">Atrium</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

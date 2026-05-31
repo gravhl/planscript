@@ -185,13 +185,15 @@ Regenerate all example SVGs with the Rust CLI:
 ./scripts/build-examples-psc.sh
 ```
 
+This writes color output as `<name>.svg`, draft output as `<name>_draft.svg`, and warning captures as `<name>_warnings.txt` / `<name>_draft_warnings.txt`.
+
 Regenerate intent-based examples:
 
 ```bash
 ./scripts/build-examples-intent.sh
 ```
 
-Warnings emitted during example compilation are written beside each `.psc` file using the `_warnings.txt` suffix.
+Warnings emitted during example compilation are written beside each generated SVG.
 
 ## Documentation
 

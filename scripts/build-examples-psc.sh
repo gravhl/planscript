@@ -1,5 +1,6 @@
 #!/bin/bash
-# Generate .svg from all .psc files in examples/ and planscript-rust/examples/.
+# Generate color and draft .svg files from all .psc files in examples/ and
+# planscript-rust/examples/.
 
 set -e
 
@@ -36,7 +37,14 @@ build_psc_dir() {
       warnings_file="$dir/${base_name}_warnings.txt"
 
       echo "  $base_name.psc -> $base_name.svg"
-      compile_with_warning_capture "$psc_file" "$svg_file" "$warnings_file"
+      compile_with_warning_capture "$psc_file" "$svg_file" "$warnings_file" --color
+
+      echo "  $base_name.psc -> ${base_name}_draft.svg"
+      compile_with_warning_capture \
+        "$psc_file" \
+        "$dir/${base_name}_draft.svg" \
+        "$dir/${base_name}_draft_warnings.txt" \
+        --draft
     fi
   done
 }
@@ -65,7 +73,16 @@ if [ -f "$EXAMPLES_DIR/house.psc" ]; then
   compile_with_warning_capture \
     "$EXAMPLES_DIR/house.psc" \
     "$EXAMPLES_DIR/house-with-dimensions.svg" \
-    "$EXAMPLES_DIR/house_warnings.txt" \
+    "$EXAMPLES_DIR/house-with-dimensions_warnings.txt" \
+    --color \
+    --dimensions
+
+  echo "  house.psc -> house-with-dimensions_draft.svg"
+  compile_with_warning_capture \
+    "$EXAMPLES_DIR/house.psc" \
+    "$EXAMPLES_DIR/house-with-dimensions_draft.svg" \
+    "$EXAMPLES_DIR/house-with-dimensions_draft_warnings.txt" \
+    --draft \
     --dimensions
 fi
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 60.00 693.33 L 940.00 693.33 L 940.00 106.67 L 60.00 106.67 Z" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 60.00 693.33 L 500.00 693.33 L 500.00 106.67 L 60.00 106.67 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 500.00 693.33 L 744.44 693.33 L 744.44 400.00 L 500.00 400.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 744.44 693.33 L 940.00 693.33 L 940.00 400.00 L 744.44 400.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 500.00 400.00 L 940.00 400.00 L 940.00 106.67 L 500.00 106.67 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="500.00" y1="693.33" x2="500.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="400.00" x2="500.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="744.44" y1="693.33" x2="744.44" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="400.00" x2="744.44" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="744.44" y1="400.00" x2="940.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="693.33" x2="500.00" y2="693.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="106.67" x2="500.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="693.33" x2="60.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="693.33" x2="744.44" y2="693.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="744.44" y1="693.33" x2="940.00" y2="693.33" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="940.00" y1="693.33" x2="940.00" y2="400.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="940.00" y1="400.00" x2="940.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="500.00" y1="106.67" x2="940.00" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="500.00" y1="590.67" x2="500.00" y2="502.67" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="500.00" y1="502.67" x2="588.00" y2="502.67" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 500.00 590.67 A 88.00 88.00 0 0 0 588.00 502.67" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="744.44" y1="590.67" x2="744.44" y2="502.67" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="744.44" y1="590.67" x2="832.44" y2="590.67" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 744.44 502.67 A 88.00 88.00 0 0 1 832.44 590.67" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="500.00" y1="297.33" x2="500.00" y2="209.33" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="500.00" y1="209.33" x2="412.00" y2="209.33" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 500.00 297.33 A 88.00 88.00 0 0 1 412.00 209.33" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="661.33" y1="106.67" x2="778.67" y2="106.67" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text class="room-label" data-room-label="living" x="280.00" y="400.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living</text>
+    <text class="room-label" data-room-label="kitchen" x="622.22" y="546.67" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
+    <text class="room-label" data-room-label="bath" x="842.22" y="546.67" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bath</text>
+    <text class="room-label" data-room-label="bedroom" x="720.00" y="253.33" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Bedroom</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

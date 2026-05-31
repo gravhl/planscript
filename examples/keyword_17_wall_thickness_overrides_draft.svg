@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 160.00 740.00 L 840.00 740.00 L 840.00 60.00 L 160.00 60.00 Z" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 296.00 604.00 L 704.00 604.00 L 704.00 196.00 L 296.00 196.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+    <path d="M 296.00 740.00 L 704.00 740.00 L 704.00 604.00 L 296.00 604.00 Z" fill="#ffffff" stroke="#707070" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+
+
+  <!-- Walls -->
+  <line x1="296.00" y1="604.00" x2="704.00" y2="604.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="704.00" y1="604.00" x2="704.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="296.00" y1="196.00" x2="704.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="296.00" y1="604.00" x2="296.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="296.00" y1="740.00" x2="704.00" y2="740.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="704.00" y1="740.00" x2="704.00" y2="604.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+    <line x1="296.00" y1="740.00" x2="296.00" y2="604.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="469.40" y1="604.00" x2="530.60" y2="604.00" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="530.60" y1="604.00" x2="530.60" y2="665.20" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 469.40 604.00 A 61.20 61.20 0 0 0 530.60 665.20" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="432.00" y1="196.00" x2="568.00" y2="196.00" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text class="room-label" data-room-label="core" x="500.00" y="400.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Core</text>
+    <text class="room-label" data-room-label="south_room" x="500.00" y="672.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">South Room</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+</svg>

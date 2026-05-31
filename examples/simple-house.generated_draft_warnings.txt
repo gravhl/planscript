@@ -1,0 +1,3 @@
+Warnings:
+  - Door "d3" swing intersects wall "wall_3" between rooms "bedroom2" and "bath"; consider changing the swing hand/reverse, width, or position.
+  - Door "d3" swing intersects wall "wall_19" for room "bath"; consider changing the swing hand/reverse, width, or position.

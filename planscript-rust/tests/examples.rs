@@ -46,6 +46,36 @@ fn compile_example(path: &Path) -> planscript::CompileResult {
 }
 
 #[test]
+fn examples_have_color_and_draft_svg_artifacts() {
+    let mut missing = Vec::new();
+
+    for path in example_files() {
+        let stem = path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .expect("example file stem");
+        let dir = path.parent().expect("example parent dir");
+        for file_name in [
+            format!("{stem}.svg"),
+            format!("{stem}_draft.svg"),
+            format!("{stem}_warnings.txt"),
+            format!("{stem}_draft_warnings.txt"),
+        ] {
+            let artifact = dir.join(file_name);
+            if !artifact.exists() {
+                missing.push(artifact.display().to_string());
+            }
+        }
+    }
+
+    assert!(
+        missing.is_empty(),
+        "missing generated example artifact(s):\n{}",
+        missing.join("\n")
+    );
+}
+
+#[test]
 fn examples_compile_with_handed_doors_and_room_connections() {
     let mut failures = Vec::new();
     let mut handed_doors = 0;
