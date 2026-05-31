@@ -1,0 +1,14 @@
+Example: realworld_08_jack_jill_split_bath.psc
+Source: RoomSketcher - Jack and Jill Style Bathroom
+URL: https://www.roomsketcher.com/floor-plan-gallery/360/bathroom-floor-plan-examples/jack-and-jill-style-bathroom/
+
+Source excerpt used:
+"double sink and 2 showerheads"
+
+Derived layout description:
+The example models a Jack-and-Jill bathroom between two bedrooms. Each bedroom enters the shared vanity room, and a second internal door leads to the wet room with toilet and shower.
+
+PlanScript interpretation notes:
+- Two separate sink objects represent the double vanity.
+- The shower is labeled as a dual shower because the current built-in catalog has one shower footprint.
+- The split bath structure is represented as two connected rooms.

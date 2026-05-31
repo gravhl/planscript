@@ -1,0 +1,14 @@
+Example: realworld_09_accessible_roll_in_bath.psc
+Source: RoomSketcher - Accessible Bathroom Floor Plan
+URL: https://www.roomsketcher.com/floor-plan-gallery/825/bathroom-floor-plan-examples/accessible-bathroom-floor-plan/
+
+Source excerpt used:
+"wide pocket door entry slides completely open"
+
+Derived layout description:
+The example models an accessible three-quarter bathroom entered from a hall. It includes a wide door, roll-under sink, comfort-height toilet transfer zone, roll-in shower, and an open central turning area.
+
+PlanScript interpretation notes:
+- PlanScript does not currently have pocket-door syntax, so the wide entry is represented as a wider swinging door.
+- Grab bars and benches are described in labels/notes rather than separate catalog objects.
+- The layout intentionally leaves the center of the room clear.

@@ -1,0 +1,14 @@
+Example: realworld_01_family_u_kitchen_floor.psc
+Source: Plan 36558TX - Family Home Plan with U-Shaped Kitchen
+URL: https://www.architecturaldesigns.com/house-plans/family-home-plan-with-u-shaped-kitchen-36558tx
+
+Source excerpt used:
+"U-shaped breakfast bar with cooktop, ice maker, dish washer, sink, refrigerator and built-ins."
+
+Derived layout description:
+The example models a family-level plan with foyer, study, two family bedrooms, a shared bath, a family room, and a kitchen open to the family room. The kitchen is laid out as a U-shaped work area with sink, dishwasher, refrigerator, range, and landing counter space. A screened porch is placed beyond the family room.
+
+PlanScript interpretation notes:
+- The source mentions two floors; this example focuses on the main-level family/kitchen/bath relationship.
+- The shared bath is represented with toilet, wall sink, and shower.
+- Fixture dimensions come from PlanScript built-in catalog items, not copied plan measurements.
