@@ -1,0 +1,14 @@
+Example: realworld_15_modern_primary_bath_laundry.psc
+Source: RoomSketcher - Full Modern Master Bathroom Design
+URL: https://www.roomsketcher.com/floor-plan-gallery/62/bathroom-floor-plan-examples/full-modern-master-bathroom-design/
+
+Source excerpt used:
+"dual sinks, a toilet, and a shared bathtub and shower"
+
+Derived layout description:
+The example models a modern primary bathroom connected to a bedroom, with dual sinks, separate bathing fixtures, a toilet compartment, and laundry niche.
+
+PlanScript interpretation notes:
+- The L-shaped source plan is represented with a main bath plus two connected side compartments.
+- Washer and dryer are placed in their own niche to preserve circulation in the bath.
+- The bedroom connection makes the example behave like a primary-suite layout.

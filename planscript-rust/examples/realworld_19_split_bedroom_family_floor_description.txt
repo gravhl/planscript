@@ -1,0 +1,14 @@
+Example: realworld_19_split_bedroom_family_floor.psc
+Source: RoomSketcher - Spacious Floor Plan Two Living Rooms
+URL: https://www.roomsketcher.com/floor-plan-gallery/240/roomsketcher/spacious-floor-plan-two-living-rooms/
+
+Source excerpt used:
+"features a split bedroom design"
+
+Derived layout description:
+The example models a larger one-level family floor with entry, formal living, office, great room, kitchen, split primary suite, secondary bedrooms, shared bath, laundry, and closet zones.
+
+PlanScript interpretation notes:
+- The source five-bedroom idea is reduced to three bedrooms so the example remains readable while preserving split-bedroom logic.
+- The shared bath includes separate wet fixtures and connects to secondary bedrooms and the kitchen-side service zone.
+- The great room and kitchen are connected with a wide opening to approximate the source open-concept core.

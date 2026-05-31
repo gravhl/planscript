@@ -1,0 +1,14 @@
+Example: realworld_16_functional_two_bed_apartment.psc
+Source: RoomSketcher - Functional 2 Bedroom Apartment Floor Plan
+URL: https://www.roomsketcher.com/floor-plan-gallery/35/roomsketcher/functional-2-bedroom-apartment-floor-plan/
+
+Source excerpt used:
+"peninsula kitchen puts all cooking features at your fingertips"
+
+Derived layout description:
+The example models a two-bedroom apartment with entry hall, bathroom, open living/dining, peninsula kitchen, two bedrooms, and balcony.
+
+PlanScript interpretation notes:
+- The source open-concept living area is broken into connected living_dining and peninsula_kitchen rooms for deterministic room geometry.
+- The bathroom is kept adjacent to the hall entry, matching the source description.
+- The balcony is represented as an outdoor deck connected by double doors.

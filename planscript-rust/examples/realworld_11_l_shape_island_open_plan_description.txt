@@ -1,0 +1,14 @@
+Example: realworld_11_l_shape_island_open_plan.psc
+Source: RoomSketcher - L-Shaped Kitchen Layout With Island
+URL: https://www.roomsketcher.com/floor-plan-gallery/26/roomsketcher-kitchen-floor-plan-examples/l-shaped-kitchen-layout-with-island/
+
+Source excerpt used:
+"spacious kitchen with a lot of counter space"
+
+Derived layout description:
+The example models an open kitchen, dining, and living area with an L-shaped kitchen, center island, dining table, and living seating zone.
+
+PlanScript interpretation notes:
+- The L-shaped counter run is simplified into north and east wall appliance/counter placement plus a freestanding island counter.
+- Dining and living are modeled as adjacent rooms with wide openings so the example stays testable as connected PlanScript rooms.
+- Window placement follows the source emphasis on bright counter-facing walls.

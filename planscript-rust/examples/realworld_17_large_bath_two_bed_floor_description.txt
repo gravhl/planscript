@@ -1,0 +1,14 @@
+Example: realworld_17_large_bath_two_bed_floor.psc
+Source: RoomSketcher - Stylish 2 Bedroom Layout With Large Bathroom
+URL: https://www.roomsketcher.com/floor-plan-gallery/34/roomsketcher/stylish-2-bedroom-layout-with-large-bathroom/
+
+Source excerpt used:
+"u-shaped kitchen includes a full-size refrigerator, range, sink"
+
+Derived layout description:
+The example models a two-bedroom floor with foyer, powder room, laundry, open living/dining, U-shaped kitchen, and a large spa-style bathroom.
+
+PlanScript interpretation notes:
+- The large bathroom includes double sinks, toilet, tub, and shower; the sauna from the source is omitted because PlanScript does not yet have a sauna fixture.
+- Laundry and powder room are grouped near the foyer.
+- The kitchen and living area are connected with a wide double door to approximate an open-plan transition.

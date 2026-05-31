@@ -1,0 +1,14 @@
+Example: realworld_18_two_bed_two_bath_home.psc
+Source: RoomSketcher - 2 Bedroom Home Design
+URL: https://www.roomsketcher.com/floor-plan-gallery/49/marsh--co/2-bedroom-home-design/
+
+Source excerpt used:
+"The L-shaped kitchen includes a range, sink, dishwasher"
+
+Derived layout description:
+The example models a two-bedroom, two-bath home with foyer, open living/dining, L-shaped kitchen, primary ensuite, and hall bath.
+
+PlanScript interpretation notes:
+- The source optional refrigerator is represented with a counter-depth refrigerator in the kitchen.
+- The hall bath includes a tub while the primary ensuite uses a shower, matching the source fixture split.
+- The open living/dining area is modeled as a single room connected to the kitchen.

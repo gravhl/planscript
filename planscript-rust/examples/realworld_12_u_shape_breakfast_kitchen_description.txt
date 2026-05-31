@@ -1,0 +1,14 @@
+Example: realworld_12_u_shape_breakfast_kitchen.psc
+Source: RoomSketcher - U-Shaped Kitchen Design
+URL: https://www.roomsketcher.com/floor-plan-gallery/432/kitchen-floor-plan-examples/u-shaped-kitchen-design/
+
+Source excerpt used:
+"white countertops wrap around one half of the kitchen"
+
+Derived layout description:
+The example models a compact U-shaped kitchen with the refrigerator, sink, dishwasher, range run, and a small breakfast nook nearby.
+
+PlanScript interpretation notes:
+- The U-shape is represented by fixtures and counters on three walls of the kitchen room.
+- The breakfast bar/table area is modeled as a connected breakfast_nook room.
+- The pantry gives the example a second service connection without changing the kitchen work triangle.
