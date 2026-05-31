@@ -246,6 +246,8 @@ pub fn export_svg(
         "Floor Material Legend",
         generate_floor_material_legend_svg(&legend_entries, &opts),
     );
+    let dimensions = generate_dimensions_svg(geometry, transform, &opts, &dimension_settings);
+    let labels = generate_labels_svg(geometry, transform, &opts, &dimensions.label_rects);
 
     let svg = format!(
         r#"<?xml version="1.0" encoding="UTF-8"?>
@@ -294,8 +296,8 @@ pub fn export_svg(
         objects = generate_objects_svg(geometry, transform, &opts),
         walls = generate_walls_svg(&geometry.walls, transform, &opts),
         openings = generate_openings_svg(geometry, transform, &opts),
-        labels = generate_labels_svg(geometry, transform, &opts),
-        dimensions = generate_dimensions_svg(geometry, transform, &opts, &dimension_settings),
+        labels = labels,
+        dimensions = dimensions.svg,
         compass = generate_compass_svg(site, &opts),
         floor_material_legend = floor_material_legend,
     );
@@ -1703,12 +1705,17 @@ fn arc_sweep(hinge: Point, closed: Point, open: Point) -> u8 {
     }
 }
 
-fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -> String {
+fn generate_labels_svg(
+    geometry: &GeometryIr,
+    t: Transform,
+    opts: &SvgOptions,
+    reserved_text: &[LabelRect],
+) -> String {
     if !opts.show_labels {
         return String::new();
     }
     let obstacles = label_obstacles(geometry, t);
-    let mut placed = Vec::new();
+    let mut placed = reserved_text.to_vec();
     let mut out = Vec::new();
 
     for room in &geometry.rooms {
@@ -1808,6 +1815,26 @@ struct LabelCandidate {
     x: f64,
     y: f64,
     rotation: f64,
+    rect: LabelRect,
+    preference: f64,
+}
+
+#[derive(Debug, Clone)]
+struct DimensionSvg {
+    svg: String,
+    label_rects: Vec<LabelRect>,
+}
+
+#[derive(Debug, Clone)]
+struct DimensionFragment {
+    svg: String,
+    label_rect: LabelRect,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct DimensionTextCandidate {
+    x: f64,
+    y: f64,
     rect: LabelRect,
     preference: f64,
 }
@@ -2096,7 +2123,7 @@ fn label_score(
         score += overlap_area(candidate.rect, *obstacle) * 250.0;
     }
     for label in placed {
-        score += overlap_area(candidate.rect, *label) * 800.0;
+        score += overlap_area(candidate.rect, *label) * 10000.0;
     }
     score
 }
@@ -2299,16 +2326,20 @@ fn generate_dimensions_svg(
     t: Transform,
     opts: &SvgOptions,
     settings: &DimensionDeclaration,
-) -> String {
+) -> DimensionSvg {
     if !dimensions_are_visible(settings) {
-        return String::new();
+        return DimensionSvg {
+            svg: String::new(),
+            label_rects: Vec::new(),
+        };
     }
     let mut out = Vec::new();
+    let mut label_rects = Vec::new();
 
     if settings.rooms == DimensionRoomSelection::All {
         for room in &geometry.rooms {
             let (min_x, max_x, min_y, max_y) = bounds(&room.polygon.points);
-            out.push(dimension_line(
+            let horizontal = dimension_line(
                 Point { x: min_x, y: min_y },
                 Point { x: max_x, y: min_y },
                 opts.dimension_offset,
@@ -2316,8 +2347,12 @@ fn generate_dimensions_svg(
                 "bottom",
                 t,
                 opts,
-            ));
-            out.push(dimension_line(
+                &label_rects,
+            );
+            label_rects.push(horizontal.label_rect);
+            out.push(horizontal.svg);
+
+            let vertical = dimension_line(
                 Point { x: min_x, y: min_y },
                 Point { x: min_x, y: max_y },
                 opts.dimension_offset,
@@ -2325,13 +2360,16 @@ fn generate_dimensions_svg(
                 "left",
                 t,
                 opts,
-            ));
+                &label_rects,
+            );
+            label_rects.push(vertical.label_rect);
+            out.push(vertical.svg);
         }
     }
 
     if settings.footprint {
         let (min_x, max_x, min_y, max_y) = bounds(&geometry.footprint.points);
-        out.push(dimension_line(
+        let horizontal = dimension_line(
             Point { x: min_x, y: min_y },
             Point { x: max_x, y: min_y },
             opts.dimension_offset + 25.0,
@@ -2339,8 +2377,12 @@ fn generate_dimensions_svg(
             "bottom",
             t,
             opts,
-        ));
-        out.push(dimension_line(
+            &label_rects,
+        );
+        label_rects.push(horizontal.label_rect);
+        out.push(horizontal.svg);
+
+        let vertical = dimension_line(
             Point { x: min_x, y: min_y },
             Point { x: min_x, y: max_y },
             opts.dimension_offset + 25.0,
@@ -2348,7 +2390,10 @@ fn generate_dimensions_svg(
             "left",
             t,
             opts,
-        ));
+            &label_rects,
+        );
+        label_rects.push(vertical.label_rect);
+        out.push(vertical.svg);
     }
 
     for wall in selected_wall_dimensions(geometry, &settings.walls) {
@@ -2356,7 +2401,7 @@ fn generate_dimensions_svg(
         if length <= 0.001 {
             continue;
         }
-        out.push(dimension_segment_line(
+        let Some(fragment) = dimension_segment_line(
             wall.start,
             wall.end,
             opts.dimension_offset * 0.65,
@@ -2366,7 +2411,12 @@ fn generate_dimensions_svg(
             &wall.id,
             t,
             opts,
-        ));
+            &label_rects,
+        ) else {
+            continue;
+        };
+        label_rects.push(fragment.label_rect);
+        out.push(fragment.svg);
     }
 
     for object in selected_fixture_dimensions(geometry, &settings.fixtures) {
@@ -2400,7 +2450,7 @@ fn generate_dimensions_svg(
                 y: dims.max_y,
             },
         );
-        out.push(dimension_segment_line(
+        if let Some(fragment) = dimension_segment_line(
             width_start,
             width_end,
             offset,
@@ -2410,8 +2460,12 @@ fn generate_dimensions_svg(
             &object.name,
             t,
             opts,
-        ));
-        out.push(dimension_segment_line(
+            &label_rects,
+        ) {
+            label_rects.push(fragment.label_rect);
+            out.push(fragment.svg);
+        }
+        if let Some(fragment) = dimension_segment_line(
             depth_start,
             depth_end,
             -offset,
@@ -2421,10 +2475,17 @@ fn generate_dimensions_svg(
             &object.name,
             t,
             opts,
-        ));
+            &label_rects,
+        ) {
+            label_rects.push(fragment.label_rect);
+            out.push(fragment.svg);
+        }
     }
 
-    out.join("\n    ")
+    DimensionSvg {
+        svg: out.join("\n    "),
+        label_rects,
+    }
 }
 
 fn selected_wall_dimensions<'a>(
@@ -2499,6 +2560,88 @@ fn selected_fixture_dimensions<'a>(
     }
 }
 
+fn best_dimension_text_candidate(
+    label: &str,
+    font_size: f64,
+    line_start: Point,
+    line_end: Point,
+    rotation: f64,
+    placed_text: &[LabelRect],
+    canvas_width: f64,
+    canvas_height: f64,
+) -> DimensionTextCandidate {
+    let dx = line_end.x - line_start.x;
+    let dy = line_end.y - line_start.y;
+    let len = (dx * dx + dy * dy).sqrt().max(1.0);
+    let ux = dx / len;
+    let uy = dy / len;
+    let nx = -uy;
+    let ny = ux;
+    let fractions = [0.5, 0.35, 0.65, 0.2, 0.8, 0.08, 0.92];
+    let gap = (font_size * 1.25).max(8.0);
+    let normal_offsets = [0.0, gap, -gap, gap * 2.0, -gap * 2.0, gap * 3.0, -gap * 3.0];
+
+    let mut candidates = Vec::new();
+    for (offset_index, normal_offset) in normal_offsets.iter().enumerate() {
+        for (fraction_index, fraction) in fractions.iter().enumerate() {
+            let x = line_start.x + dx * fraction + nx * normal_offset;
+            let y = line_start.y + dy * fraction + ny * normal_offset;
+            candidates.push(DimensionTextCandidate {
+                x,
+                y,
+                rect: rotated_text_rect(label, font_size, x, y, rotation).inflate(1.5),
+                preference: offset_index as f64 * 5.0 + fraction_index as f64,
+            });
+        }
+    }
+
+    candidates
+        .into_iter()
+        .min_by(|a, b| {
+            let a_score = dimension_text_score(a, placed_text, canvas_width, canvas_height);
+            let b_score = dimension_text_score(b, placed_text, canvas_width, canvas_height);
+            a_score
+                .partial_cmp(&b_score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .expect("dimension text candidates")
+}
+
+fn dimension_text_score(
+    candidate: &DimensionTextCandidate,
+    placed_text: &[LabelRect],
+    canvas_width: f64,
+    canvas_height: f64,
+) -> f64 {
+    let mut score = candidate.preference;
+    score += overflow_penalty(candidate.rect, canvas_width, canvas_height) * 1000.0;
+    for placed in placed_text {
+        score += overlap_area(candidate.rect, *placed) * 10000.0;
+    }
+    score
+}
+
+fn rotated_text_rect(label: &str, font_size: f64, x: f64, y: f64, rotation: f64) -> LabelRect {
+    let width = estimate_text_width(label, font_size);
+    let height = font_size * 1.15;
+    let radians = rotation.to_radians();
+    let cos = radians.cos();
+    let sin = radians.sin();
+    let mut points = Vec::with_capacity(4);
+    for (local_x, local_y) in [
+        (-width / 2.0, -height / 2.0),
+        (width / 2.0, -height / 2.0),
+        (width / 2.0, height / 2.0),
+        (-width / 2.0, height / 2.0),
+    ] {
+        points.push(Point {
+            x: x + local_x * cos - local_y * sin,
+            y: y + local_x * sin + local_y * cos,
+        });
+    }
+    rect_for_points(&points)
+}
+
 fn dimension_segment_line(
     p1: Point,
     p2: Point,
@@ -2509,14 +2652,15 @@ fn dimension_segment_line(
     data_value: &str,
     t: Transform,
     opts: &SvgOptions,
-) -> String {
+    placed_text: &[LabelRect],
+) -> Option<DimensionFragment> {
     let sp1 = transform_point(p1, t);
     let sp2 = transform_point(p2, t);
     let dx = sp2.x - sp1.x;
     let dy = sp2.y - sp1.y;
     let len = (dx * dx + dy * dy).sqrt();
     if len <= 0.001 {
-        return String::new();
+        return None;
     }
     let nx = -dy / len;
     let ny = dx / len;
@@ -2528,53 +2672,64 @@ fn dimension_segment_line(
         x: sp2.x + nx * offset,
         y: sp2.y + ny * offset,
     };
-    let text_x = (dp1.x + dp2.x) / 2.0;
-    let text_y = (dp1.y + dp2.y) / 2.0;
     let mut rotation = dy.atan2(dx).to_degrees();
     if rotation > 90.0 {
         rotation -= 180.0;
     } else if rotation < -90.0 {
         rotation += 180.0;
     }
+    let label_position = best_dimension_text_candidate(
+        label,
+        opts.dimension_font_size,
+        dp1,
+        dp2,
+        rotation,
+        placed_text,
+        opts.width,
+        opts.height,
+    );
     let transform = if rotation.abs() > f64::EPSILON {
         format!(
             r#" transform="rotate({}, {:.2}, {:.2})""#,
             number(rotation),
-            text_x,
-            text_y
+            label_position.x,
+            label_position.y
         )
     } else {
         String::new()
     };
-    format!(
-        r#"<g class="{class_name}" {data_attr}="{data_value}">
+    Some(DimensionFragment {
+        label_rect: label_position.rect,
+        svg: format!(
+            r#"<g class="{class_name}" {data_attr}="{data_value}">
       <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="0.75" />
       <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="0.75" />
       <text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif"{transform}>{}</text>
     </g>"#,
-        dp1.x,
-        dp1.y,
-        dp2.x,
-        dp2.y,
-        opts.dimension_color,
-        sp1.x,
-        sp1.y,
-        dp1.x,
-        dp1.y,
-        opts.dimension_color,
-        sp2.x,
-        sp2.y,
-        dp2.x,
-        dp2.y,
-        opts.dimension_color,
-        text_x,
-        text_y,
-        number(opts.dimension_font_size),
-        opts.dimension_color,
-        escape_xml(label),
-        data_value = escape_xml(data_value),
-    )
+            dp1.x,
+            dp1.y,
+            dp2.x,
+            dp2.y,
+            opts.dimension_color,
+            sp1.x,
+            sp1.y,
+            dp1.x,
+            dp1.y,
+            opts.dimension_color,
+            sp2.x,
+            sp2.y,
+            dp2.x,
+            dp2.y,
+            opts.dimension_color,
+            label_position.x,
+            label_position.y,
+            number(opts.dimension_font_size),
+            opts.dimension_color,
+            escape_xml(label),
+            data_value = escape_xml(data_value),
+        ),
+    })
 }
 
 fn dimension_line(
@@ -2585,10 +2740,11 @@ fn dimension_line(
     side: &str,
     t: Transform,
     opts: &SvgOptions,
-) -> String {
+    placed_text: &[LabelRect],
+) -> DimensionFragment {
     let sp1 = transform_point(p1, t);
     let sp2 = transform_point(p2, t);
-    let (dp1, dp2, text_x, text_y, rotation) = match side {
+    let (dp1, dp2, rotation) = match side {
         "bottom" => {
             let y = offset;
             (
@@ -2600,8 +2756,6 @@ fn dimension_line(
                     x: sp2.x,
                     y: sp2.y + y,
                 },
-                (sp1.x + sp2.x) / 2.0,
-                sp1.y + y,
                 0.0,
             )
         }
@@ -2616,36 +2770,47 @@ fn dimension_line(
                     x: sp2.x + x,
                     y: sp2.y,
                 },
-                sp1.x + x,
-                (sp1.y + sp2.y) / 2.0,
                 -90.0,
             )
         }
-        _ => (sp1, sp2, (sp1.x + sp2.x) / 2.0, (sp1.y + sp2.y) / 2.0, 0.0),
+        _ => (sp1, sp2, 0.0),
     };
+    let label_position = best_dimension_text_candidate(
+        label,
+        opts.dimension_font_size,
+        dp1,
+        dp2,
+        rotation,
+        placed_text,
+        opts.width,
+        opts.height,
+    );
     let transform = if rotation != 0.0 {
         format!(
             r#" transform="rotate({}, {:.2}, {:.2})""#,
-            rotation, text_x, text_y
+            rotation, label_position.x, label_position.y
         )
     } else {
         String::new()
     };
-    format!(
-        r#"<line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" />
+    DimensionFragment {
+        label_rect: label_position.rect,
+        svg: format!(
+            r#"<line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" />
     <text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif"{}>{}</text>"#,
-        dp1.x,
-        dp1.y,
-        dp2.x,
-        dp2.y,
-        opts.dimension_color,
-        text_x,
-        text_y,
-        number(opts.dimension_font_size),
-        opts.dimension_color,
-        transform,
-        escape_xml(label)
-    )
+            dp1.x,
+            dp1.y,
+            dp2.x,
+            dp2.y,
+            opts.dimension_color,
+            label_position.x,
+            label_position.y,
+            number(opts.dimension_font_size),
+            opts.dimension_color,
+            transform,
+            escape_xml(label)
+        ),
+    }
 }
 
 fn generate_compass_svg(site: Option<SiteInfo>, opts: &SvgOptions) -> String {

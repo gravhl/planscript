@@ -61,7 +61,7 @@
     <line x1="363.33" y1="633.33" x2="403.33" y2="633.33" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
 
   <!-- Labels -->
-  <text class="room-label" data-room-label="living" x="416.67" y="583.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
+  <text class="room-label" data-room-label="living" x="396.67" y="583.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Living Room</text>
     <text class="room-label" data-room-label="kitchen" x="516.67" y="583.33" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
     <text class="room-label" data-room-label="hall" x="450.00" y="516.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hallway</text>
     <text class="room-label" data-room-label="bedroom" x="356.00" y="486.67" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Master Bedroom</text>
