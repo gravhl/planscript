@@ -34,7 +34,7 @@ plan "Pocket Door Suite" {
   opening pocket door d_bed_dressing {
     between bedroom and dressing
     on shared_edge
-    at 4
+    at 5.5
     width 3
     slide right
   }
@@ -42,7 +42,7 @@ plan "Pocket Door Suite" {
   opening pocket door d_dressing_bath {
     between dressing and bath
     on shared_edge
-    at 4
+    at 2.5
     width 3
     slide left
   }
@@ -50,8 +50,8 @@ plan "Pocket Door Suite" {
   opening door d_dressing_closet {
     between dressing and closet
     on shared_edge
-    at 3
-    width 3
+    at 2
+    width 2.5
     pocket
   }
 

@@ -205,3 +205,33 @@ fn pocket_door_examples_cover_syntax_variants() {
         "syntax gallery should include default slide direction"
     );
 }
+
+#[test]
+fn pocket_door_examples_cover_clearance_warnings() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let examples_dir = manifest_dir.join("examples");
+    let warning_path = examples_dir.join("realworld_09_accessible_roll_in_bath_with_warning.psc");
+    let clean_path = examples_dir.join("realworld_09_accessible_roll_in_bath.psc");
+
+    let warning_result = compile_example(&warning_path);
+    assert!(warning_result.success, "{:?}", warning_result.errors);
+    assert!(
+        warning_result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("Pocket door \"d_hall_bath\" needs")),
+        "with_warning example should report pocket clearance warning, got {:?}",
+        warning_result.warnings
+    );
+
+    let clean_result = compile_example(&clean_path);
+    assert!(clean_result.success, "{:?}", clean_result.errors);
+    assert!(
+        !clean_result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("Pocket door \"d_hall_bath\" needs")),
+        "clean accessible bath should have enough pocket clearance, got {:?}",
+        clean_result.warnings
+    );
+}

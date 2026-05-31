@@ -1,0 +1,2 @@
+Warnings:
+  - Pocket door "d_hall_bath" needs 1.16 plan units of clear wall pocket to slide right, but only 0.95 is available on wall "wall_0" between rooms "hall" and "accessible_bath"; move the door, reverse the slide direction, narrow it, or lengthen the wall.

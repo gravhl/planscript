@@ -1,4 +1,4 @@
-use crate::ast::{DoorSwing, EdgeSide, Point};
+use crate::ast::{DoorSlideDirection, DoorSwing, EdgeSide, Point};
 use crate::catalog::prefers_wall_placement_for;
 use crate::flooring::floor_material_spec;
 use crate::geometry::{
@@ -11,6 +11,7 @@ const EPS: f64 = 1e-6;
 const ARC_STEPS: usize = 12;
 const WALL_BACKED_ON_WALL_TOLERANCE: f64 = 0.02;
 const WALL_BACKED_NEAR_WALL_DISTANCE: f64 = 0.35;
+const POCKET_DOOR_END_CLEARANCE_RATIO: f64 = 0.05;
 
 pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
     let mut warnings = Vec::new();
@@ -20,10 +21,6 @@ pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
         if opening.opening_type != OpeningPlacementType::Door {
             continue;
         }
-        if opening.pocket {
-            continue;
-        }
-
         let Some(host_wall) = geometry
             .walls
             .iter()
@@ -31,6 +28,14 @@ pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
         else {
             continue;
         };
+
+        if opening.pocket {
+            if let Some(warning) = pocket_door_warning(opening, host_wall) {
+                warnings.push(warning);
+            }
+            continue;
+        }
+
         let leaves = door_leaves(opening, host_wall);
 
         'obstacles: for wall in &geometry.walls {
@@ -58,6 +63,104 @@ pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
     warnings.extend(wall_backed_fixture_warnings(geometry));
     warnings.extend(floor_material_warnings(geometry));
     warnings
+}
+
+fn pocket_door_warning(opening: &OpeningPlacement, host_wall: &WallSegment) -> Option<String> {
+    let run = pocket_door_wall_run(opening, host_wall)?;
+    let required = opening.width * (1.0 + POCKET_DOOR_END_CLEARANCE_RATIO);
+    if run.available + EPS >= required {
+        return None;
+    }
+
+    Some(format!(
+        "Pocket door \"{}\" needs {:.2} plan units of clear wall pocket to slide {}, but only {:.2} is available on wall \"{}\"{}; move the door, reverse the slide direction, narrow it, or lengthen the wall.",
+        opening.id,
+        required,
+        slide_direction_label(opening.slide.unwrap_or(DoorSlideDirection::Right)),
+        run.available,
+        host_wall.id,
+        wall_room_description(host_wall)
+    ))
+}
+
+#[derive(Debug, Clone, Copy)]
+struct PocketDoorRun {
+    available: f64,
+}
+
+fn pocket_door_wall_run(
+    opening: &OpeningPlacement,
+    host_wall: &WallSegment,
+) -> Option<PocketDoorRun> {
+    let wall_length = distance(host_wall.start, host_wall.end);
+    if wall_length <= EPS || opening.width <= EPS {
+        return None;
+    }
+
+    let wall_unit = Point {
+        x: (host_wall.end.x - host_wall.start.x) / wall_length,
+        y: (host_wall.end.y - host_wall.start.y) / wall_length,
+    };
+    let center = Point {
+        x: host_wall.start.x + wall_unit.x * opening.position,
+        y: host_wall.start.y + wall_unit.y * opening.position,
+    };
+    let half = opening.width / 2.0;
+    let p1 = Point {
+        x: center.x - wall_unit.x * half,
+        y: center.y - wall_unit.y * half,
+    };
+    let p2 = Point {
+        x: center.x + wall_unit.x * half,
+        y: center.y + wall_unit.y * half,
+    };
+    let outside = opening.outside_normal.unwrap_or(Point { x: 0.0, y: -1.0 });
+    let (left, right) = left_right_points_from_outside(p1, p2, outside);
+    let opening_length = distance(left, right);
+    if opening_length <= EPS {
+        return None;
+    }
+
+    let wall_dir = Point {
+        x: (right.x - left.x) / opening_length,
+        y: (right.y - left.y) / opening_length,
+    };
+    let slide = opening.slide.unwrap_or(DoorSlideDirection::Right);
+    let slide_dir = match slide {
+        DoorSlideDirection::Left => Point {
+            x: -wall_dir.x,
+            y: -wall_dir.y,
+        },
+        DoorSlideDirection::Right => wall_dir,
+    };
+    let pocket_start = match slide {
+        DoorSlideDirection::Left => left,
+        DoorSlideDirection::Right => right,
+    };
+    let available = dot(
+        Point {
+            x: host_wall.start.x - pocket_start.x,
+            y: host_wall.start.y - pocket_start.y,
+        },
+        slide_dir,
+    )
+    .max(dot(
+        Point {
+            x: host_wall.end.x - pocket_start.x,
+            y: host_wall.end.y - pocket_start.y,
+        },
+        slide_dir,
+    ))
+    .max(0.0);
+
+    Some(PocketDoorRun { available })
+}
+
+fn slide_direction_label(slide: DoorSlideDirection) -> &'static str {
+    match slide {
+        DoorSlideDirection::Left => "left",
+        DoorSlideDirection::Right => "right",
+    }
 }
 
 fn floor_material_warnings(geometry: &GeometryIr) -> Vec<String> {

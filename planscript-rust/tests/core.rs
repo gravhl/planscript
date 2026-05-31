@@ -650,15 +650,15 @@ fn renders_pocket_door_without_swing_arc() {
         units m
 
         plan {
-          footprint rect (0,0) (5,3)
-          room hall { rect (0,0) (1,3) }
-          room bath { rect (1,0) (5,3) }
+          footprint rect (0,0) (5,4)
+          room hall { rect (0,0) (1,4) }
+          room bath { rect (1,0) (5,4) }
 
           opening pocket door d_bath {
             between hall and bath
             on shared_edge
-            at 50%
-            width 1.1
+            at 35%
+            width 0.9
             slide right
           }
         }
@@ -694,6 +694,42 @@ fn renders_pocket_door_without_swing_arc() {
     assert!(svg.contains(r#"class="door-leaf pocket-door-leaf""#));
     assert!(svg.contains(r#"class="pocket-door-slide""#));
     assert!(!svg.contains(r#"class="door-swing""#));
+}
+
+#[test]
+fn warns_when_pocket_door_lacks_wall_pocket_clearance() {
+    let source = r#"
+        units m
+
+        plan {
+          footprint rect (0,0) (5,3.2)
+          room hall { rect (0,0) (1.2,3.2) }
+          room bath { rect (1.2,0) (5,3.2) }
+
+          opening pocket door d_bath {
+            between hall and bath
+            on shared_edge
+            at 47%
+            width 1.1
+            slide right
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert!(
+        result
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("Pocket door \"d_bath\" needs")),
+        "expected pocket clearance warning, got {:?}",
+        result.warnings
+    );
+    assert!(
+        result.svg.unwrap().contains(r#"class="pocket-door""#),
+        "warnings should not prevent SVG generation"
+    );
 }
 
 #[test]
