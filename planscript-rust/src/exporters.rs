@@ -801,6 +801,7 @@ fn render_builtin_fixture_svg(
         "range" => render_range_details(object, dims, t, opts, &mut parts),
         "cooktop" => render_cooktop_details(object, dims, t, opts, &mut parts),
         "fridge" => render_fridge_details(object, dims, t, opts, &mut parts),
+        "dishwasher" => render_dishwasher_details(object, dims, t, opts, &mut parts),
         "washer" => render_appliance_drum_details(object, dims, t, opts, &mut parts, "washer"),
         "dryer" => render_appliance_drum_details(object, dims, t, opts, &mut parts, "dryer"),
         "bed" => render_bed_details(object, dims, t, opts, &mut parts),
@@ -840,6 +841,7 @@ fn builtin_fixture_kind(catalog_id: &str) -> Option<&'static str> {
         _ if catalog_id.starts_with("builtin.kitchen.stovetop.") => Some("cooktop"),
         _ if catalog_id.starts_with("builtin.kitchen.fridge.") => Some("fridge"),
         _ if catalog_id.starts_with("builtin.kitchen.refrigerator.") => Some("fridge"),
+        _ if catalog_id.starts_with("builtin.kitchen.dishwasher.") => Some("dishwasher"),
         _ => None,
     }
 }
@@ -1272,6 +1274,45 @@ fn render_fridge_details(
         d.min_x + d.width * 0.62,
         d.max_y - d.depth * 0.25,
         "fixture-detail fixture-handle",
+        t,
+        opts,
+    ));
+}
+
+fn render_dishwasher_details(
+    object: &ResolvedObject,
+    d: ObjectDimensions,
+    t: Transform,
+    opts: &SvgOptions,
+    out: &mut Vec<String>,
+) {
+    out.push(fixture_rect(
+        object,
+        d.min_x + d.width * 0.10,
+        d.min_y + d.depth * 0.24,
+        d.max_x - d.width * 0.10,
+        d.max_y - d.depth * 0.10,
+        "fixture-detail fixture-dishwasher-door",
+        t,
+        opts,
+    ));
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.12,
+        d.min_y + d.depth * 0.16,
+        d.max_x - d.width * 0.12,
+        d.min_y + d.depth * 0.16,
+        "fixture-detail fixture-dishwasher-controls",
+        t,
+        opts,
+    ));
+    out.push(fixture_line(
+        object,
+        d.min_x + d.width * 0.18,
+        d.min_y + d.depth * 0.34,
+        d.max_x - d.width * 0.18,
+        d.min_y + d.depth * 0.34,
+        "fixture-detail fixture-dishwasher-handle",
         t,
         opts,
     ));

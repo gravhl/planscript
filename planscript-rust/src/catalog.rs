@@ -1191,6 +1191,7 @@ pub fn builtin_items() -> Vec<CatalogItem> {
 
     items.extend(kitchen_counter_items());
     items.extend(kitchen_refrigerator_items());
+    items.extend(kitchen_dishwasher_items());
     items.extend(kitchen_cooktop_items());
     items.extend(kitchen_range_items());
     items
@@ -1246,6 +1247,25 @@ fn kitchen_refrigerator_items() -> Vec<CatalogItem> {
         }
     }
     items
+}
+
+fn kitchen_dishwasher_items() -> Vec<CatalogItem> {
+    [(18, "compact"), (24, "standard")]
+        .into_iter()
+        .map(|(width, noun)| {
+            builtin_item(
+                &format!("builtin.kitchen.dishwasher.{noun}_{width}in"),
+                &format!("{width} in Dishwasher"),
+                "kitchen",
+                inches(width as f64),
+                inches(24.5),
+                Some(inches(35.0)),
+                "IfcElectricAppliance",
+                Some("DISHWASHER"),
+                &[(ClearanceSide::Front, inches(27.0))],
+            )
+        })
+        .collect()
 }
 
 fn kitchen_cooktop_items() -> Vec<CatalogItem> {

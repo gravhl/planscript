@@ -1,11 +1,11 @@
-units ft
+units m
 
 defaults {
-  door_width 3
+  door_width 0.9
 }
 
 plan "Dimension Controls" {
-  footprint rect (0,0) (18,12)
+  footprint rect (0,0) (9,5)
 
   dimensions {
     walls bath.east kitchen.south
@@ -13,12 +13,12 @@ plan "Dimension Controls" {
   }
 
   room bath {
-    rect (0,0) (7,12)
+    rect (0,0) (3,5)
     label "Bath"
   }
 
   room kitchen {
-    rect (7,0) (18,12)
+    rect (3,0) (9,5)
     label "Kitchen"
   }
 
@@ -39,18 +39,50 @@ plan "Dimension Controls" {
   }
 
   object range {
-    use builtin.kitchen.range.size_600
+    use builtin.kitchen.range.size_36in
     in kitchen
     attach south wall
-    at 30%
+    at 2.35
     facing north
   }
 
+  object range_left_counter {
+    use builtin.kitchen.counter.size_24in
+    in kitchen
+    attach south wall
+    at 1.50
+    facing north
+  }
+
+  object range_right_counter {
+    use builtin.kitchen.counter.size_36in
+    in kitchen
+    attach south wall
+    at 3.30
+    facing north
+  }
+
+  object dishwasher {
+    use builtin.kitchen.dishwasher.standard_24in
+    in kitchen
+    attach north wall
+    at 4.10
+    facing south
+  }
+
+  object kitchen_sink {
+    use builtin.kitchen.sink
+    in kitchen
+    attach north wall
+    at 4.85
+    facing south
+  }
+
   object fridge {
-    use builtin.kitchen.fridge.size_900
+    use builtin.kitchen.fridge.counter_depth_36in
     in kitchen
     attach east wall
-    at 70%
+    at 3.75
     facing west
   }
 
@@ -63,7 +95,7 @@ plan "Dimension Controls" {
 
   opening door d_entry {
     on kitchen.edge south
-    at 70%
+    at 78%
     swing rh
   }
 

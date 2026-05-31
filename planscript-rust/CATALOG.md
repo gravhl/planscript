@@ -56,6 +56,8 @@ Initial built-ins include:
 - `builtin.kitchen.fridge.counter_depth_<30|33|36>in`
 - `builtin.kitchen.refrigerator.standard_<24|30|33|36>in`
 - `builtin.kitchen.refrigerator.counter_depth_<30|33|36>in`
+- `builtin.kitchen.dishwasher.compact_18in`
+- `builtin.kitchen.dishwasher.standard_24in`
 - `builtin.kitchen.cooktop.size_<15|24|30|36|48>in`
 - `builtin.kitchen.stovetop.size_<15|24|30|36|48>in`
 - `builtin.kitchen.range.size_<24|30|36|48>in`
@@ -67,7 +69,7 @@ Initial built-ins include:
 
 These items are generic PlanScript-owned assets. They include BIM alignment fields like `ifcClass` and `ifcPredefinedType`, but are not copied from manufacturer files.
 
-US nominal kitchen sizes are stored in meters internally while preserving inch-based IDs for authoring. Counter modules use 25.5 in depth and 36 in height; refrigerator variants distinguish standard-depth and counter-depth footprints; cooktop and stovetop IDs are aliases for stove tops that sit in counter space. A cooktop/stovetop can be placed at the same wall station as a counter module; `object_no_overlap` treats it as an embedded insert when the cooktop footprint is fully inside the counter.
+US nominal kitchen sizes are stored in meters internally while preserving inch-based IDs for authoring. Counter modules use 25.5 in depth and 36 in height; refrigerator variants distinguish standard-depth and counter-depth footprints; dishwashers include compact 18 in and standard 24 in modules; cooktop and stovetop IDs are aliases for stove tops that sit in counter space. A cooktop/stovetop can be placed at the same wall station as a counter module; `object_no_overlap` treats it as an embedded insert when the cooktop footprint is fully inside the counter.
 
 ## `.psobj.json` Format
 
