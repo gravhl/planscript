@@ -153,11 +153,34 @@ impl Default for DimensionFixtureSelection {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DimensionUnitSystem {
+    Metric,
+    Standard,
+}
+
+impl Default for DimensionUnitSystem {
+    fn default() -> Self {
+        Self::Metric
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DimensionUnitsDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub units: DimensionUnitSystem,
+}
+
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DimensionDeclaration {
     #[serde(rename = "type")]
     pub node_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_system: Option<DimensionUnitSystem>,
     #[serde(default)]
     pub rooms: DimensionRoomSelection,
     #[serde(default)]
@@ -820,6 +843,8 @@ pub struct Program {
     pub defaults: Option<DefaultsDeclaration>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub render: Option<RenderDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dimension_units: Option<DimensionUnitsDeclaration>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteDeclaration>,
     pub catalogs: Vec<CatalogDeclaration>,

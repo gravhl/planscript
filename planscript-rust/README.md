@@ -102,13 +102,15 @@ Draft mode is optional and color remains the default. Use `render { mode draft }
 PlanScript can dimension every wall and fixture, or only selected room edges and object names:
 
 ```planscript
+dimension_units standard
+
 dimensions {
   walls bath.east kitchen.south
   fixtures wc lav range
 }
 ```
 
-Use `walls all`, `fixtures all`, or CLI shortcuts such as `--dimensions all`, `--wall-dimensions`, and `--fixture-dimensions` for broad annotation passes.
+Dimension labels default to metric. Use `dimension_units standard` for US feet/inches, `walls all`, `fixtures all`, or CLI shortcuts such as `--dimensions all`, `--wall-dimensions`, and `--fixture-dimensions` for broad annotation passes.
 
 ## Door Swing Conventions
 

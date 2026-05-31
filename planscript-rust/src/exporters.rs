@@ -1,7 +1,7 @@
 use crate::ast::{
     CardinalDirection, DimensionDeclaration, DimensionFixtureSelection, DimensionRoomSelection,
-    DimensionWallSelection, DimensionWallTarget, DoorSwing, EdgeSide, FloorMaterialLegendMode,
-    Point, Program, RenderMode,
+    DimensionUnitSystem, DimensionWallSelection, DimensionWallTarget, DoorSwing, EdgeSide,
+    FloorMaterialLegendMode, Point, Program, RenderMode,
 };
 use crate::flooring::{floor_material_spec, floor_pattern_id, FloorMaterialSpec, FloorPatternKind};
 use crate::geometry::{
@@ -2344,10 +2344,24 @@ fn estimate_text_width(label: &str, font_size: f64) -> f64 {
 }
 
 fn resolve_dimension_settings(geometry: &GeometryIr, opts: &SvgOptions) -> DimensionDeclaration {
-    let mut settings = opts
-        .dimensions
-        .clone()
-        .unwrap_or_else(|| geometry.dimensions.clone());
+    let mut settings = geometry.dimensions.clone();
+    if let Some(overrides) = &opts.dimensions {
+        if overrides.unit_system.is_some() {
+            settings.unit_system = overrides.unit_system;
+        }
+        if overrides.rooms != DimensionRoomSelection::None {
+            settings.rooms = overrides.rooms;
+        }
+        if overrides.footprint {
+            settings.footprint = true;
+        }
+        if !matches!(overrides.walls, DimensionWallSelection::None) {
+            settings.walls = overrides.walls.clone();
+        }
+        if !matches!(overrides.fixtures, DimensionFixtureSelection::None) {
+            settings.fixtures = overrides.fixtures.clone();
+        }
+    }
     if opts.show_dimensions {
         settings.rooms = DimensionRoomSelection::All;
         settings.footprint = opts.show_footprint_dimensions;
@@ -2376,6 +2390,7 @@ fn generate_dimensions_svg(
     }
     let mut out = Vec::new();
     let mut label_rects = Vec::new();
+    let unit_system = settings.unit_system.unwrap_or_default();
 
     if settings.rooms == DimensionRoomSelection::All {
         for room in &geometry.rooms {
@@ -2384,7 +2399,7 @@ fn generate_dimensions_svg(
                 Point { x: min_x, y: min_y },
                 Point { x: max_x, y: min_y },
                 opts.dimension_offset,
-                &format_dimension(max_x - min_x),
+                &format_dimension(max_x - min_x, unit_system),
                 "bottom",
                 t,
                 opts,
@@ -2397,7 +2412,7 @@ fn generate_dimensions_svg(
                 Point { x: min_x, y: min_y },
                 Point { x: min_x, y: max_y },
                 opts.dimension_offset,
-                &format_dimension(max_y - min_y),
+                &format_dimension(max_y - min_y, unit_system),
                 "left",
                 t,
                 opts,
@@ -2414,7 +2429,7 @@ fn generate_dimensions_svg(
             Point { x: min_x, y: min_y },
             Point { x: max_x, y: min_y },
             opts.dimension_offset + 25.0,
-            &format_dimension(max_x - min_x),
+            &format_dimension(max_x - min_x, unit_system),
             "bottom",
             t,
             opts,
@@ -2427,7 +2442,7 @@ fn generate_dimensions_svg(
             Point { x: min_x, y: min_y },
             Point { x: min_x, y: max_y },
             opts.dimension_offset + 25.0,
-            &format_dimension(max_y - min_y),
+            &format_dimension(max_y - min_y, unit_system),
             "left",
             t,
             opts,
@@ -2446,7 +2461,7 @@ fn generate_dimensions_svg(
             wall.start,
             wall.end,
             opts.dimension_offset * 0.65,
-            &format_dimension(length),
+            &format_dimension(length, unit_system),
             "dimension dimension-wall",
             "data-wall-dimension",
             &wall.id,
@@ -2495,7 +2510,7 @@ fn generate_dimensions_svg(
             width_start,
             width_end,
             offset,
-            &format_dimension(dims.width),
+            &format_dimension(dims.width, unit_system),
             "dimension dimension-fixture",
             "data-fixture-dimension",
             &object.name,
@@ -2510,7 +2525,7 @@ fn generate_dimensions_svg(
             depth_start,
             depth_end,
             -offset,
-            &format_dimension(dims.depth),
+            &format_dimension(dims.depth, unit_system),
             "dimension dimension-fixture",
             "data-fixture-dimension",
             &object.name,
@@ -3022,7 +3037,14 @@ fn geometry_bounds(geometry: &GeometryIr) -> (f64, f64, f64, f64) {
     }
 }
 
-fn format_dimension(meters: f64) -> String {
+fn format_dimension(meters: f64, unit_system: DimensionUnitSystem) -> String {
+    match unit_system {
+        DimensionUnitSystem::Metric => format_metric_dimension(meters),
+        DimensionUnitSystem::Standard => format_standard_dimension(meters),
+    }
+}
+
+fn format_metric_dimension(meters: f64) -> String {
     if meters >= 1.0 {
         let rounded = (meters * 10.0).round() / 10.0;
         if (rounded - rounded.round()).abs() < 1e-9 {
@@ -3032,6 +3054,17 @@ fn format_dimension(meters: f64) -> String {
         }
     } else {
         format!("{}cm", (meters * 100.0).round() as i64)
+    }
+}
+
+fn format_standard_dimension(meters: f64) -> String {
+    let total_inches = (meters / 0.0254).round().max(0.0) as i64;
+    let feet = total_inches / 12;
+    let inches = total_inches % 12;
+    match (feet, inches) {
+        (0, inches) => format!("{inches}in"),
+        (feet, 0) => format!("{feet}ft"),
+        (feet, inches) => format!("{feet}ft {inches}in"),
     }
 }
 

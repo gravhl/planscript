@@ -1,6 +1,6 @@
 use planscript::ast::{
-    DimensionFixtureSelection, DimensionRoomSelection, DimensionWallSelection, DoorSwing,
-    RenderMode,
+    DimensionFixtureSelection, DimensionRoomSelection, DimensionUnitSystem, DimensionWallSelection,
+    DoorSwing, RenderMode,
 };
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
@@ -378,6 +378,50 @@ fn renders_targeted_wall_and_fixture_dimensions() {
     );
     assert!(svg.contains(r#"data-fixture-dimension="sink""#));
     assert!(!svg.contains(r#"data-fixture-dimension="wc""#));
+}
+
+#[test]
+fn renders_standard_dimension_units_from_global_setting() {
+    let source = r#"
+        dimension_units standard
+
+        plan "Standard Dimension Units" {
+          footprint rect (0,0) (5,4)
+          dimensions {
+            fixtures range
+          }
+
+          room kitchen {
+            rect (0,0) (5,4)
+          }
+
+          object range {
+            use builtin.kitchen.range.size_36in
+            in kitchen
+            attach south wall
+            at 50%
+            facing north
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    assert_eq!(
+        ast.dimension_units.as_ref().map(|units| units.units),
+        Some(DimensionUnitSystem::Standard)
+    );
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let geometry = result.geometry.as_ref().expect("geometry");
+    assert_eq!(
+        geometry.dimensions.unit_system,
+        Some(DimensionUnitSystem::Standard)
+    );
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(">3ft<"), "{svg}");
+    assert!(svg.contains(">2ft 5in<"), "{svg}");
+    assert!(!svg.contains(">91cm<"));
 }
 
 #[test]

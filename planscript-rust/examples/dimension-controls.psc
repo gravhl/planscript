@@ -1,4 +1,5 @@
 units m
+dimension_units standard
 
 defaults {
   door_width 0.9

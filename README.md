@@ -180,6 +180,8 @@ cargo run --manifest-path planscript-rust/Cargo.toml -- compile planscript-rust/
 For detailed construction-style annotations, use a `dimensions` block or CLI flags:
 
 ```planscript
+dimension_units standard
+
 dimensions {
   walls all
   fixtures all

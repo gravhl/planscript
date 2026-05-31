@@ -294,6 +294,7 @@ impl Parser {
         let mut grid = None;
         let mut defaults = None;
         let mut render = None;
+        let mut dimension_units = None;
         let mut site = None;
         let mut catalogs = Vec::new();
 
@@ -310,6 +311,8 @@ impl Parser {
                 defaults = Some(self.parse_defaults()?);
             } else if self.check_keyword("render") {
                 render = Some(self.parse_render()?);
+            } else if self.check_keyword("dimension_units") {
+                dimension_units = Some(self.parse_dimension_units_declaration()?);
             } else if self.check_keyword("site") {
                 site = Some(self.parse_site()?);
             } else if self.check_keyword("catalog") {
@@ -329,6 +332,7 @@ impl Parser {
             grid,
             defaults,
             render,
+            dimension_units,
             site,
             catalogs,
             plan,
@@ -669,7 +673,9 @@ impl Parser {
         };
 
         while !self.consume_symbol("}") {
-            if self.consume_keyword("rooms") {
+            if self.consume_keyword("units") {
+                dimensions.unit_system = Some(self.parse_dimension_unit_system()?);
+            } else if self.consume_keyword("rooms") {
                 dimensions.rooms = self.parse_dimension_room_selection()?;
             } else if self.consume_keyword("footprint") {
                 dimensions.footprint = self.parse_dimension_bool()?;
@@ -687,6 +693,25 @@ impl Parser {
         }
 
         Ok(dimensions)
+    }
+
+    fn parse_dimension_units_declaration(
+        &mut self,
+    ) -> Result<DimensionUnitsDeclaration, ParseError> {
+        self.expect_keyword("dimension_units")?;
+        Ok(DimensionUnitsDeclaration {
+            node_type: node_type("DimensionUnitsDeclaration"),
+            units: self.parse_dimension_unit_system()?,
+        })
+    }
+
+    fn parse_dimension_unit_system(&mut self) -> Result<DimensionUnitSystem, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "metric" => Ok(DimensionUnitSystem::Metric),
+            "standard" | "imperial" | "us" | "us_customary" => Ok(DimensionUnitSystem::Standard),
+            _ => Err(self.error_here(format!("Unknown dimension unit system '{raw}'"))),
+        }
     }
 
     fn parse_dimension_room_selection(&mut self) -> Result<DimensionRoomSelection, ParseError> {
@@ -760,7 +785,8 @@ impl Parser {
     }
 
     fn is_dimension_item_start(&self) -> bool {
-        self.check_keyword("rooms")
+        self.check_keyword("units")
+            || self.check_keyword("rooms")
             || self.check_keyword("footprint")
             || self.check_keyword("walls")
             || self.check_keyword("wall")

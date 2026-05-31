@@ -113,6 +113,7 @@ A PlanScript file (`.psc`) has the following structure. All top-level declaratio
 
 ```planscript
 units <unit>              # Optional: set measurement units
+dimension_units <system>  # Optional: metric or standard dimension labels
 origin (<x>, <y>)         # Optional: set coordinate origin
 defaults { ... }          # Optional: default values for openings/materials
 render { ... }            # Optional: global SVG rendering mode
@@ -135,7 +136,7 @@ plan "<name>" {           # Required: the floor plan definition
 
 ## Units
 
-Sets the measurement unit for all coordinates and dimensions.
+Sets the measurement unit for authored coordinates and numeric dimension values.
 
 ```planscript
 units <unit>
@@ -153,6 +154,13 @@ units <unit>
 **Example:**
 ```planscript
 units m
+```
+
+SVG dimension labels default to metric (`m`/`cm`). Use the global `dimension_units` setting to display generated dimension labels in metric or standard US feet/inches:
+
+```planscript
+dimension_units standard
+dimension_units metric
 ```
 
 ---
@@ -228,9 +236,11 @@ planscript-rust compile house.psc --svg house.svg --draft
 
 ## Dimensions
 
-Controls SVG dimension annotations. The CLI `--dimensions` flag still shows room and footprint dimensions; use a plan-level `dimensions` block for wall and fixture/object control.
+Controls SVG dimension annotations. The CLI `--dimensions` flag still shows room and footprint dimensions; use a plan-level `dimensions` block for wall and fixture/object control. Dimension labels default to metric; set `dimension_units standard` globally for feet/inches.
 
 ```planscript
+dimension_units standard
+
 dimensions {
   walls all
   fixtures all
@@ -241,6 +251,7 @@ Target specific walls by room edge, and specific fixtures by object name:
 
 ```planscript
 dimensions {
+  units metric
   rooms none
   footprint off
   walls living.north kitchen.east
@@ -252,6 +263,7 @@ Options:
 
 | Directive | Values |
 |-----------|--------|
+| `units` | `metric`, `standard` |
 | `rooms` | `all`, `none`, `on`, `off` |
 | `footprint` | `on`, `off` |
 | `walls` | `all`, `none`, wall ids, or room-edge refs like `bath.east` |
