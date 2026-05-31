@@ -112,7 +112,7 @@
     <text class="fixture-label" data-object-label="wc" x="213.22" y="477.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 213.22, 477.78)">Floor Mounted Toilet</text>
     <text class="fixture-label" data-object-label="lav" x="301.67" y="250.89" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Wall Hung Sink</text>
     <text class="fixture-label" data-object-label="range" x="566.11" y="526.82" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">36 in Range</text>
-    <text class="fixture-label" data-object-label="range_left_counter" x="470.08" y="604.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">24 in Counter Space</text>
+    <text class="fixture-label" data-object-label="range_left_counter" x="500.00" y="604.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">24 in Counter Space</text>
     <text class="fixture-label" data-object-label="range_right_counter" x="658.07" y="533.74" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">36 in Counter Space</text>
     <text class="fixture-label" data-object-label="dishwasher" x="702.22" y="264.29" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">24 in Dishwasher</text>
     <text class="fixture-label" data-object-label="kitchen_sink" x="760.56" y="195.22" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen Sink</text>
@@ -123,49 +123,49 @@
       <line x1="396.33" y1="594.44" x2="396.33" y2="205.56" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="383.33" y1="594.44" x2="396.33" y2="594.44" stroke="#666666" stroke-width="0.75" />
       <line x1="383.33" y1="205.56" x2="396.33" y2="205.56" stroke="#666666" stroke-width="0.75" />
-      <text x="396.33" y="400.00" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(-90, 396.33, 400.00)">5m</text>
+      <text x="396.33" y="400.00" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(-90, 396.33, 400.00)">16ft 5in</text>
     </g>
     <g class="dimension dimension-wall" data-wall-dimension="wall_4">
       <line x1="383.33" y1="607.44" x2="850.00" y2="607.44" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="383.33" y1="594.44" x2="383.33" y2="607.44" stroke="#666666" stroke-width="0.75" />
       <line x1="850.00" y1="594.44" x2="850.00" y2="607.44" stroke="#666666" stroke-width="0.75" />
-      <text x="616.67" y="607.44" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">6m</text>
+      <text x="616.67" y="607.44" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">19ft 8in</text>
     </g>
     <g class="dimension dimension-fixture" data-fixture-dimension="wc">
       <line x1="139.00" y1="463.00" x2="139.00" y2="492.56" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="150.00" y1="463.00" x2="139.00" y2="463.00" stroke="#666666" stroke-width="0.75" />
       <line x1="150.00" y1="492.56" x2="139.00" y2="492.56" stroke="#666666" stroke-width="0.75" />
-      <text x="139.00" y="477.78" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 139.00, 477.78)">38cm</text>
+      <text x="139.00" y="477.78" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 139.00, 477.78)">1ft 3in</text>
     </g>
     <g class="dimension dimension-fixture" data-fixture-dimension="wc">
       <line x1="150.00" y1="452.00" x2="202.89" y2="452.00" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="150.00" y1="463.00" x2="150.00" y2="452.00" stroke="#666666" stroke-width="0.75" />
       <line x1="202.89" y1="463.00" x2="202.89" y2="452.00" stroke="#666666" stroke-width="0.75" />
-      <text x="176.44" y="452.00" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">68cm</text>
+      <text x="176.44" y="452.00" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">2ft 3in</text>
     </g>
     <g class="dimension dimension-fixture" data-fixture-dimension="lav">
       <line x1="323.06" y1="194.56" x2="280.28" y2="194.56" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="323.06" y1="205.56" x2="323.06" y2="194.56" stroke="#666666" stroke-width="0.75" />
       <line x1="280.28" y1="205.56" x2="280.28" y2="194.56" stroke="#666666" stroke-width="0.75" />
-      <text x="301.67" y="194.56" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">55cm</text>
+      <text x="301.67" y="194.56" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">1ft 10in</text>
     </g>
     <g class="dimension dimension-fixture" data-fixture-dimension="lav">
       <line x1="334.06" y1="205.56" x2="334.06" y2="240.56" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="323.06" y1="205.56" x2="334.06" y2="205.56" stroke="#666666" stroke-width="0.75" />
       <line x1="323.06" y1="240.56" x2="334.06" y2="240.56" stroke="#666666" stroke-width="0.75" />
-      <text x="334.06" y="223.06" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 334.06, 223.06)">45cm</text>
+      <text x="334.06" y="223.06" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 334.06, 223.06)">1ft 6in</text>
     </g>
     <g class="dimension dimension-fixture" data-fixture-dimension="range">
       <line x1="530.55" y1="605.44" x2="601.67" y2="605.44" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="530.55" y1="594.44" x2="530.55" y2="605.44" stroke="#666666" stroke-width="0.75" />
       <line x1="601.67" y1="594.44" x2="601.67" y2="605.44" stroke="#666666" stroke-width="0.75" />
-      <text x="566.11" y="605.44" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">91cm</text>
+      <text x="566.11" y="605.44" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">3ft</text>
     </g>
     <g class="dimension dimension-fixture" data-fixture-dimension="range">
       <line x1="519.55" y1="594.44" x2="519.55" y2="537.15" stroke="#666666" stroke-width="1" stroke-dasharray="3,2" />
       <line x1="530.55" y1="594.44" x2="519.55" y2="594.44" stroke="#666666" stroke-width="0.75" />
       <line x1="530.55" y1="537.15" x2="519.55" y2="537.15" stroke="#666666" stroke-width="0.75" />
-      <text x="519.55" y="565.80" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(-90, 519.55, 565.80)">74cm</text>
+      <text x="519.55" y="565.80" font-size="10" fill="#666666" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(-90, 519.55, 565.80)">2ft 5in</text>
     </g>
 
   <!-- Compass / Orientation -->

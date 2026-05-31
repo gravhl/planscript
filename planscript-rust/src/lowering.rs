@@ -215,6 +215,17 @@ pub fn lower_with_catalog(
         .as_ref()
         .map(|site| derive_site_info(site.street, site.hemisphere.unwrap_or(Hemisphere::North)));
 
+    let mut dimensions = plan
+        .dimensions
+        .clone()
+        .unwrap_or_else(|| DimensionDeclaration {
+            node_type: node_type("DimensionDeclaration"),
+            ..Default::default()
+        });
+    if dimensions.unit_system.is_none() {
+        dimensions.unit_system = program.dimension_units.as_ref().map(|units| units.units);
+    }
+
     Ok(LoweredProgram {
         name: plan.name.clone(),
         footprint,
@@ -237,13 +248,7 @@ pub fn lower_with_catalog(
             .or(program.render.as_ref())
             .map(|render| render.mode)
             .unwrap_or(RenderMode::Color),
-        dimensions: plan
-            .dimensions
-            .clone()
-            .unwrap_or_else(|| DimensionDeclaration {
-                node_type: node_type("DimensionDeclaration"),
-                ..Default::default()
-            }),
+        dimensions,
         site,
     })
 }
