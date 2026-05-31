@@ -95,7 +95,7 @@ plan "Built-In Fixture House" {
     use builtin.kitchen.counter.size_24in
     in kitchen
     attach north wall
-    at 3.30
+    at 3.388
     facing south
     label "Landing"
   }
@@ -113,7 +113,7 @@ plan "Built-In Fixture House" {
     use builtin.kitchen.counter.size_36in
     in kitchen
     attach north wall
-    at 5.10
+    at 5.0644
     facing south
     label "Landing Counter"
   }

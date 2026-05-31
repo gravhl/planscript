@@ -7,6 +7,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::{HashMap, HashSet, VecDeque};
 
+const POLYGON_EPSILON: f64 = 1e-9;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ErrorCode {
     #[serde(rename = "E101")]
@@ -721,18 +723,18 @@ fn is_room_near_direction(
 
 fn polygon_inside_polygon(inner: &[Point], outer: &[Point]) -> bool {
     inner.iter().all(|point| {
-        point_in_polygon(*point, outer) || point_on_polygon_boundary(*point, outer, 1e-10)
+        point_in_polygon(*point, outer) || point_on_polygon_boundary(*point, outer, POLYGON_EPSILON)
     })
 }
 
 fn polygons_overlap(a: &[Point], b: &[Point]) -> bool {
     for p in a {
-        if point_in_polygon(*p, b) && !point_on_polygon_boundary(*p, b, 1e-10) {
+        if point_in_polygon(*p, b) && !point_on_polygon_boundary(*p, b, POLYGON_EPSILON) {
             return true;
         }
     }
     for p in b {
-        if point_in_polygon(*p, a) && !point_on_polygon_boundary(*p, a, 1e-10) {
+        if point_in_polygon(*p, a) && !point_on_polygon_boundary(*p, a, POLYGON_EPSILON) {
             return true;
         }
     }
@@ -793,8 +795,10 @@ fn segments_intersect(a1: Point, a2: Point, b1: Point, b2: Point) -> bool {
     let d2 = direction(b1, b2, a2);
     let d3 = direction(a1, a2, b1);
     let d4 = direction(a1, a2, b2);
-    ((d1 > 0.0 && d2 < 0.0) || (d1 < 0.0 && d2 > 0.0))
-        && ((d3 > 0.0 && d4 < 0.0) || (d3 < 0.0 && d4 > 0.0))
+    ((d1 > POLYGON_EPSILON && d2 < -POLYGON_EPSILON)
+        || (d1 < -POLYGON_EPSILON && d2 > POLYGON_EPSILON))
+        && ((d3 > POLYGON_EPSILON && d4 < -POLYGON_EPSILON)
+            || (d3 < -POLYGON_EPSILON && d4 > POLYGON_EPSILON))
 }
 
 fn direction(p1: Point, p2: Point, p3: Point) -> f64 {
