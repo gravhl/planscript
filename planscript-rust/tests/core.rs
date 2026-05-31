@@ -1,4 +1,7 @@
-use planscript::ast::{DoorSwing, RenderMode};
+use planscript::ast::{
+    DimensionFixtureSelection, DimensionRoomSelection, DimensionWallSelection, DoorSwing,
+    RenderMode,
+};
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
 use planscript::geometry::{calculate_polygon_area, generate_geometry};
@@ -268,6 +271,113 @@ fn svg_export_options_can_force_draft_mode() {
     assert!(svg.contains(r##"stroke="#111111""##));
     assert!(!svg.contains("#f2dfbf"));
     assert!(!svg.contains("#b98d56"));
+}
+
+#[test]
+fn renders_wall_and_fixture_dimensions_from_plan_settings() {
+    let source = r#"
+        plan "Dimension Controls" {
+          footprint rect (0,0) (12,8)
+          dimensions {
+            walls all
+            fixtures all
+          }
+
+          room bath {
+            rect (0,0) (6,8)
+          }
+
+          room hall {
+            rect (6,0) (12,8)
+          }
+
+          object wc {
+            use builtin.sanitary.toilet.floor_mounted
+            in bath
+            at (1,1)
+          }
+
+          opening door d_bath_hall {
+            between bath and hall
+            on shared_edge
+            at 50%
+            swing lh
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    let dimensions = ast.plan.dimensions.as_ref().expect("dimensions");
+    assert!(matches!(dimensions.walls, DimensionWallSelection::All));
+    assert!(matches!(
+        dimensions.fixtures,
+        DimensionFixtureSelection::All
+    ));
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r#"class="dimension dimension-wall""#));
+    assert!(svg.contains(r#"class="dimension dimension-fixture""#));
+    assert!(svg.contains(r#"data-fixture-dimension="wc""#));
+}
+
+#[test]
+fn renders_targeted_wall_and_fixture_dimensions() {
+    let source = r#"
+        plan "Targeted Dimensions" {
+          footprint rect (0,0) (12,8)
+          dimensions {
+            rooms none
+            footprint off
+            walls bath.east
+            fixtures sink
+          }
+
+          room bath {
+            rect (0,0) (6,8)
+          }
+
+          room hall {
+            rect (6,0) (12,8)
+          }
+
+          object wc {
+            use builtin.sanitary.toilet.floor_mounted
+            in bath
+            at (1,1)
+          }
+
+          object sink {
+            use builtin.sanitary.sink.wall_hung
+            in bath
+            at (3,1)
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    let dimensions = ast.plan.dimensions.as_ref().expect("dimensions");
+    assert_eq!(dimensions.rooms, DimensionRoomSelection::None);
+    assert!(matches!(
+        dimensions.walls,
+        DimensionWallSelection::Only { .. }
+    ));
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    assert_eq!(
+        svg.matches(r#"class="dimension dimension-wall""#).count(),
+        1
+    );
+    assert_eq!(
+        svg.matches(r#"class="dimension dimension-fixture""#)
+            .count(),
+        2
+    );
+    assert!(svg.contains(r#"data-fixture-dimension="sink""#));
+    assert!(!svg.contains(r#"data-fixture-dimension="wc""#));
 }
 
 #[test]

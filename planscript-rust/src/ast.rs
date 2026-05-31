@@ -105,6 +105,69 @@ pub struct RenderDeclaration {
     pub mode: RenderMode,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DimensionRoomSelection {
+    None,
+    All,
+}
+
+impl Default for DimensionRoomSelection {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum DimensionWallTarget {
+    WallId { id: String },
+    RoomEdge { room: String, edge: EdgeSide },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum DimensionWallSelection {
+    None,
+    All,
+    Only { targets: Vec<DimensionWallTarget> },
+}
+
+impl Default for DimensionWallSelection {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum DimensionFixtureSelection {
+    None,
+    All,
+    Only { names: Vec<String> },
+}
+
+impl Default for DimensionFixtureSelection {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DimensionDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    #[serde(default)]
+    pub rooms: DimensionRoomSelection,
+    #[serde(default)]
+    pub footprint: bool,
+    #[serde(default)]
+    pub walls: DimensionWallSelection,
+    #[serde(default)]
+    pub fixtures: DimensionFixtureSelection,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CatalogDeclaration {
@@ -736,6 +799,8 @@ pub struct PlanDefinition {
     pub legend: Option<LegendDeclaration>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub render: Option<RenderDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dimensions: Option<DimensionDeclaration>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

@@ -108,6 +108,7 @@ pub struct LoweredProgram {
     pub defaults: Defaults,
     pub floor_material_legend: FloorMaterialLegendMode,
     pub render_mode: RenderMode,
+    pub dimensions: DimensionDeclaration,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteInfo>,
 }
@@ -236,6 +237,13 @@ pub fn lower_with_catalog(
             .or(program.render.as_ref())
             .map(|render| render.mode)
             .unwrap_or(RenderMode::Color),
+        dimensions: plan
+            .dimensions
+            .clone()
+            .unwrap_or_else(|| DimensionDeclaration {
+                node_type: node_type("DimensionDeclaration"),
+                ..Default::default()
+            }),
         site,
     })
 }

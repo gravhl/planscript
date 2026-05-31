@@ -609,6 +609,7 @@ impl Parser {
         let mut assertions = Vec::new();
         let mut legend = None;
         let mut render = None;
+        let mut dimensions = None;
 
         while !self.consume_symbol("}") {
             if self.check_keyword("footprint") {
@@ -633,6 +634,8 @@ impl Parser {
                 legend = Some(self.parse_legend()?);
             } else if self.check_keyword("render") {
                 render = Some(self.parse_render()?);
+            } else if self.check_keyword("dimensions") {
+                dimensions = Some(self.parse_dimensions()?);
             } else {
                 return Err(self.error_here("Expected plan content"));
             }
@@ -653,7 +656,118 @@ impl Parser {
             assertions,
             legend,
             render,
+            dimensions,
         })
+    }
+
+    fn parse_dimensions(&mut self) -> Result<DimensionDeclaration, ParseError> {
+        self.expect_keyword("dimensions")?;
+        self.expect_symbol("{")?;
+        let mut dimensions = DimensionDeclaration {
+            node_type: node_type("DimensionDeclaration"),
+            ..Default::default()
+        };
+
+        while !self.consume_symbol("}") {
+            if self.consume_keyword("rooms") {
+                dimensions.rooms = self.parse_dimension_room_selection()?;
+            } else if self.consume_keyword("footprint") {
+                dimensions.footprint = self.parse_dimension_bool()?;
+            } else if self.consume_keyword("walls") || self.consume_keyword("wall") {
+                dimensions.walls = self.parse_dimension_wall_selection()?;
+            } else if self.consume_keyword("fixtures")
+                || self.consume_keyword("fixture")
+                || self.consume_keyword("objects")
+                || self.consume_keyword("object")
+            {
+                dimensions.fixtures = self.parse_dimension_fixture_selection()?;
+            } else {
+                return Err(self.error_here("Expected dimensions content"));
+            }
+        }
+
+        Ok(dimensions)
+    }
+
+    fn parse_dimension_room_selection(&mut self) -> Result<DimensionRoomSelection, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "all" | "on" | "true" => Ok(DimensionRoomSelection::All),
+            "none" | "off" | "false" => Ok(DimensionRoomSelection::None),
+            _ => Err(self.error_here(format!("Unknown room dimension mode '{raw}'"))),
+        }
+    }
+
+    fn parse_dimension_bool(&mut self) -> Result<bool, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "all" | "on" | "true" => Ok(true),
+            "none" | "off" | "false" => Ok(false),
+            _ => Err(self.error_here(format!("Unknown dimension toggle '{raw}'"))),
+        }
+    }
+
+    fn parse_dimension_wall_selection(&mut self) -> Result<DimensionWallSelection, ParseError> {
+        if self.consume_keyword("all") {
+            return Ok(DimensionWallSelection::All);
+        }
+        if self.consume_keyword("none") || self.consume_keyword("off") {
+            return Ok(DimensionWallSelection::None);
+        }
+
+        let mut targets = Vec::new();
+        while matches!(self.current().kind, TokenKind::Ident(_)) && !self.is_dimension_item_start()
+        {
+            let name = self.expect_ident()?;
+            if self.consume_symbol(".") {
+                targets.push(DimensionWallTarget::RoomEdge {
+                    room: name,
+                    edge: self.parse_edge_side()?,
+                });
+            } else {
+                targets.push(DimensionWallTarget::WallId { id: name });
+            }
+        }
+
+        if targets.is_empty() {
+            Err(self.error_here("Expected wall dimension target"))
+        } else {
+            Ok(DimensionWallSelection::Only { targets })
+        }
+    }
+
+    fn parse_dimension_fixture_selection(
+        &mut self,
+    ) -> Result<DimensionFixtureSelection, ParseError> {
+        if self.consume_keyword("all") {
+            return Ok(DimensionFixtureSelection::All);
+        }
+        if self.consume_keyword("none") || self.consume_keyword("off") {
+            return Ok(DimensionFixtureSelection::None);
+        }
+
+        let mut names = Vec::new();
+        while matches!(self.current().kind, TokenKind::Ident(_)) && !self.is_dimension_item_start()
+        {
+            names.push(self.expect_ident()?);
+        }
+
+        if names.is_empty() {
+            Err(self.error_here("Expected fixture dimension target"))
+        } else {
+            Ok(DimensionFixtureSelection::Only { names })
+        }
+    }
+
+    fn is_dimension_item_start(&self) -> bool {
+        self.check_keyword("rooms")
+            || self.check_keyword("footprint")
+            || self.check_keyword("walls")
+            || self.check_keyword("wall")
+            || self.check_keyword("fixtures")
+            || self.check_keyword("fixture")
+            || self.check_keyword("objects")
+            || self.check_keyword("object")
     }
 
     fn parse_footprint(&mut self) -> Result<Footprint, ParseError> {

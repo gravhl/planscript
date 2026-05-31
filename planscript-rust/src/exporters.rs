@@ -1,5 +1,7 @@
 use crate::ast::{
-    CardinalDirection, DoorSwing, FloorMaterialLegendMode, Point, Program, RenderMode,
+    CardinalDirection, DimensionDeclaration, DimensionFixtureSelection, DimensionRoomSelection,
+    DimensionWallSelection, DimensionWallTarget, DoorSwing, EdgeSide, FloorMaterialLegendMode,
+    Point, Program, RenderMode,
 };
 use crate::flooring::{floor_material_spec, floor_pattern_id, FloorMaterialSpec, FloorPatternKind};
 use crate::geometry::{
@@ -18,6 +20,7 @@ pub struct SvgExportOptions {
     pub padding: Option<f64>,
     pub scale: Option<f64>,
     pub render_mode: Option<RenderMode>,
+    pub dimensions: Option<DimensionDeclaration>,
     pub show_labels: Option<bool>,
     pub show_dimensions: Option<bool>,
     pub show_footprint_dimensions: Option<bool>,
@@ -56,6 +59,7 @@ struct SvgOptions {
     scale: f64,
     render_mode: Option<RenderMode>,
     draft_mode: bool,
+    dimensions: Option<DimensionDeclaration>,
     show_labels: bool,
     show_dimensions: bool,
     show_footprint_dimensions: bool,
@@ -95,6 +99,7 @@ impl SvgOptions {
             scale: options.scale.unwrap_or(1.0),
             render_mode: options.render_mode,
             draft_mode: false,
+            dimensions: options.dimensions,
             show_labels: options.show_labels.unwrap_or(true),
             show_dimensions: options.show_dimensions.unwrap_or(false),
             show_footprint_dimensions: options.show_footprint_dimensions.unwrap_or(true),
@@ -222,7 +227,13 @@ pub fn export_svg(
     let render_mode = opts.render_mode.unwrap_or(geometry.render_mode);
     opts.apply_render_mode(render_mode);
     let legend_entries = floor_material_legend_entries(geometry, &opts);
-    let transform = create_transform(geometry, &opts, !legend_entries.is_empty());
+    let dimension_settings = resolve_dimension_settings(geometry, &opts);
+    let transform = create_transform(
+        geometry,
+        &opts,
+        !legend_entries.is_empty(),
+        dimensions_are_visible(&dimension_settings),
+    );
     let width = number(opts.width);
     let height = number(opts.height);
     let floor_material_defs =
@@ -284,7 +295,7 @@ pub fn export_svg(
         walls = generate_walls_svg(&geometry.walls, transform, &opts),
         openings = generate_openings_svg(geometry, transform, &opts),
         labels = generate_labels_svg(geometry, transform, &opts),
-        dimensions = generate_dimensions_svg(geometry, transform, &opts),
+        dimensions = generate_dimensions_svg(geometry, transform, &opts, &dimension_settings),
         compass = generate_compass_svg(site, &opts),
         floor_material_legend = floor_material_legend,
     );
@@ -324,11 +335,12 @@ fn create_transform(
     geometry: &GeometryIr,
     opts: &SvgOptions,
     reserve_legend_space: bool,
+    reserve_dimension_space: bool,
 ) -> Transform {
     let (min_x, max_x, min_y, max_y) = geometry_bounds(geometry);
     let content_width = (max_x - min_x).max(0.001);
     let content_height = (max_y - min_y).max(0.001);
-    let dimension_space = if opts.show_dimensions {
+    let dimension_space = if reserve_dimension_space {
         opts.dimension_offset + 70.0
     } else {
         0.0
@@ -2263,33 +2275,61 @@ fn estimate_text_width(label: &str, font_size: f64) -> f64 {
     label.chars().count() as f64 * font_size * 0.56
 }
 
-fn generate_dimensions_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -> String {
-    if !opts.show_dimensions {
+fn resolve_dimension_settings(geometry: &GeometryIr, opts: &SvgOptions) -> DimensionDeclaration {
+    let mut settings = opts
+        .dimensions
+        .clone()
+        .unwrap_or_else(|| geometry.dimensions.clone());
+    if opts.show_dimensions {
+        settings.rooms = DimensionRoomSelection::All;
+        settings.footprint = opts.show_footprint_dimensions;
+    }
+    settings
+}
+
+fn dimensions_are_visible(settings: &DimensionDeclaration) -> bool {
+    settings.rooms == DimensionRoomSelection::All
+        || settings.footprint
+        || !matches!(settings.walls, DimensionWallSelection::None)
+        || !matches!(settings.fixtures, DimensionFixtureSelection::None)
+}
+
+fn generate_dimensions_svg(
+    geometry: &GeometryIr,
+    t: Transform,
+    opts: &SvgOptions,
+    settings: &DimensionDeclaration,
+) -> String {
+    if !dimensions_are_visible(settings) {
         return String::new();
     }
     let mut out = Vec::new();
-    for room in &geometry.rooms {
-        let (min_x, max_x, min_y, max_y) = bounds(&room.polygon.points);
-        out.push(dimension_line(
-            Point { x: min_x, y: min_y },
-            Point { x: max_x, y: min_y },
-            opts.dimension_offset,
-            &format_dimension(max_x - min_x),
-            "bottom",
-            t,
-            opts,
-        ));
-        out.push(dimension_line(
-            Point { x: min_x, y: min_y },
-            Point { x: min_x, y: max_y },
-            opts.dimension_offset,
-            &format_dimension(max_y - min_y),
-            "left",
-            t,
-            opts,
-        ));
+
+    if settings.rooms == DimensionRoomSelection::All {
+        for room in &geometry.rooms {
+            let (min_x, max_x, min_y, max_y) = bounds(&room.polygon.points);
+            out.push(dimension_line(
+                Point { x: min_x, y: min_y },
+                Point { x: max_x, y: min_y },
+                opts.dimension_offset,
+                &format_dimension(max_x - min_x),
+                "bottom",
+                t,
+                opts,
+            ));
+            out.push(dimension_line(
+                Point { x: min_x, y: min_y },
+                Point { x: min_x, y: max_y },
+                opts.dimension_offset,
+                &format_dimension(max_y - min_y),
+                "left",
+                t,
+                opts,
+            ));
+        }
     }
-    if opts.show_footprint_dimensions {
+
+    if settings.footprint {
         let (min_x, max_x, min_y, max_y) = bounds(&geometry.footprint.points);
         out.push(dimension_line(
             Point { x: min_x, y: min_y },
@@ -2310,7 +2350,231 @@ fn generate_dimensions_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOption
             opts,
         ));
     }
+
+    for wall in selected_wall_dimensions(geometry, &settings.walls) {
+        let length = distance(wall.start, wall.end);
+        if length <= 0.001 {
+            continue;
+        }
+        out.push(dimension_segment_line(
+            wall.start,
+            wall.end,
+            opts.dimension_offset * 0.65,
+            &format_dimension(length),
+            "dimension dimension-wall",
+            "data-wall-dimension",
+            &wall.id,
+            t,
+            opts,
+        ));
+    }
+
+    for object in selected_fixture_dimensions(geometry, &settings.fixtures) {
+        let dims = object_local_dimensions(object);
+        let offset = opts.dimension_offset * 0.55;
+        let width_start = local_to_plan(
+            object,
+            Point {
+                x: dims.min_x,
+                y: dims.min_y,
+            },
+        );
+        let width_end = local_to_plan(
+            object,
+            Point {
+                x: dims.max_x,
+                y: dims.min_y,
+            },
+        );
+        let depth_start = local_to_plan(
+            object,
+            Point {
+                x: dims.min_x,
+                y: dims.min_y,
+            },
+        );
+        let depth_end = local_to_plan(
+            object,
+            Point {
+                x: dims.min_x,
+                y: dims.max_y,
+            },
+        );
+        out.push(dimension_segment_line(
+            width_start,
+            width_end,
+            offset,
+            &format_dimension(dims.width),
+            "dimension dimension-fixture",
+            "data-fixture-dimension",
+            &object.name,
+            t,
+            opts,
+        ));
+        out.push(dimension_segment_line(
+            depth_start,
+            depth_end,
+            -offset,
+            &format_dimension(dims.depth),
+            "dimension dimension-fixture",
+            "data-fixture-dimension",
+            &object.name,
+            t,
+            opts,
+        ));
+    }
+
     out.join("\n    ")
+}
+
+fn selected_wall_dimensions<'a>(
+    geometry: &'a GeometryIr,
+    selection: &DimensionWallSelection,
+) -> Vec<&'a WallSegment> {
+    match selection {
+        DimensionWallSelection::None => Vec::new(),
+        DimensionWallSelection::All => geometry.walls.iter().collect(),
+        DimensionWallSelection::Only { targets } => {
+            let mut walls = Vec::new();
+            for target in targets {
+                match target {
+                    DimensionWallTarget::WallId { id } => {
+                        if let Some(wall) = geometry.walls.iter().find(|wall| wall.id == *id) {
+                            push_unique_wall(&mut walls, wall);
+                        }
+                    }
+                    DimensionWallTarget::RoomEdge { room, edge } => {
+                        let Some(resolved_room) = geometry
+                            .rooms
+                            .iter()
+                            .find(|candidate| candidate.name == *room)
+                        else {
+                            continue;
+                        };
+                        for wall in &geometry.walls {
+                            if wall_matches_room_edge(wall, resolved_room, *edge) {
+                                push_unique_wall(&mut walls, wall);
+                            }
+                        }
+                    }
+                }
+            }
+            walls
+        }
+    }
+}
+
+fn push_unique_wall<'a>(walls: &mut Vec<&'a WallSegment>, wall: &'a WallSegment) {
+    if !walls.iter().any(|candidate| candidate.id == wall.id) {
+        walls.push(wall);
+    }
+}
+
+fn wall_matches_room_edge(wall: &WallSegment, room: &ResolvedRoom, edge: EdgeSide) -> bool {
+    if !wall.rooms.iter().any(|name| name == &room.name) {
+        return false;
+    }
+    let (min_x, max_x, min_y, max_y) = bounds(&room.polygon.points);
+    let eps = 1e-6;
+    match edge {
+        EdgeSide::North => (wall.start.y - max_y).abs() < eps && (wall.end.y - max_y).abs() < eps,
+        EdgeSide::South => (wall.start.y - min_y).abs() < eps && (wall.end.y - min_y).abs() < eps,
+        EdgeSide::East => (wall.start.x - max_x).abs() < eps && (wall.end.x - max_x).abs() < eps,
+        EdgeSide::West => (wall.start.x - min_x).abs() < eps && (wall.end.x - min_x).abs() < eps,
+    }
+}
+
+fn selected_fixture_dimensions<'a>(
+    geometry: &'a GeometryIr,
+    selection: &DimensionFixtureSelection,
+) -> Vec<&'a ResolvedObject> {
+    match selection {
+        DimensionFixtureSelection::None => Vec::new(),
+        DimensionFixtureSelection::All => geometry.objects.iter().collect(),
+        DimensionFixtureSelection::Only { names } => geometry
+            .objects
+            .iter()
+            .filter(|object| names.iter().any(|name| name == &object.name))
+            .collect(),
+    }
+}
+
+fn dimension_segment_line(
+    p1: Point,
+    p2: Point,
+    offset: f64,
+    label: &str,
+    class_name: &str,
+    data_attr: &str,
+    data_value: &str,
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
+    let sp1 = transform_point(p1, t);
+    let sp2 = transform_point(p2, t);
+    let dx = sp2.x - sp1.x;
+    let dy = sp2.y - sp1.y;
+    let len = (dx * dx + dy * dy).sqrt();
+    if len <= 0.001 {
+        return String::new();
+    }
+    let nx = -dy / len;
+    let ny = dx / len;
+    let dp1 = Point {
+        x: sp1.x + nx * offset,
+        y: sp1.y + ny * offset,
+    };
+    let dp2 = Point {
+        x: sp2.x + nx * offset,
+        y: sp2.y + ny * offset,
+    };
+    let text_x = (dp1.x + dp2.x) / 2.0;
+    let text_y = (dp1.y + dp2.y) / 2.0;
+    let mut rotation = dy.atan2(dx).to_degrees();
+    if rotation > 90.0 {
+        rotation -= 180.0;
+    } else if rotation < -90.0 {
+        rotation += 180.0;
+    }
+    let transform = if rotation.abs() > f64::EPSILON {
+        format!(
+            r#" transform="rotate({}, {:.2}, {:.2})""#,
+            number(rotation),
+            text_x,
+            text_y
+        )
+    } else {
+        String::new()
+    };
+    format!(
+        r#"<g class="{class_name}" {data_attr}="{data_value}">
+      <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" stroke-dasharray="3,2" />
+      <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="0.75" />
+      <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="0.75" />
+      <text x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif"{transform}>{}</text>
+    </g>"#,
+        dp1.x,
+        dp1.y,
+        dp2.x,
+        dp2.y,
+        opts.dimension_color,
+        sp1.x,
+        sp1.y,
+        dp1.x,
+        dp1.y,
+        opts.dimension_color,
+        sp2.x,
+        sp2.y,
+        dp2.x,
+        dp2.y,
+        opts.dimension_color,
+        text_x,
+        text_y,
+        number(opts.dimension_font_size),
+        opts.dimension_color,
+        escape_xml(label),
+        data_value = escape_xml(data_value),
+    )
 }
 
 fn dimension_line(

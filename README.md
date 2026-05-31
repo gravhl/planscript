@@ -177,6 +177,19 @@ render {
 cargo run --manifest-path planscript-rust/Cargo.toml -- compile planscript-rust/examples/outdoor-floor-materials.psc --svg /tmp/floors-draft.svg --draft
 ```
 
+For detailed construction-style annotations, use a `dimensions` block or CLI flags:
+
+```planscript
+dimensions {
+  walls all
+  fixtures all
+}
+```
+
+```bash
+cargo run --manifest-path planscript-rust/Cargo.toml -- compile planscript-rust/examples/dimension-controls.psc --svg /tmp/dimensions.svg --dimensions all
+```
+
 ## Examples
 
 Regenerate all example SVGs with the Rust CLI:
