@@ -1,3 +1,4 @@
+use planscript::ast::RenderMode;
 use planscript::catalog::{
     candidate_ifc_item_from_file, import_ifc_manifest, lint_catalog_item, Catalog, CatalogItem,
     CatalogLintSeverity,
@@ -55,12 +56,14 @@ Compile Options:
   --svg <output.svg>   Write SVG output to file
   --json <output.json> Write JSON output to file
   --dimensions         Include dimension lines in SVG
+  --draft              Render SVG in black-and-white architectural draft mode
   --no-labels          Don't show room labels in SVG
   --no-svg             Don't generate SVG
 
 Solve Options:
   --out <output.psc>   Write generated PlanScript to file
   --svg <output.svg>   Also compile and write SVG
+  --draft              Render SVG in black-and-white architectural draft mode
   --inspect            Show solver inspection summary
   --variants <n>       Accepted for CLI compatibility
 
@@ -114,6 +117,7 @@ fn run_compile(args: &[String]) -> Result<(), String> {
     let mut emit_json = false;
     let mut show_dimensions = false;
     let mut show_labels = true;
+    let mut render_mode = None;
 
     let mut i = 1;
     while i < args.len() {
@@ -135,6 +139,14 @@ fn run_compile(args: &[String]) -> Result<(), String> {
                 show_dimensions = true;
                 i += 1;
             }
+            "--draft" | "--draft-mode" | "--black-white" | "--bw" => {
+                render_mode = Some(RenderMode::Draft);
+                i += 1;
+            }
+            "--color" | "--colour" => {
+                render_mode = Some(RenderMode::Color);
+                i += 1;
+            }
             "--no-labels" => {
                 show_labels = false;
                 i += 1;
@@ -153,6 +165,7 @@ fn run_compile(args: &[String]) -> Result<(), String> {
             svg_options: Some(SvgExportOptions {
                 show_dimensions: Some(show_dimensions),
                 show_labels: Some(show_labels),
+                render_mode,
                 ..Default::default()
             }),
             json_options: Some(JsonExportOptions {
@@ -473,6 +486,7 @@ fn run_solve(args: &[String]) -> Result<(), String> {
     let mut svg_out = None;
     let mut inspect = false;
     let mut variants = 1usize;
+    let mut render_mode = None;
 
     let mut i = 1;
     while i < args.len() {
@@ -487,6 +501,14 @@ fn run_solve(args: &[String]) -> Result<(), String> {
             }
             "--inspect" => {
                 inspect = true;
+                i += 1;
+            }
+            "--draft" | "--draft-mode" | "--black-white" | "--bw" => {
+                render_mode = Some(RenderMode::Draft);
+                i += 1;
+            }
+            "--color" | "--colour" => {
+                render_mode = Some(RenderMode::Color);
                 i += 1;
             }
             "--variants" if i + 1 < args.len() => {
@@ -553,6 +575,7 @@ fn run_solve(args: &[String]) -> Result<(), String> {
                         emit_svg: Some(true),
                         svg_options: Some(SvgExportOptions {
                             show_labels: Some(true),
+                            render_mode,
                             ..Default::default()
                         }),
                         ..Default::default()

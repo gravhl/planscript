@@ -14,6 +14,7 @@ The canonical product lives in [`planscript-rust`](planscript-rust/). The reposi
 - Deterministic compiler pipeline: parse -> lower -> geometry -> validate -> export
 - Precise room, wall, door, window, and fixture geometry
 - Indoor floor materials, outdoor areas, SVG hatches, and auto floor legends
+- Color and black-and-white architectural draft SVG rendering modes
 - Built-in fixture catalog for common residential items
 - External `.psobj.json` catalog support and IFC import normalization
 - Intent solver for generating PlanScript from higher-level JSON requests
@@ -162,6 +163,18 @@ plan "Deck and Patio" {
     label "Rear Deck"
   }
 }
+```
+
+For black-and-white architectural draft output, use a global render block or the CLI flag:
+
+```planscript
+render {
+  mode draft
+}
+```
+
+```bash
+cargo run --manifest-path planscript-rust/Cargo.toml -- compile planscript-rust/examples/outdoor-floor-materials.psc --svg /tmp/floors-draft.svg --draft
 ```
 
 ## Examples

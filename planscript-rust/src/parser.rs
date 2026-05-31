@@ -293,6 +293,7 @@ impl Parser {
         let mut axis = None;
         let mut grid = None;
         let mut defaults = None;
+        let mut render = None;
         let mut site = None;
         let mut catalogs = Vec::new();
 
@@ -307,6 +308,8 @@ impl Parser {
                 grid = Some(self.parse_grid()?);
             } else if self.check_keyword("defaults") {
                 defaults = Some(self.parse_defaults()?);
+            } else if self.check_keyword("render") {
+                render = Some(self.parse_render()?);
             } else if self.check_keyword("site") {
                 site = Some(self.parse_site()?);
             } else if self.check_keyword("catalog") {
@@ -325,6 +328,7 @@ impl Parser {
             axis,
             grid,
             defaults,
+            render,
             site,
             catalogs,
             plan,
@@ -510,6 +514,32 @@ impl Parser {
         Ok(defaults)
     }
 
+    fn parse_render(&mut self) -> Result<RenderDeclaration, ParseError> {
+        self.expect_keyword("render")?;
+        self.expect_symbol("{")?;
+        let mut mode = RenderMode::Color;
+        while !self.consume_symbol("}") {
+            if self.consume_keyword("mode") {
+                mode = self.parse_render_mode()?;
+            } else {
+                return Err(self.error_here("Expected render content"));
+            }
+        }
+        Ok(RenderDeclaration {
+            node_type: node_type("RenderDeclaration"),
+            mode,
+        })
+    }
+
+    fn parse_render_mode(&mut self) -> Result<RenderMode, ParseError> {
+        let raw = self.expect_ident()?.to_lowercase();
+        match raw.as_str() {
+            "color" | "colour" => Ok(RenderMode::Color),
+            "draft" | "black_white" | "blackwhite" | "bw" | "b_w" => Ok(RenderMode::Draft),
+            _ => Err(self.error_here(format!("Unknown render mode '{raw}'"))),
+        }
+    }
+
     fn parse_site(&mut self) -> Result<SiteDeclaration, ParseError> {
         self.expect_keyword("site")?;
         self.expect_symbol("{")?;
@@ -578,6 +608,7 @@ impl Parser {
         let mut wall_overrides = Vec::new();
         let mut assertions = Vec::new();
         let mut legend = None;
+        let mut render = None;
 
         while !self.consume_symbol("}") {
             if self.check_keyword("footprint") {
@@ -600,6 +631,8 @@ impl Parser {
                 assertions.push(self.parse_assertion()?);
             } else if self.check_keyword("legend") {
                 legend = Some(self.parse_legend()?);
+            } else if self.check_keyword("render") {
+                render = Some(self.parse_render()?);
             } else {
                 return Err(self.error_here("Expected plan content"));
             }
@@ -619,6 +652,7 @@ impl Parser {
             wall_overrides,
             assertions,
             legend,
+            render,
         })
     }
 

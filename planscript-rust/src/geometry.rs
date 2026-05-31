@@ -1,6 +1,6 @@
 use crate::ast::{
     ClearanceSide, DoorSwing, EdgeSide, FloorMaterialLegendMode, Opening, OutdoorAreaKind, Point,
-    Position,
+    Position, RenderMode,
 };
 use crate::lowering::LoweredProgram;
 use serde::{Deserialize, Serialize};
@@ -124,6 +124,7 @@ pub struct GeometryIr {
     pub walls: Vec<WallSegment>,
     pub openings: Vec<OpeningPlacement>,
     pub floor_material_legend: FloorMaterialLegendMode,
+    pub render_mode: RenderMode,
 }
 
 const STANDARD_DOOR_WIDTH: f64 = 0.9;
@@ -302,6 +303,7 @@ pub fn generate_geometry(lowered: &LoweredProgram) -> GeometryIr {
         walls,
         openings,
         floor_material_legend: lowered.floor_material_legend,
+        render_mode: lowered.render_mode,
     }
 }
 

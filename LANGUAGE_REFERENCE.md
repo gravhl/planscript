@@ -11,6 +11,7 @@ This document provides a complete specification of the PlanScript language for d
 - [Units](#units)
 - [Origin](#origin)
 - [Defaults](#defaults)
+- [Render Mode](#render-mode)
 - [Site](#site)
 - [Plan Block](#plan-block)
 - [Footprint](#footprint)
@@ -113,6 +114,7 @@ A PlanScript file (`.psc`) has the following structure. All top-level declaratio
 units <unit>              # Optional: set measurement units
 origin (<x>, <y>)         # Optional: set coordinate origin
 defaults { ... }          # Optional: default values for openings/materials
+render { ... }            # Optional: global SVG rendering mode
 site { ... }              # Optional: site orientation (for solar/street context)
 
 plan "<name>" {           # Required: the floor plan definition
@@ -192,6 +194,33 @@ defaults {
 ```
 
 `floor` applies to rooms that do not set their own floor. `outdoor_floor` applies to outdoor areas that do not set their own floor.
+
+---
+
+## Render Mode
+
+Controls the global SVG rendering style. Color rendering is the default.
+
+```planscript
+render {
+  mode draft
+}
+```
+
+Modes:
+
+| Mode | Description |
+|------|-------------|
+| `color` | Default color rendering |
+| `draft` | Black-and-white architectural draft rendering with hatches/patterns |
+| `black_white` | Alias for `draft` |
+| `bw` | Alias for `draft` |
+
+The CLI can also force draft rendering:
+
+```bash
+planscript-rust compile house.psc --svg house.svg --draft
+```
 
 ---
 

@@ -107,6 +107,7 @@ pub struct LoweredProgram {
     pub assertions: Vec<Assertion>,
     pub defaults: Defaults,
     pub floor_material_legend: FloorMaterialLegendMode,
+    pub render_mode: RenderMode,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteInfo>,
 }
@@ -229,6 +230,12 @@ pub fn lower_with_catalog(
             .as_ref()
             .map(|legend| legend.floor_materials)
             .unwrap_or(FloorMaterialLegendMode::Auto),
+        render_mode: plan
+            .render
+            .as_ref()
+            .or(program.render.as_ref())
+            .map(|render| render.mode)
+            .unwrap_or(RenderMode::Color),
         site,
     })
 }

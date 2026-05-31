@@ -185,6 +185,7 @@ See `LANGUAGE_REFERENCE.md` for complete syntax documentation. Key constructs:
 - **Objects**: Built-in and catalog-backed fixtures
 - **Outdoor areas**: `outdoor deck`, `outdoor patio`, exterior surfaces
 - **Floor materials**: `floor`, `outdoor_floor`, `legend { floor_materials ... }`
+- **Rendering**: `render { mode color|draft }` for color or black-and-white SVG output
 - **Assertions**: `assert no_overlap`, `assert inside footprint`, etc.
 
 ## Error Handling

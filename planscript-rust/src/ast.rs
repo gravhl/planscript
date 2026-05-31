@@ -90,6 +90,21 @@ pub struct DefaultsDeclaration {
     pub outdoor_floor: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RenderMode {
+    Color,
+    Draft,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RenderDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub mode: RenderMode,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CatalogDeclaration {
@@ -719,6 +734,8 @@ pub struct PlanDefinition {
     pub assertions: Vec<Assertion>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub legend: Option<LegendDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub render: Option<RenderDeclaration>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -736,6 +753,8 @@ pub struct Program {
     pub grid: Option<GridDeclaration>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub defaults: Option<DefaultsDeclaration>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub render: Option<RenderDeclaration>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteDeclaration>,
     pub catalogs: Vec<CatalogDeclaration>,

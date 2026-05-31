@@ -1,4 +1,6 @@
-use crate::ast::{CardinalDirection, DoorSwing, FloorMaterialLegendMode, Point, Program};
+use crate::ast::{
+    CardinalDirection, DoorSwing, FloorMaterialLegendMode, Point, Program, RenderMode,
+};
 use crate::flooring::{floor_material_spec, floor_pattern_id, FloorMaterialSpec, FloorPatternKind};
 use crate::geometry::{
     GeometryIr, OpeningPlacementType, Polygon, ResolvedCourtyard, ResolvedObject,
@@ -15,6 +17,7 @@ pub struct SvgExportOptions {
     pub height: Option<f64>,
     pub padding: Option<f64>,
     pub scale: Option<f64>,
+    pub render_mode: Option<RenderMode>,
     pub show_labels: Option<bool>,
     pub show_dimensions: Option<bool>,
     pub show_footprint_dimensions: Option<bool>,
@@ -51,6 +54,8 @@ struct SvgOptions {
     height: f64,
     padding: f64,
     scale: f64,
+    render_mode: Option<RenderMode>,
+    draft_mode: bool,
     show_labels: bool,
     show_dimensions: bool,
     show_footprint_dimensions: bool,
@@ -88,6 +93,8 @@ impl SvgOptions {
             height: options.height.unwrap_or(800.0),
             padding: options.padding.unwrap_or(60.0),
             scale: options.scale.unwrap_or(1.0),
+            render_mode: options.render_mode,
+            draft_mode: false,
             show_labels: options.show_labels.unwrap_or(true),
             show_dimensions: options.show_dimensions.unwrap_or(false),
             show_footprint_dimensions: options.show_footprint_dimensions.unwrap_or(true),
@@ -144,6 +151,30 @@ impl SvgOptions {
                 .unwrap_or_else(|| "#e74c3c".to_string()),
         }
     }
+
+    fn apply_render_mode(&mut self, mode: RenderMode) {
+        self.draft_mode = mode == RenderMode::Draft;
+        if !self.draft_mode {
+            return;
+        }
+
+        self.background_color = "#ffffff".to_string();
+        self.wall_color = "#111111".to_string();
+        self.room_fill_color = "#ffffff".to_string();
+        self.room_stroke_color = "#707070".to_string();
+        self.courtyard_fill_color = "#ffffff".to_string();
+        self.courtyard_stroke_color = "#333333".to_string();
+        self.object_fill_color = "#ffffff".to_string();
+        self.object_stroke_color = "#111111".to_string();
+        self.object_clearance_color = "#555555".to_string();
+        self.door_color = "#111111".to_string();
+        self.window_color = "#111111".to_string();
+        self.footprint_color = "#333333".to_string();
+        self.label_color = "#111111".to_string();
+        self.dimension_color = "#111111".to_string();
+        self.compass_color = "#111111".to_string();
+        self.street_indicator_color = "#111111".to_string();
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -187,16 +218,18 @@ pub fn export_svg(
     options: SvgExportOptions,
     site: Option<SiteInfo>,
 ) -> String {
-    let opts = SvgOptions::from_options(options);
+    let mut opts = SvgOptions::from_options(options);
+    let render_mode = opts.render_mode.unwrap_or(geometry.render_mode);
+    opts.apply_render_mode(render_mode);
     let legend_entries = floor_material_legend_entries(geometry, &opts);
     let transform = create_transform(geometry, &opts, !legend_entries.is_empty());
     let width = number(opts.width);
     let height = number(opts.height);
     let floor_material_defs =
-        generate_floor_material_defs(&floor_material_render_entries(geometry));
+        generate_floor_material_defs(&floor_material_render_entries(geometry), &opts);
     let outdoor_areas = svg_section(
         "Outdoor Areas",
-        generate_outdoor_areas_svg(&geometry.outdoor_areas, transform),
+        generate_outdoor_areas_svg(&geometry.outdoor_areas, transform, &opts),
     );
     let floor_material_legend = svg_trailing_section(
         "Floor Material Legend",
@@ -446,31 +479,40 @@ fn floor_material_render_entries(geometry: &GeometryIr) -> Vec<FloorLegendEntry>
     entries
 }
 
-fn floor_fill(material: Option<&str>, fallback: &str) -> String {
+fn floor_fill(material: Option<&str>, fallback: &str, opts: &SvgOptions) -> String {
     let Some(material) = material else {
-        return fallback.to_string();
+        return if opts.draft_mode {
+            "#ffffff".to_string()
+        } else {
+            fallback.to_string()
+        };
     };
     if floor_material_spec(material).is_some() {
         format!("url(#{})", floor_pattern_id(material))
+    } else if opts.draft_mode {
+        "#ffffff".to_string()
     } else {
         "#f3efe7".to_string()
     }
 }
 
-fn floor_stroke(material: Option<&str>, fallback: &str) -> String {
+fn floor_stroke(material: Option<&str>, fallback: &str, opts: &SvgOptions) -> String {
+    if opts.draft_mode {
+        return "#111111".to_string();
+    }
     material
         .and_then(floor_material_spec)
         .map(|spec| spec.stroke.to_string())
         .unwrap_or_else(|| fallback.to_string())
 }
 
-fn generate_floor_material_defs(entries: &[FloorLegendEntry]) -> String {
+fn generate_floor_material_defs(entries: &[FloorLegendEntry], opts: &SvgOptions) -> String {
     if entries.is_empty() {
         return String::new();
     }
     let defs = entries
         .iter()
-        .map(|entry| indent_block(&floor_pattern_def(entry.spec), "    "))
+        .map(|entry| indent_block(&floor_pattern_def(entry.spec, opts.draft_mode), "    "))
         .collect::<Vec<_>>()
         .join("\n");
     format!("{defs}\n")
@@ -484,61 +526,86 @@ fn indent_block(input: &str, prefix: &str) -> String {
         .join("\n")
 }
 
-fn floor_pattern_def(spec: FloorMaterialSpec) -> String {
+fn floor_pattern_def(spec: FloorMaterialSpec, draft_mode: bool) -> String {
     let id = floor_pattern_id(spec.id);
+    let fill = if draft_mode { "#ffffff" } else { spec.fill };
+    let stroke = if draft_mode { "#111111" } else { spec.stroke };
     match spec.pattern {
-        FloorPatternKind::Solid => format!(
+        FloorPatternKind::Solid if draft_mode => format!(
             r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{}" />
-    </pattern>"#,
-            spec.fill
+      <rect width="12" height="12" fill="{fill}" />
+      <path d="M 0 12 L 12 0" stroke="{stroke}" stroke-width="0.55" opacity="0.55" />
+    </pattern>"#
         ),
-        FloorPatternKind::Planks => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="18" height="18">
-      <rect width="18" height="18" fill="{}" />
-      <path d="M 0 6 H 18 M 0 12 H 18 M 9 0 V 6 M 4 6 V 12 M 13 12 V 18" stroke="{}" stroke-width="0.7" opacity="0.55" />
+        FloorPatternKind::Solid => {
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="{fill}" />
+    </pattern>"#
+            )
+        }
+        FloorPatternKind::Planks => {
+            let opacity = if draft_mode { "0.85" } else { "0.55" };
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="18" height="18">
+      <rect width="18" height="18" fill="{fill}" />
+      <path d="M 0 6 H 18 M 0 12 H 18 M 9 0 V 6 M 4 6 V 12 M 13 12 V 18" stroke="{stroke}" stroke-width="0.7" opacity="{opacity}" />
     </pattern>"#,
-            spec.fill, spec.stroke
-        ),
-        FloorPatternKind::Grid => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="14" height="14">
-      <rect width="14" height="14" fill="{}" />
-      <path d="M 14 0 V 14 M 0 14 H 14" stroke="{}" stroke-width="0.65" opacity="0.5" />
+            )
+        }
+        FloorPatternKind::Grid => {
+            let opacity = if draft_mode { "0.85" } else { "0.5" };
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="14" height="14">
+      <rect width="14" height="14" fill="{fill}" />
+      <path d="M 14 0 V 14 M 0 14 H 14" stroke="{stroke}" stroke-width="0.65" opacity="{opacity}" />
     </pattern>"#,
-            spec.fill, spec.stroke
-        ),
-        FloorPatternKind::Diagonal => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{}" />
-      <path d="M -3 12 L 12 -3 M 3 15 L 15 3" stroke="{}" stroke-width="0.6" opacity="0.4" />
+            )
+        }
+        FloorPatternKind::Diagonal => {
+            let opacity = if draft_mode { "0.85" } else { "0.4" };
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="{fill}" />
+      <path d="M -3 12 L 12 -3 M 3 15 L 15 3" stroke="{stroke}" stroke-width="0.6" opacity="{opacity}" />
     </pattern>"#,
-            spec.fill, spec.stroke
-        ),
-        FloorPatternKind::RunningBond => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="24" height="16">
-      <rect width="24" height="16" fill="{}" />
-      <path d="M 0 8 H 24 M 12 0 V 8 M 0 8 V 16 M 24 8 V 16" stroke="{}" stroke-width="0.65" opacity="0.5" />
+            )
+        }
+        FloorPatternKind::RunningBond => {
+            let opacity = if draft_mode { "0.85" } else { "0.5" };
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="24" height="16">
+      <rect width="24" height="16" fill="{fill}" />
+      <path d="M 0 8 H 24 M 12 0 V 8 M 0 8 V 16 M 24 8 V 16" stroke="{stroke}" stroke-width="0.65" opacity="{opacity}" />
     </pattern>"#,
-            spec.fill, spec.stroke
-        ),
-        FloorPatternKind::Dots => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
-      <rect width="12" height="12" fill="{}" />
-      <circle cx="3" cy="3" r="0.8" fill="{}" opacity="0.45" />
-      <circle cx="9" cy="8" r="0.8" fill="{}" opacity="0.35" />
+            )
+        }
+        FloorPatternKind::Dots => {
+            let first_opacity = if draft_mode { "0.75" } else { "0.45" };
+            let second_opacity = if draft_mode { "0.6" } else { "0.35" };
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="{fill}" />
+      <circle cx="3" cy="3" r="0.8" fill="{stroke}" opacity="{first_opacity}" />
+      <circle cx="9" cy="8" r="0.8" fill="{stroke}" opacity="{second_opacity}" />
     </pattern>"#,
-            spec.fill, spec.stroke, spec.stroke
-        ),
-        FloorPatternKind::Speckles => format!(
-            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="16" height="16">
-      <rect width="16" height="16" fill="{}" />
-      <circle cx="4" cy="5" r="0.7" fill="{}" opacity="0.45" />
-      <circle cx="10" cy="3" r="0.55" fill="{}" opacity="0.35" />
-      <circle cx="13" cy="11" r="0.65" fill="{}" opacity="0.4" />
-      <circle cx="6" cy="13" r="0.5" fill="{}" opacity="0.3" />
+            )
+        }
+        FloorPatternKind::Speckles => {
+            let first_opacity = if draft_mode { "0.75" } else { "0.45" };
+            let second_opacity = if draft_mode { "0.6" } else { "0.35" };
+            let third_opacity = if draft_mode { "0.68" } else { "0.4" };
+            let fourth_opacity = if draft_mode { "0.55" } else { "0.3" };
+            format!(
+                r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="16" height="16">
+      <rect width="16" height="16" fill="{fill}" />
+      <circle cx="4" cy="5" r="0.7" fill="{stroke}" opacity="{first_opacity}" />
+      <circle cx="10" cy="3" r="0.55" fill="{stroke}" opacity="{second_opacity}" />
+      <circle cx="13" cy="11" r="0.65" fill="{stroke}" opacity="{third_opacity}" />
+      <circle cx="6" cy="13" r="0.5" fill="{stroke}" opacity="{fourth_opacity}" />
     </pattern>"#,
-            spec.fill, spec.stroke, spec.stroke, spec.stroke, spec.stroke
-        ),
+            )
+        }
     }
 }
 
@@ -551,13 +618,17 @@ fn generate_footprint_svg(footprint: &Polygon, t: Transform, opts: &SvgOptions) 
     )
 }
 
-fn generate_outdoor_areas_svg(areas: &[ResolvedOutdoorArea], t: Transform) -> String {
+fn generate_outdoor_areas_svg(
+    areas: &[ResolvedOutdoorArea],
+    t: Transform,
+    opts: &SvgOptions,
+) -> String {
     areas
         .iter()
         .map(|area| {
             let points = transform_polygon(&area.polygon.points, t);
-            let fill = floor_fill(area.floor_material.as_deref(), "#f5f6f1");
-            let stroke = floor_stroke(area.floor_material.as_deref(), "#9aa386");
+            let fill = floor_fill(area.floor_material.as_deref(), "#f5f6f1", opts);
+            let stroke = floor_stroke(area.floor_material.as_deref(), "#9aa386", opts);
             let cover = if area.kind.has_overhead_cover() {
                 format!(
                     r#"
@@ -604,7 +675,7 @@ fn generate_rooms_svg(rooms: &[ResolvedRoom], t: Transform, opts: &SvgOptions) -
         .iter()
         .map(|room| {
             let points = transform_polygon(&room.polygon.points, t);
-            let fill = floor_fill(room.floor_material.as_deref(), &opts.room_fill_color);
+            let fill = floor_fill(room.floor_material.as_deref(), &opts.room_fill_color, opts);
             format!(
                 r#"<path d="{}" fill="{}" stroke="{}" stroke-width="{}" />"#,
                 points_to_path(&points),
@@ -1658,7 +1729,7 @@ fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -
             candidate.x,
             candidate.y,
             number((opts.label_font_size * 0.82).max(9.0)),
-            floor_stroke(area.floor_material.as_deref(), "#6f7a66"),
+            floor_stroke(area.floor_material.as_deref(), "#6f7a66", opts),
             escape_xml(label)
         ));
     }
@@ -2382,13 +2453,18 @@ fn generate_floor_material_legend_svg(entries: &[FloorLegendEntry], opts: &SvgOp
 
     for (index, entry) in entries.iter().enumerate() {
         let row_y = y + header_height + index as f64 * row_height;
+        let swatch_stroke = if opts.draft_mode {
+            "#111111"
+        } else {
+            entry.spec.stroke
+        };
         rows.push(format!(
             r#"<rect x="{:.2}" y="{:.2}" width="18" height="12" fill="url(#{})" stroke="{}" stroke-width="0.8" />
     <text x="{:.2}" y="{:.2}" font-size="10" fill="{}" dominant-baseline="middle" font-family="Arial, sans-serif">{}</text>"#,
             x + 12.0,
             row_y + 4.0,
             floor_pattern_id(&entry.id),
-            entry.spec.stroke,
+            swatch_stroke,
             x + 38.0,
             row_y + 10.0,
             opts.label_color,
@@ -2398,7 +2474,7 @@ fn generate_floor_material_legend_svg(entries: &[FloorLegendEntry], opts: &SvgOp
 
     format!(
         r##"<g class="floor-material-legend">
-    <rect x="{:.2}" y="{:.2}" width="{:.2}" height="{:.2}" rx="4" fill="#ffffff" fill-opacity="0.92" stroke="#c9d0d3" stroke-width="1" />
+    <rect x="{:.2}" y="{:.2}" width="{:.2}" height="{:.2}" rx="4" fill="#ffffff" fill-opacity="0.92" stroke="{}" stroke-width="1" />
     <text x="{:.2}" y="{:.2}" font-size="11" fill="{}" font-family="Arial, sans-serif" font-weight="bold">Floor Materials</text>
     {}
   </g>"##,
@@ -2406,6 +2482,11 @@ fn generate_floor_material_legend_svg(entries: &[FloorLegendEntry], opts: &SvgOp
         y,
         width,
         height,
+        if opts.draft_mode {
+            "#111111"
+        } else {
+            "#c9d0d3"
+        },
         x + 12.0,
         y + 16.0,
         opts.label_color,

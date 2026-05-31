@@ -67,6 +67,10 @@ See [CATALOG.md](CATALOG.md) for the catalog format, BIM curation plan, and IFC 
 Indoor rooms and outdoor surfaces can carry semantic floor materials. The SVG exporter renders material patterns and an optional legend:
 
 ```planscript
+render {
+  mode draft
+}
+
 defaults {
   floor hardwood
   outdoor_floor pavers
@@ -90,6 +94,8 @@ plan "With Deck" {
 ```
 
 Supported materials include `hardwood`, `tile`, `carpet`, `concrete`, `polished_concrete`, `vinyl`, `stone`, `wood_deck`, `composite_deck`, `pavers`, `gravel`, `grass`, and `mulch`. Indoor/outdoor material mismatches produce non-fatal layout warnings.
+
+Draft mode is optional and color remains the default. Use `render { mode draft }` in PlanScript or pass `--draft` to the CLI to render SVGs with black-and-white architectural hatches.
 
 ## Door Swing Conventions
 
