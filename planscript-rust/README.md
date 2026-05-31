@@ -42,7 +42,7 @@ Wall-backed fixture categories such as sanitary, kitchen, and laundry default to
 
 Built-in fixture IDs are legally clean generic objects created for PlanScript. They include BIM semantics such as IFC class and predefined type, but they do not depend on external BIM files.
 
-Common US kitchen modules are available with inch-based IDs, including counter space widths (`builtin.kitchen.counter.size_36in`), refrigerators (`builtin.kitchen.fridge.standard_36in`, `builtin.kitchen.refrigerator.counter_depth_36in`), cooktops/stove tops (`builtin.kitchen.cooktop.size_30in`, `builtin.kitchen.stovetop.size_30in`), and ranges (`builtin.kitchen.range.size_30in`).
+Common US kitchen modules are available with inch-based IDs, including counter space widths (`builtin.kitchen.counter.size_36in`), refrigerators (`builtin.kitchen.fridge.standard_36in`, `builtin.kitchen.refrigerator.counter_depth_36in`), dishwashers (`builtin.kitchen.dishwasher.standard_24in`), cooktops/stove tops (`builtin.kitchen.cooktop.size_30in`, `builtin.kitchen.stovetop.size_30in`), and ranges (`builtin.kitchen.range.size_36in`).
 
 External catalog items use `.psobj.json`:
 

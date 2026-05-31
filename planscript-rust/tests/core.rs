@@ -398,7 +398,7 @@ fn fixture_labels_avoid_dimension_text() {
           }
 
           object range {
-            use builtin.kitchen.range.size_600
+            use builtin.kitchen.range.size_36in
             in kitchen
             attach south wall
             at 50%

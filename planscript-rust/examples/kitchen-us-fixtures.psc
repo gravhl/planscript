@@ -1,88 +1,88 @@
 units m
 
 plan "US Kitchen Fixtures" {
-  footprint rect (0, 0) (13, 5)
+  footprint rect (0, 0) (11, 6)
 
   room kitchen {
-    rect (0, 0) (10, 5)
+    rect (0, 0) (8, 6)
     label "Kitchen"
   }
 
   room pantry {
-    rect (10, 0) (13, 5)
+    rect (8, 0) (11, 6)
     label "Pantry"
   }
 
-  object counter12 {
-    use builtin.kitchen.counter.size_12in
+  object sink1 {
+    use builtin.kitchen.sink
     in kitchen
     attach north wall
-    at 0.3
+    at 1.0
     facing south
-    label "12 in Counter"
+    label "Kitchen Sink"
   }
 
-  object counter24 {
-    use builtin.kitchen.counter.size_24in
+  object dishwasher24 {
+    use builtin.kitchen.dishwasher.standard_24in
     in kitchen
     attach north wall
-    at 0.9
+    at 1.75
     facing south
-    label "24 in Counter"
+    label "24 in Dishwasher"
   }
 
-  object counter36 {
+  object prep_counter36 {
     use builtin.kitchen.counter.size_36in
     in kitchen
     attach north wall
-    at 1.7
+    at 2.70
     facing south
-    label "Stovetop Counter"
+    label "36 in Prep Counter"
   }
 
-  object cooktop30 {
-    use builtin.kitchen.stovetop.size_30in
+  object range_left_counter24 {
+    use builtin.kitchen.counter.size_24in
     in kitchen
     attach north wall
-    at 1.7
+    at 3.55
     facing south
-    label "30 in Stovetop"
+    label "24 in Landing"
+  }
+
+  object range36 {
+    use builtin.kitchen.range.size_36in
+    in kitchen
+    attach north wall
+    at 4.42
+    facing south
+    label "36 in Range"
+  }
+
+  object range_right_counter36 {
+    use builtin.kitchen.counter.size_36in
+    in kitchen
+    attach north wall
+    at 5.35
+    facing south
+    label "36 in Landing"
   }
 
   object counter48 {
     use builtin.kitchen.counter.size_48in
     in kitchen
     attach north wall
-    at 3.7
+    at 6.80
     facing south
     label "48 in Counter"
   }
 
-  object range30 {
-    use builtin.kitchen.range.size_30in
-    in kitchen
-    attach north wall
-    at 5.0
-    facing south
-    label "30 in Range"
-  }
-
-  object fridge36 {
-    use builtin.kitchen.fridge.standard_36in
+  object fridge36cd {
+    use builtin.kitchen.fridge.counter_depth_36in
     in kitchen
     attach east wall
     at 1.0
     facing west
-    label "36 in Fridge"
-  }
-
-  object fridge33cd {
-    use builtin.kitchen.refrigerator.counter_depth_33in
-    in kitchen
-    attach south wall
-    at 7.8
-    facing north
-    label "33 in Counter Depth Fridge"
+    label "36 in Counter Depth Fridge"
   }
 
   opening door d_kitchen_pantry {

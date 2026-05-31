@@ -31,8 +31,9 @@
     <path class="object-clearance" d="M 141.30 468.00 L 131.10 468.00 L 131.10 498.60 L 141.30 498.60 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 279.00 678.80 L 340.20 678.80 L 340.20 631.20 L 279.00 631.20 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 313.00 607.40 L 313.00 491.80 L 265.40 491.80 L 265.40 607.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 459.20 508.80 L 404.80 508.80 L 404.80 559.80 L 459.20 559.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
-    <path class="object-clearance" d="M 593.91 504.27 L 542.09 504.27 L 542.09 556.09 L 593.91 556.09 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 445.60 508.80 L 391.20 508.80 L 391.20 559.80 L 445.60 559.80 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 490.13 510.32 L 448.67 510.32 L 448.67 556.95 L 490.13 556.95 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 677.29 518.09 L 615.11 518.09 L 615.11 580.27 L 677.29 580.27 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 864.82 703.09 L 864.82 640.91 L 802.64 640.91 L 802.64 703.09 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 182.10 308.20 L 137.90 308.20 L 137.90 369.40 L 182.10 369.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
     <path class="object-clearance" d="M 277.30 308.20 L 233.10 308.20 L 233.10 369.40 L 277.30 369.40 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
@@ -73,30 +74,48 @@
     </g>
     <circle data-object-origin="tub1" cx="364.00" cy="549.60" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-kitchen-sink" data-object="kitchen_sink1" data-catalog-id="builtin.kitchen.sink">
-      <path class="fixture-base fixture-kitchen-sink" d="M 459.20 468.00 L 404.80 468.00 L 404.80 508.80 L 459.20 508.80 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-      <path class="fixture-detail fixture-sink-basin" d="M 452.13 475.34 L 434.18 475.34 L 434.18 501.46 L 452.13 501.46 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-sink-basin" d="M 429.82 475.34 L 411.87 475.34 L 411.87 501.46 L 429.82 501.46 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-drain" d="M 441.79 488.40 L 441.84 488.75 L 441.97 489.08 L 442.19 489.36 L 442.47 489.58 L 442.80 489.71 L 443.15 489.76 L 443.50 489.71 L 443.83 489.58 L 444.11 489.36 L 444.33 489.08 L 444.47 488.75 L 444.51 488.40 L 444.47 488.05 L 444.33 487.72 L 444.11 487.44 L 443.83 487.22 L 443.50 487.09 L 443.15 487.04 L 442.80 487.09 L 442.47 487.22 L 442.19 487.44 L 441.97 487.72 L 441.84 488.05 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-drain" d="M 419.49 488.40 L 419.53 488.75 L 419.67 489.08 L 419.89 489.36 L 420.17 489.58 L 420.50 489.71 L 420.85 489.76 L 421.20 489.71 L 421.53 489.58 L 421.81 489.36 L 422.03 489.08 L 422.16 488.75 L 422.21 488.40 L 422.16 488.05 L 422.03 487.72 L 421.81 487.44 L 421.53 487.22 L 421.20 487.09 L 420.85 487.04 L 420.50 487.09 L 420.17 487.22 L 419.89 487.44 L 419.67 487.72 L 419.53 488.05 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <line class="fixture-detail fixture-faucet" x1="432.00" y1="470.86" x2="432.00" y2="476.98" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <path class="fixture-base fixture-kitchen-sink" d="M 445.60 468.00 L 391.20 468.00 L 391.20 508.80 L 445.60 508.80 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <path class="fixture-detail fixture-sink-basin" d="M 438.53 475.34 L 420.58 475.34 L 420.58 501.46 L 438.53 501.46 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-sink-basin" d="M 416.22 475.34 L 398.27 475.34 L 398.27 501.46 L 416.22 501.46 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-drain" d="M 428.19 488.40 L 428.24 488.75 L 428.37 489.08 L 428.59 489.36 L 428.87 489.58 L 429.20 489.71 L 429.55 489.76 L 429.90 489.71 L 430.23 489.58 L 430.51 489.36 L 430.73 489.08 L 430.87 488.75 L 430.91 488.40 L 430.87 488.05 L 430.73 487.72 L 430.51 487.44 L 430.23 487.22 L 429.90 487.09 L 429.55 487.04 L 429.20 487.09 L 428.87 487.22 L 428.59 487.44 L 428.37 487.72 L 428.24 488.05 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-drain" d="M 405.89 488.40 L 405.93 488.75 L 406.07 489.08 L 406.29 489.36 L 406.57 489.58 L 406.90 489.71 L 407.25 489.76 L 407.60 489.71 L 407.93 489.58 L 408.21 489.36 L 408.43 489.08 L 408.56 488.75 L 408.61 488.40 L 408.56 488.05 L 408.43 487.72 L 408.21 487.44 L 407.93 487.22 L 407.60 487.09 L 407.25 487.04 L 406.90 487.09 L 406.57 487.22 L 406.29 487.44 L 406.07 487.72 L 405.93 488.05 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <line class="fixture-detail fixture-faucet" x1="418.40" y1="470.86" x2="418.40" y2="476.98" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
     </g>
-    <circle data-object-origin="kitchen_sink1" cx="432.00" cy="468.00" r="2.5" fill="#8a6d3b" />
-    <g class="fixture fixture-counter" data-object="cooktop_counter1" data-catalog-id="builtin.kitchen.counter.size_36in">
-      <path class="fixture-base fixture-counter" d="M 599.09 468.00 L 536.91 468.00 L 536.91 512.04 L 599.09 512.04 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-      <line class="fixture-detail fixture-counter-backsplash" x1="596.60" y1="473.29" x2="539.40" y2="473.29" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
-      <line class="fixture-detail fixture-counter-front-edge" x1="596.60" y1="508.52" x2="539.40" y2="508.52" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+    <circle data-object-origin="kitchen_sink1" cx="418.40" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-dishwasher" data-object="dishwasher1" data-catalog-id="builtin.kitchen.dishwasher.standard_24in">
+      <path class="fixture-base fixture-dishwasher" d="M 490.13 468.00 L 448.67 468.00 L 448.67 510.32 L 490.13 510.32 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <path class="fixture-detail fixture-dishwasher-door" d="M 485.98 478.16 L 452.82 478.16 L 452.82 506.08 L 485.98 506.08 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <line class="fixture-detail fixture-dishwasher-controls" x1="485.15" y1="474.77" x2="453.65" y2="474.77" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <line class="fixture-detail fixture-dishwasher-handle" x1="482.66" y1="482.39" x2="456.14" y2="482.39" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
     </g>
-    <circle data-object-origin="cooktop_counter1" cx="568.00" cy="468.00" r="2.5" fill="#8a6d3b" />
-    <g class="fixture fixture-cooktop" data-object="cooktop1" data-catalog-id="builtin.kitchen.stovetop.size_30in">
-      <path class="fixture-base fixture-cooktop" d="M 593.91 468.00 L 542.09 468.00 L 542.09 504.27 L 593.91 504.27 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-      <path class="fixture-detail fixture-cooktop-glass" d="M 589.76 472.35 L 546.24 472.35 L 546.24 499.92 L 589.76 499.92 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-burner" d="M 572.15 480.69 L 572.32 482.04 L 572.84 483.29 L 573.66 484.36 L 574.74 485.18 L 575.99 485.70 L 577.33 485.88 L 578.67 485.70 L 579.92 485.18 L 580.99 484.36 L 581.81 483.29 L 582.33 482.04 L 582.51 480.69 L 582.33 479.35 L 581.81 478.10 L 580.99 477.03 L 579.92 476.21 L 578.67 475.69 L 577.33 475.51 L 575.99 475.69 L 574.74 476.21 L 573.66 477.03 L 572.84 478.10 L 572.32 479.35 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-burner" d="M 553.49 480.69 L 553.67 482.04 L 554.19 483.29 L 555.01 484.36 L 556.08 485.18 L 557.33 485.70 L 558.67 485.88 L 560.01 485.70 L 561.26 485.18 L 562.34 484.36 L 563.16 483.29 L 563.68 482.04 L 563.85 480.69 L 563.68 479.35 L 563.16 478.10 L 562.34 477.03 L 561.26 476.21 L 560.01 475.69 L 558.67 475.51 L 557.33 475.69 L 556.08 476.21 L 555.01 477.03 L 554.19 478.10 L 553.67 479.35 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-burner" d="M 572.15 491.94 L 572.32 493.28 L 572.84 494.53 L 573.66 495.60 L 574.74 496.43 L 575.99 496.94 L 577.33 497.12 L 578.67 496.94 L 579.92 496.43 L 580.99 495.60 L 581.81 494.53 L 582.33 493.28 L 582.51 491.94 L 582.33 490.60 L 581.81 489.35 L 580.99 488.28 L 579.92 487.45 L 578.67 486.93 L 577.33 486.76 L 575.99 486.93 L 574.74 487.45 L 573.66 488.28 L 572.84 489.35 L 572.32 490.60 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <path class="fixture-detail fixture-burner" d="M 553.49 491.94 L 553.67 493.28 L 554.19 494.53 L 555.01 495.60 L 556.08 496.43 L 557.33 496.94 L 558.67 497.12 L 560.01 496.94 L 561.26 496.43 L 562.34 495.60 L 563.16 494.53 L 563.68 493.28 L 563.85 491.94 L 563.68 490.60 L 563.16 489.35 L 562.34 488.28 L 561.26 487.45 L 560.01 486.93 L 558.67 486.76 L 557.33 486.93 L 556.08 487.45 L 555.01 488.28 L 554.19 489.35 L 553.67 490.60 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
-      <line class="fixture-detail fixture-control-line" x1="584.58" y1="475.25" x2="551.42" y2="475.25" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+    <circle data-object-origin="dishwasher1" cx="469.40" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-counter" data-object="prep_counter1" data-catalog-id="builtin.kitchen.counter.size_36in">
+      <path class="fixture-base fixture-counter" d="M 561.69 468.00 L 499.51 468.00 L 499.51 512.04 L 561.69 512.04 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-counter-backsplash" x1="559.20" y1="473.29" x2="502.00" y2="473.29" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <line class="fixture-detail fixture-counter-front-edge" x1="559.20" y1="508.52" x2="502.00" y2="508.52" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
     </g>
-    <circle data-object-origin="cooktop1" cx="568.00" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <circle data-object-origin="prep_counter1" cx="530.60" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-counter" data-object="range_left_counter1" data-catalog-id="builtin.kitchen.counter.size_24in">
+      <path class="fixture-base fixture-counter" d="M 609.13 468.00 L 567.67 468.00 L 567.67 512.04 L 609.13 512.04 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-counter-backsplash" x1="607.47" y1="473.29" x2="569.33" y2="473.29" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <line class="fixture-detail fixture-counter-front-edge" x1="607.47" y1="508.52" x2="569.33" y2="508.52" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+    </g>
+    <circle data-object-origin="range_left_counter1" cx="588.40" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-range" data-object="range1" data-catalog-id="builtin.kitchen.range.size_36in">
+      <path class="fixture-base fixture-range" d="M 677.29 468.00 L 615.11 468.00 L 615.11 518.09 L 677.29 518.09 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <path class="fixture-detail fixture-burner" d="M 651.17 485.53 L 651.39 487.14 L 652.01 488.64 L 653.00 489.93 L 654.28 490.92 L 655.78 491.54 L 657.39 491.75 L 659.00 491.54 L 660.50 490.92 L 661.79 489.93 L 662.78 488.64 L 663.40 487.14 L 663.61 485.53 L 663.40 483.92 L 662.78 482.42 L 661.79 481.13 L 660.50 480.15 L 659.00 479.53 L 657.39 479.31 L 655.78 479.53 L 654.28 480.15 L 653.00 481.13 L 652.01 482.42 L 651.39 483.92 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-burner" d="M 628.79 485.53 L 629.00 487.14 L 629.62 488.64 L 630.61 489.93 L 631.90 490.92 L 633.40 491.54 L 635.01 491.75 L 636.62 491.54 L 638.12 490.92 L 639.40 489.93 L 640.39 488.64 L 641.01 487.14 L 641.23 485.53 L 641.01 483.92 L 640.39 482.42 L 639.40 481.13 L 638.12 480.15 L 636.62 479.53 L 635.01 479.31 L 633.40 479.53 L 631.90 480.15 L 630.61 481.13 L 629.62 482.42 L 629.00 483.92 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-burner" d="M 651.17 501.06 L 651.39 502.67 L 652.01 504.17 L 653.00 505.46 L 654.28 506.44 L 655.78 507.06 L 657.39 507.28 L 659.00 507.06 L 660.50 506.44 L 661.79 505.46 L 662.78 504.17 L 663.40 502.67 L 663.61 501.06 L 663.40 499.45 L 662.78 497.95 L 661.79 496.66 L 660.50 495.67 L 659.00 495.05 L 657.39 494.84 L 655.78 495.05 L 654.28 495.67 L 653.00 496.66 L 652.01 497.95 L 651.39 499.45 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-burner" d="M 628.79 501.06 L 629.00 502.67 L 629.62 504.17 L 630.61 505.46 L 631.90 506.44 L 633.40 507.06 L 635.01 507.28 L 636.62 507.06 L 638.12 506.44 L 639.40 505.46 L 640.39 504.17 L 641.01 502.67 L 641.23 501.06 L 641.01 499.45 L 640.39 497.95 L 639.40 496.66 L 638.12 495.67 L 636.62 495.05 L 635.01 494.84 L 633.40 495.05 L 631.90 495.67 L 630.61 496.66 L 629.62 497.95 L 629.00 499.45 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <line class="fixture-detail fixture-control-line" x1="669.83" y1="477.02" x2="622.57" y2="477.02" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+    </g>
+    <circle data-object-origin="range1" cx="646.20" cy="468.00" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-counter" data-object="range_right_counter1" data-catalog-id="builtin.kitchen.counter.size_36in">
+      <path class="fixture-base fixture-counter" d="M 741.89 468.00 L 679.71 468.00 L 679.71 512.04 L 741.89 512.04 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-counter-backsplash" x1="739.40" y1="473.29" x2="682.20" y2="473.29" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <line class="fixture-detail fixture-counter-front-edge" x1="739.40" y1="508.52" x2="682.20" y2="508.52" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+    </g>
+    <circle data-object-origin="range_right_counter1" cx="710.80" cy="468.00" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-fridge" data-object="fridge1" data-catalog-id="builtin.kitchen.fridge.counter_depth_36in">
       <path class="fixture-base fixture-fridge" d="M 908.00 703.09 L 908.00 640.91 L 864.82 640.91 L 864.82 703.09 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
       <line class="fixture-detail fixture-door-split" x1="904.55" y1="670.76" x2="868.27" y2="670.76" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
@@ -189,9 +208,12 @@
     <text class="fixture-label" data-object-label="lav1" x="160.00" y="508.93" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Sink</text>
     <text class="fixture-label" data-object-label="shower1" x="309.60" y="750.33" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
     <text class="fixture-label" data-object-label="tub1" x="338.50" y="617.73" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Tub</text>
-    <text class="fixture-label" data-object-label="kitchen_sink1" x="432.00" y="519.13" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen Sink</text>
-    <text class="fixture-label" data-object-label="cooktop_counter1" x="568.00" y="522.38" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Cooktop Counter</text>
-    <text class="fixture-label" data-object-label="cooktop1" x="568.00" y="457.67" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Cooktop</text>
+    <text class="fixture-label" data-object-label="kitchen_sink1" x="418.40" y="519.13" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen Sink</text>
+    <text class="fixture-label" data-object-label="dishwasher1" x="461.90" y="457.67" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dishwasher</text>
+    <text class="fixture-label" data-object-label="prep_counter1" x="530.60" y="522.38" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Prep Counter</text>
+    <text class="fixture-label" data-object-label="range_left_counter1" x="588.40" y="522.38" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Landing</text>
+    <text class="fixture-label" data-object-label="range1" x="646.20" y="528.42" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">36 in Range</text>
+    <text class="fixture-label" data-object-label="range_right_counter1" x="722.05" y="522.38" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Landing Counter</text>
     <text class="fixture-label" data-object-label="fridge1" x="886.41" y="713.42" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Fridge</text>
     <text class="fixture-label" data-object-label="washer1" x="160.00" y="318.53" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Washer</text>
     <text class="fixture-label" data-object-label="dryer1" x="255.20" y="318.53" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Dryer</text>

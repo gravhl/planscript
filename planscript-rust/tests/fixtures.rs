@@ -415,6 +415,15 @@ fn builtins_include_common_us_kitchen_sizes() {
         assert_close(item.size.depth, inches(25.0), 1e-9);
     }
 
+    for (id, width) in [
+        ("builtin.kitchen.dishwasher.compact_18in", 18),
+        ("builtin.kitchen.dishwasher.standard_24in", 24),
+    ] {
+        let item = catalog.get(id).unwrap_or_else(|| panic!("{id}"));
+        assert_close(item.size.width, inches(width as f64), 1e-9);
+        assert_close(item.size.depth, inches(24.5), 1e-9);
+    }
+
     for width in [15, 24, 30, 36, 48] {
         let id = format!("builtin.kitchen.cooktop.size_{width}in");
         let item = catalog.get(&id).unwrap_or_else(|| panic!("{id}"));
@@ -464,12 +473,21 @@ fn compiles_and_draws_us_kitchen_builtins() {
           }
 
           object range1 {
-            use builtin.kitchen.range.size_30in
+            use builtin.kitchen.range.size_36in
             in kitchen
             attach north wall
             at 4.0
             facing south
-            label "Range"
+            label "36 in Range"
+          }
+
+          object dishwasher1 {
+            use builtin.kitchen.dishwasher.standard_24in
+            in kitchen
+            attach north wall
+            at 5.2
+            facing south
+            label "Dishwasher"
           }
 
           object fridge1 {
@@ -488,7 +506,7 @@ fn compiles_and_draws_us_kitchen_builtins() {
     let result = compile(source, CompileOptions::default());
     assert!(result.success, "{:?}", result.errors);
     let geometry = result.geometry.expect("geometry");
-    assert_eq!(geometry.objects.len(), 4);
+    assert_eq!(geometry.objects.len(), 5);
     let svg = result.svg.expect("svg");
     assert!(svg.contains(r#"class="fixture fixture-counter""#));
     assert!(svg.contains(r#"class="fixture-detail fixture-counter-front-edge""#));
@@ -496,6 +514,7 @@ fn compiles_and_draws_us_kitchen_builtins() {
     assert!(svg.contains(r#"class="fixture-detail fixture-cooktop-glass""#));
     assert!(svg.contains(r#"class="fixture fixture-range""#));
     assert!(svg.contains(r#"class="fixture fixture-fridge""#));
+    assert!(svg.contains(r#"class="fixture fixture-dishwasher""#));
 }
 
 #[test]
