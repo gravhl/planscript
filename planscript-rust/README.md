@@ -139,6 +139,18 @@ Supported swing values:
 
 Single doors default to `door_width` from `defaults` or `0.9m`. Double doors default to two standard leaves, so their default total width is `2 * door_width`. Any door can override the total opening width with `width <value>`.
 
+Pocket doors use the same placement rules and render as a sliding panel tucked into a wall pocket:
+
+```planscript
+opening pocket door d_bath {
+  between hall and bath
+  on shared_edge
+  at 50%
+  width 1.1
+  slide right
+}
+```
+
 ## Library
 
 The crate exposes the main PlanScript pipeline:

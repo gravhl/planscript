@@ -1,7 +1,7 @@
 use crate::ast::{
     CardinalDirection, DimensionDeclaration, DimensionFixtureSelection, DimensionRoomSelection,
-    DimensionUnitSystem, DimensionWallSelection, DimensionWallTarget, DoorSwing, EdgeSide,
-    FloorMaterialLegendMode, Point, Program, RenderMode,
+    DimensionUnitSystem, DimensionWallSelection, DimensionWallTarget, DoorSlideDirection,
+    DoorSwing, EdgeSide, FloorMaterialLegendMode, Point, Program, RenderMode,
 };
 use crate::flooring::{floor_material_spec, floor_pattern_id, FloorMaterialSpec, FloorPatternKind};
 use crate::geometry::{
@@ -1621,13 +1621,152 @@ fn generate_openings_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions)
             color,
             number(stroke)
         ));
-        if opening.opening_type == OpeningPlacementType::Door
-            && (opening.swing.is_some() || opening.double)
-        {
-            out.push(render_door_swing(opening, plan_p1, plan_p2, t, color));
+        if opening.opening_type == OpeningPlacementType::Door {
+            if opening.pocket {
+                out.push(render_pocket_door(opening, plan_p1, plan_p2, t, color));
+            } else if opening.swing.is_some() || opening.double {
+                out.push(render_door_swing(opening, plan_p1, plan_p2, t, color));
+            }
         }
     }
     out.join("\n    ")
+}
+
+fn render_pocket_door(
+    opening: &crate::geometry::OpeningPlacement,
+    plan_p1: Point,
+    plan_p2: Point,
+    t: Transform,
+    color: &str,
+) -> String {
+    let outside = opening.outside_normal.unwrap_or(Point { x: 0.0, y: -1.0 });
+    let (left, right) = left_right_points_from_outside(plan_p1, plan_p2, outside);
+    let width = distance(left, right);
+    if width <= 0.0 {
+        return String::new();
+    }
+    let wall_dir = Point {
+        x: (right.x - left.x) / width,
+        y: (right.y - left.y) / width,
+    };
+    let slide_dir = match opening.slide.unwrap_or(DoorSlideDirection::Right) {
+        DoorSlideDirection::Left => Point {
+            x: -wall_dir.x,
+            y: -wall_dir.y,
+        },
+        DoorSlideDirection::Right => wall_dir,
+    };
+    let pocket_start = match opening.slide.unwrap_or(DoorSlideDirection::Right) {
+        DoorSlideDirection::Left => left,
+        DoorSlideDirection::Right => right,
+    };
+    let pocket_end = Point {
+        x: pocket_start.x + slide_dir.x * opening.width,
+        y: pocket_start.y + slide_dir.y * opening.width,
+    };
+    let pocket_offset = 3.0 / t.scale;
+    let leaf_offset = 6.0 / t.scale;
+    let arrow_offset = 11.0 / t.scale;
+    let trim = (4.0 / t.scale).min(opening.width * 0.12);
+    let pocket_line_start = offset_point(pocket_start, outside, pocket_offset);
+    let pocket_line_end = offset_point(pocket_end, outside, pocket_offset);
+    let leaf_start = offset_point(
+        Point {
+            x: pocket_start.x + slide_dir.x * trim,
+            y: pocket_start.y + slide_dir.y * trim,
+        },
+        outside,
+        leaf_offset,
+    );
+    let leaf_end = offset_point(
+        Point {
+            x: pocket_end.x - slide_dir.x * trim,
+            y: pocket_end.y - slide_dir.y * trim,
+        },
+        outside,
+        leaf_offset,
+    );
+    let arrow_start_plan = offset_point(midpoint(plan_p1, plan_p2), outside, arrow_offset);
+    let arrow_end_plan = offset_point(
+        Point {
+            x: pocket_start.x + slide_dir.x * opening.width * 0.5,
+            y: pocket_start.y + slide_dir.y * opening.width * 0.5,
+        },
+        outside,
+        arrow_offset,
+    );
+    let pocket_line_start = transform_point(pocket_line_start, t);
+    let pocket_line_end = transform_point(pocket_line_end, t);
+    let leaf_start = transform_point(leaf_start, t);
+    let leaf_end = transform_point(leaf_end, t);
+    let arrow_start = transform_point(arrow_start_plan, t);
+    let arrow_end = transform_point(arrow_end_plan, t);
+    let arrowhead = pocket_arrowhead(arrow_end_plan, slide_dir, t, color);
+    format!(
+        r#"<g class="pocket-door" data-pocket-door="{}">
+      <line class="pocket-door-pocket" x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="{}" stroke-width="1" stroke-linecap="round" />
+      {}
+    </g>"#,
+        escape_xml(&opening.id),
+        pocket_line_start.x,
+        pocket_line_start.y,
+        pocket_line_end.x,
+        pocket_line_end.y,
+        color,
+        leaf_start.x,
+        leaf_start.y,
+        leaf_end.x,
+        leaf_end.y,
+        color,
+        arrow_start.x,
+        arrow_start.y,
+        arrow_end.x,
+        arrow_end.y,
+        color,
+        arrowhead
+    )
+}
+
+fn pocket_arrowhead(end: Point, slide_dir: Point, t: Transform, color: &str) -> String {
+    let dir = normalize(slide_dir);
+    let size = 6.0 / t.scale;
+    let half = 3.0 / t.scale;
+    let base = Point {
+        x: end.x - dir.x * size,
+        y: end.y - dir.y * size,
+    };
+    let perp = Point {
+        x: -dir.y,
+        y: dir.x,
+    };
+    let a = transform_point(
+        Point {
+            x: base.x + perp.x * half,
+            y: base.y + perp.y * half,
+        },
+        t,
+    );
+    let b = transform_point(end, t);
+    let c = transform_point(
+        Point {
+            x: base.x - perp.x * half,
+            y: base.y - perp.y * half,
+        },
+        t,
+    );
+    format!(
+        r#"<polyline class="pocket-door-arrow" points="{:.2},{:.2} {:.2},{:.2} {:.2},{:.2}" fill="none" stroke="{}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />"#,
+        a.x, a.y, b.x, b.y, c.x, c.y, color
+    )
+}
+
+fn offset_point(point: Point, normal: Point, offset: f64) -> Point {
+    Point {
+        x: point.x + normal.x * offset,
+        y: point.y + normal.y * offset,
+    }
 }
 
 fn render_door_swing(
@@ -1728,6 +1867,18 @@ fn midpoint(a: Point, b: Point) -> Point {
 
 fn dot(a: Point, b: Point) -> f64 {
     a.x * b.x + a.y * b.y
+}
+
+fn normalize(vector: Point) -> Point {
+    let length = (vector.x * vector.x + vector.y * vector.y).sqrt();
+    if length <= 1e-9 {
+        Point { x: 1.0, y: 0.0 }
+    } else {
+        Point {
+            x: vector.x / length,
+            y: vector.y / length,
+        }
+    }
 }
 
 fn arc_sweep(hinge: Point, closed: Point, open: Point) -> u8 {

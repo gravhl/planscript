@@ -1,6 +1,6 @@
 use planscript::ast::{
     DimensionFixtureSelection, DimensionRoomSelection, DimensionUnitSystem, DimensionWallSelection,
-    DoorSwing, RenderMode,
+    DoorSlideDirection, DoorSwing, Opening, RenderMode,
 };
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
@@ -642,6 +642,58 @@ fn renders_handed_and_double_door_swings() {
     let svg = result.svg.unwrap();
     assert_eq!(svg.matches(r#"class="door-swing""#).count(), 4);
     assert_eq!(svg.matches(r#"class="door-leaf""#).count(), 4);
+}
+
+#[test]
+fn renders_pocket_door_without_swing_arc() {
+    let source = r#"
+        units m
+
+        plan {
+          footprint rect (0,0) (5,3)
+          room hall { rect (0,0) (1,3) }
+          room bath { rect (1,0) (5,3) }
+
+          opening pocket door d_bath {
+            between hall and bath
+            on shared_edge
+            at 50%
+            width 1.1
+            slide right
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    let Opening::DoorOpening(door) = &ast.plan.openings[0] else {
+        panic!("expected door");
+    };
+    assert!(door.pocket);
+    assert_eq!(door.slide, Some(DoorSlideDirection::Right));
+    assert!(door.swing.is_none());
+
+    let lowered = lower(&ast).expect("lower");
+    let geometry = generate_geometry(&lowered);
+    let pocket = geometry
+        .openings
+        .iter()
+        .find(|opening| opening.id == "d_bath")
+        .unwrap();
+    assert!(pocket.pocket);
+    assert_eq!(pocket.slide, Some(DoorSlideDirection::Right));
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    assert!(
+        result.warnings.is_empty(),
+        "pocket doors should not get swing warnings: {:?}",
+        result.warnings
+    );
+    let svg = result.svg.unwrap();
+    assert!(svg.contains(r#"class="pocket-door""#));
+    assert!(svg.contains(r#"class="door-leaf pocket-door-leaf""#));
+    assert!(svg.contains(r#"class="pocket-door-slide""#));
+    assert!(!svg.contains(r#"class="door-swing""#));
 }
 
 #[test]

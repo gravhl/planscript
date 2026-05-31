@@ -9,6 +9,6 @@ Derived layout description:
 The example models an accessible three-quarter bathroom entered from a hall. It includes a wide door, roll-under sink, comfort-height toilet transfer zone, roll-in shower, and an open central turning area.
 
 PlanScript interpretation notes:
-- PlanScript does not currently have pocket-door syntax, so the wide entry is represented as a wider swinging door.
+- The wide entry uses PlanScript pocket-door syntax so it slides open instead of swinging into the clear floor area.
 - Grab bars and benches are described in labels/notes rather than separate catalog objects.
 - The layout intentionally leaves the center of the room clear.

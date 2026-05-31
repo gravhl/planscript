@@ -69,9 +69,13 @@
     <line x1="225.60" y1="179.20" x2="750.00" y2="179.20" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
 
   <!-- Openings (doors/windows) -->
-  <line x1="225.60" y1="475.90" x2="225.60" y2="324.10" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
-    <line class="door-leaf" x1="225.60" y1="324.10" x2="377.40" y2="324.10" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
-    <path class="door-swing" d="M 225.60 475.90 A 151.80 151.80 0 0 0 377.40 324.10" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+  <line x1="225.60" y1="489.15" x2="225.60" y2="337.35" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <g class="pocket-door" data-pocket-door="d_hall_bath">
+      <line class="pocket-door-pocket" x1="222.60" y1="489.15" x2="222.60" y2="640.95" stroke="#e74c3c" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="219.60" y1="493.15" x2="219.60" y2="636.95" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="214.60" y1="413.25" x2="214.60" y2="565.05" stroke="#e74c3c" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="217.60,559.05 214.60,565.05 211.60,559.05" fill="none" stroke="#e74c3c" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
 
   <!-- Labels -->
   <text class="room-label" data-room-label="hall" x="142.80" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hall</text>

@@ -20,6 +20,9 @@ pub fn layout_warnings(geometry: &GeometryIr) -> Vec<String> {
         if opening.opening_type != OpeningPlacementType::Door {
             continue;
         }
+        if opening.pocket {
+            continue;
+        }
 
         let Some(host_wall) = geometry
             .walls

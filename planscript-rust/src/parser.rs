@@ -1217,11 +1217,16 @@ impl Parser {
         self.expect_keyword("opening")?;
         if self.consume_keyword("double") {
             self.expect_keyword("door")?;
-            self.parse_door_opening(true)
+            self.parse_door_opening(true, false)
         } else if self.consume_keyword("double_door") {
-            self.parse_door_opening(true)
+            self.parse_door_opening(true, false)
+        } else if self.consume_keyword("pocket") {
+            self.expect_keyword("door")?;
+            self.parse_door_opening(false, true)
+        } else if self.consume_keyword("pocket_door") {
+            self.parse_door_opening(false, true)
         } else if self.consume_keyword("door") {
-            self.parse_door_opening(false)
+            self.parse_door_opening(false, false)
         } else if self.consume_keyword("window") {
             self.parse_window_opening()
         } else {
@@ -1229,7 +1234,11 @@ impl Parser {
         }
     }
 
-    fn parse_door_opening(&mut self, default_double: bool) -> Result<Opening, ParseError> {
+    fn parse_door_opening(
+        &mut self,
+        default_double: bool,
+        default_pocket: bool,
+    ) -> Result<Opening, ParseError> {
         let name = self.expect_ident()?;
         self.expect_symbol("{")?;
         let mut between = None;
@@ -1240,6 +1249,8 @@ impl Parser {
         let mut swing = None;
         let mut swing_room = None;
         let mut double = default_double;
+        let mut pocket = default_pocket;
+        let mut slide = None;
 
         while !self.consume_symbol("}") {
             if self.consume_keyword("between") {
@@ -1270,6 +1281,13 @@ impl Parser {
                 }
             } else if self.consume_keyword("double") {
                 double = true;
+            } else if self.consume_keyword("pocket") {
+                pocket = true;
+            } else if self.consume_keyword("slide") {
+                let raw = self.expect_ident()?;
+                slide = DoorSlideDirection::from_token(&raw)
+                    .ok_or_else(|| self.error_here(format!("Unknown pocket door slide '{raw}'")))
+                    .map(Some)?;
             } else {
                 return Err(self.error_here("Expected door content"));
             }
@@ -1286,6 +1304,8 @@ impl Parser {
             swing,
             swing_room,
             double,
+            pocket,
+            slide,
         }))
     }
 

@@ -80,6 +80,7 @@ fn examples_compile_with_handed_doors_and_room_connections() {
     let mut failures = Vec::new();
     let mut handed_doors = 0;
     let mut double_doors = 0;
+    let mut pocket_doors = 0;
 
     for path in example_files() {
         let result = compile_example(&path);
@@ -111,7 +112,9 @@ fn examples_compile_with_handed_doors_and_room_connections() {
                 continue;
             }
 
-            if opening.swing.is_some() {
+            if opening.pocket {
+                pocket_doors += 1;
+            } else if opening.swing.is_some() {
                 handed_doors += 1;
             } else {
                 failures.push(format!(
@@ -154,4 +157,5 @@ fn examples_compile_with_handed_doors_and_room_connections() {
         "examples should exercise handed door swings"
     );
     assert!(double_doors > 0, "examples should exercise double doors");
+    assert!(pocket_doors > 0, "examples should exercise pocket doors");
 }

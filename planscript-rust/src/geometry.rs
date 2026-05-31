@@ -1,6 +1,6 @@
 use crate::ast::{
-    ClearanceSide, DimensionDeclaration, DoorSwing, EdgeSide, FloorMaterialLegendMode, Opening,
-    OutdoorAreaKind, Point, Position, RenderMode,
+    ClearanceSide, DimensionDeclaration, DoorSlideDirection, DoorSwing, EdgeSide,
+    FloorMaterialLegendMode, Opening, OutdoorAreaKind, Point, Position, RenderMode,
 };
 use crate::lowering::LoweredProgram;
 use serde::{Deserialize, Serialize};
@@ -43,6 +43,10 @@ pub struct OpeningPlacement {
     pub swing_room: Option<String>,
     #[serde(default, skip_serializing_if = "is_false")]
     pub double: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub pocket: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub slide: Option<DoorSlideDirection>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub outside_normal: Option<Point>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -559,6 +563,8 @@ fn place_openings(
                             swing: door.swing,
                             swing_room: door.swing_room.clone(),
                             double: door.double,
+                            pocket: door.pocket,
+                            slide: door.slide,
                             outside_normal: room_side_normal(shared, rooms, room1),
                             sill: None,
                         });
@@ -575,6 +581,8 @@ fn place_openings(
                             swing: door.swing,
                             swing_room: door.swing_room.clone(),
                             double: door.double,
+                            pocket: door.pocket,
+                            slide: door.slide,
                             outside_normal: Some(edge_outside_normal(edge)),
                             sill: None,
                         });
@@ -600,6 +608,8 @@ fn place_openings(
                         swing: None,
                         swing_room: None,
                         double: false,
+                        pocket: false,
+                        slide: None,
                         outside_normal: Some(edge_outside_normal(window.edge)),
                         sill: window.sill,
                     });
