@@ -7,20 +7,20 @@ defaults {
   floor tile
 }
 
-plan "Real World 09 Accessible Roll In Bath" {
-  footprint rect (0,0) (5,4.2)
+plan "Real World 09 Accessible Roll In Bath With Warning" {
+  footprint rect (0,0) (5,3.2)
   legend {
     floor_materials auto
   }
 
   room hall {
-    rect (0,0) (1.2,4.2)
+    rect (0,0) (1.2,3.2)
     floor vinyl
     label "Hall"
   }
 
   room accessible_bath {
-    rect (1.2,0) (5,4.2)
+    rect (1.2,0) (5,3.2)
     floor tile
     label "Clear Turning Area"
   }

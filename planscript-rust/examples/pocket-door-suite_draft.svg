@@ -40,26 +40,26 @@
     <line x1="533.85" y1="129.23" x2="940.00" y2="129.23" stroke="#111111" stroke-width="3" stroke-linecap="round" />
 
   <!-- Openings (doors/windows) -->
-  <line x1="533.85" y1="586.15" x2="533.85" y2="484.62" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+  <line x1="533.85" y1="535.38" x2="533.85" y2="433.85" stroke="#111111" stroke-width="4" stroke-linecap="round" />
     <g class="pocket-door" data-pocket-door="d_bed_dressing">
-      <line class="pocket-door-pocket" x1="530.85" y1="586.15" x2="530.85" y2="687.69" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
-      <line class="door-leaf pocket-door-leaf" x1="527.85" y1="590.15" x2="527.85" y2="683.69" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
-      <line class="pocket-door-slide" x1="522.85" y1="535.38" x2="522.85" y2="636.92" stroke="#111111" stroke-width="1" stroke-linecap="round" />
-      <polyline class="pocket-door-arrow" points="525.85,630.92 522.85,636.92 519.85,630.92" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+      <line class="pocket-door-pocket" x1="530.85" y1="535.38" x2="530.85" y2="636.92" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="527.85" y1="539.38" x2="527.85" y2="632.92" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="522.85" y1="484.62" x2="522.85" y2="586.15" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="525.85,580.15 522.85,586.15 519.85,580.15" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
     </g>
-    <line x1="736.92" y1="586.15" x2="736.92" y2="484.62" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line x1="736.92" y1="636.92" x2="736.92" y2="535.38" stroke="#111111" stroke-width="4" stroke-linecap="round" />
     <g class="pocket-door" data-pocket-door="d_dressing_bath">
-      <line class="pocket-door-pocket" x1="733.92" y1="484.62" x2="733.92" y2="383.08" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
-      <line class="door-leaf pocket-door-leaf" x1="730.92" y1="480.62" x2="730.92" y2="387.08" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
-      <line class="pocket-door-slide" x1="725.92" y1="535.38" x2="725.92" y2="433.85" stroke="#111111" stroke-width="1" stroke-linecap="round" />
-      <polyline class="pocket-door-arrow" points="722.92,439.85 725.92,433.85 728.92,439.85" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+      <line class="pocket-door-pocket" x1="733.92" y1="535.38" x2="733.92" y2="433.85" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="730.92" y1="531.38" x2="730.92" y2="437.85" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="725.92" y1="586.15" x2="725.92" y2="484.62" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="722.92,490.62 725.92,484.62 728.92,490.62" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
     </g>
-    <line x1="584.62" y1="400.00" x2="686.15" y2="400.00" stroke="#111111" stroke-width="4" stroke-linecap="round" />
+    <line x1="559.23" y1="400.00" x2="643.85" y2="400.00" stroke="#111111" stroke-width="4" stroke-linecap="round" />
     <g class="pocket-door" data-pocket-door="d_dressing_closet">
-      <line class="pocket-door-pocket" x1="686.15" y1="403.00" x2="787.69" y2="403.00" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
-      <line class="door-leaf pocket-door-leaf" x1="690.15" y1="406.00" x2="783.69" y2="406.00" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
-      <line class="pocket-door-slide" x1="635.38" y1="411.00" x2="736.92" y2="411.00" stroke="#111111" stroke-width="1" stroke-linecap="round" />
-      <polyline class="pocket-door-arrow" points="730.92,408.00 736.92,411.00 730.92,414.00" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+      <line class="pocket-door-pocket" x1="643.85" y1="403.00" x2="728.46" y2="403.00" stroke="#111111" stroke-width="1" stroke-dasharray="4,2" stroke-linecap="round" opacity="0.85" />
+      <line class="door-leaf pocket-door-leaf" x1="647.85" y1="406.00" x2="724.46" y2="406.00" stroke="#111111" stroke-width="1.5" stroke-linecap="round" />
+      <line class="pocket-door-slide" x1="601.54" y1="411.00" x2="686.15" y2="411.00" stroke="#111111" stroke-width="1" stroke-linecap="round" />
+      <polyline class="pocket-door-arrow" points="680.15,408.00 686.15,411.00 680.15,414.00" fill="none" stroke="#111111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
     </g>
     <line x1="60.00" y1="484.62" x2="60.00" y2="315.38" stroke="#111111" stroke-width="3" stroke-linecap="round" />
     <line x1="940.00" y1="586.15" x2="940.00" y2="484.62" stroke="#111111" stroke-width="3" stroke-linecap="round" />
