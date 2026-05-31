@@ -1,4 +1,4 @@
-use planscript::ast::DoorSwing;
+use planscript::ast::{DoorSwing, RenderMode};
 use planscript::compiler::{compile, CompileOptions};
 use planscript::exporters::{JsonExportOptions, SvgExportOptions};
 use planscript::geometry::{calculate_polygon_area, generate_geometry};
@@ -189,6 +189,85 @@ fn compiles_floor_materials_outdoor_areas_and_legend() {
     let json = result.json.expect("json");
     assert!(json.contains("\"outdoorAreas\""));
     assert!(json.contains("\"floorMaterial\": \"wood_deck\""));
+}
+
+#[test]
+fn renders_draft_mode_as_black_and_white_hatches() {
+    let source = r#"
+        render {
+          mode draft
+        }
+
+        defaults {
+          floor hardwood
+          outdoor_floor wood_deck
+        }
+
+        plan "Draft Floors" {
+          footprint rect (0,0) (8,6)
+          legend { floor_materials auto }
+
+          room living {
+            rect (0,0) (8,6)
+            floor tile
+          }
+
+          outdoor deck rear_deck {
+            rect (0,6) (8,9)
+            floor wood_deck
+          }
+        }
+    "#;
+
+    let ast = parse(source).expect("parse");
+    assert_eq!(
+        ast.render.as_ref().map(|render| render.mode),
+        Some(RenderMode::Draft)
+    );
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r#"class="floor-material-legend""#));
+    assert!(svg.contains(r##"fill="#ffffff""##));
+    assert!(svg.contains(r##"stroke="#111111""##));
+    assert!(svg.contains("floor-material-wood-deck"));
+    assert!(!svg.contains("#d8b47a"));
+    assert!(!svg.contains("#8f6632"));
+    assert!(!svg.contains("#e74c3c"));
+    assert!(!svg.contains("#3498db"));
+}
+
+#[test]
+fn svg_export_options_can_force_draft_mode() {
+    let source = r#"
+        defaults {
+          floor hardwood
+        }
+
+        plan "Draft Option" {
+          footprint rect (0,0) (8,6)
+          legend { floor_materials auto }
+          room living { rect (0,0) (8,6) }
+        }
+    "#;
+
+    let result = compile(
+        source,
+        CompileOptions {
+            svg_options: Some(SvgExportOptions {
+                render_mode: Some(RenderMode::Draft),
+                ..Default::default()
+            }),
+            ..Default::default()
+        },
+    );
+
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r##"stroke="#111111""##));
+    assert!(!svg.contains("#f2dfbf"));
+    assert!(!svg.contains("#b98d56"));
 }
 
 #[test]
