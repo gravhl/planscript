@@ -941,6 +941,8 @@ opening door <id> {
   width <value>           # Optional if defaults set
   swing <lh|rh|lhr|rhr>   # Rust: optional door hand convention
   double                  # Rust: optional double-door leaves
+  pocket                  # Rust: optional pocket/sliding door
+  slide <left|right>      # Rust: optional pocket direction
 }
 ```
 
@@ -965,6 +967,8 @@ opening door <id> {
   width <value>           # Optional if defaults set
   swing <lh|rh|lhr|rhr>   # Rust: optional door hand convention
   double                  # Rust: optional double-door leaves
+  pocket                  # Rust: optional pocket/sliding door
+  slide <left|right>      # Rust: optional pocket direction
 }
 ```
 
@@ -997,6 +1001,22 @@ opening double door d_patio {
   swing lh
 }
 ```
+
+#### Pocket Doors (Rust)
+
+Use `opening pocket door <id> { ... }` for a door that slides into a wall pocket instead of swinging. Pocket doors use normal door placement and width defaults, but render without a swing arc. `slide left` or `slide right` chooses the pocket side as viewed from the outside side of the wall or the first room listed in `between`.
+
+```planscript
+opening pocket door d_bath {
+  between hall and bath
+  on shared_edge
+  at 50%
+  width 1.1
+  slide right
+}
+```
+
+You can also add `pocket` inside a regular `opening door` block.
 
 ### Windows
 

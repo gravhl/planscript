@@ -578,6 +578,10 @@ pub struct DoorOpening {
     pub swing_room: Option<String>,
     #[serde(default, skip_serializing_if = "is_false")]
     pub double: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub pocket: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub slide: Option<DoorSlideDirection>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -613,6 +617,23 @@ impl DoorSwing {
 
     pub fn hinge_is_left(self) -> bool {
         matches!(self, Self::LeftHand | Self::LeftHandReverse)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DoorSlideDirection {
+    Left,
+    Right,
+}
+
+impl DoorSlideDirection {
+    pub fn from_token(raw: &str) -> Option<Self> {
+        match raw.to_ascii_lowercase().as_str() {
+            "left" => Some(Self::Left),
+            "right" => Some(Self::Right),
+            _ => None,
+        }
     }
 }
 

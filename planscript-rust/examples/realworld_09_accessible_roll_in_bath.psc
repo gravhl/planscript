@@ -52,12 +52,12 @@ plan "Real World 09 Accessible Roll In Bath" {
     label "Roll-In Shower"
   }
 
-  opening door d_hall_bath {
+  opening pocket door d_hall_bath {
     between hall and accessible_bath
     on shared_edge
-    at 50%
+    at 47%
     width 1.1
-    swing lh
+    slide right
   }
 
   assert no_overlap rooms
