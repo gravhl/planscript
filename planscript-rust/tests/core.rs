@@ -381,6 +381,41 @@ fn renders_targeted_wall_and_fixture_dimensions() {
 }
 
 #[test]
+fn fixture_labels_avoid_dimension_text() {
+    let source = r#"
+        units ft
+
+        plan "Dimension Label Collision" {
+          footprint rect (0,0) (12,8)
+
+          dimensions {
+            fixtures range
+          }
+
+          room kitchen {
+            rect (0,0) (12,8)
+            label "Kitchen"
+          }
+
+          object range {
+            use builtin.kitchen.range.size_600
+            in kitchen
+            attach south wall
+            at 50%
+            facing north
+          }
+        }
+    "#;
+
+    let result = compile(source, CompileOptions::default());
+    assert!(result.success, "{:?}", result.errors);
+    let svg = result.svg.expect("svg");
+    assert!(svg.contains(r#"data-object-label="range""#));
+    assert!(svg.contains(r#"data-fixture-dimension="range""#));
+    assert_svg_text_does_not_overlap(&svg);
+}
+
+#[test]
 fn omits_floor_legend_when_no_floor_materials_are_declared() {
     let source = r#"
         plan "No Floor Legend" {
@@ -621,4 +656,111 @@ fn warns_when_door_swing_intersects_wall_but_still_renders() {
         "{:?}",
         result.warnings
     );
+}
+
+#[derive(Debug)]
+struct SvgTextBox {
+    label: String,
+    rect: TestRect,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct TestRect {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+}
+
+fn assert_svg_text_does_not_overlap(svg: &str) {
+    let boxes = svg_text_boxes(svg);
+    for (i, a) in boxes.iter().enumerate() {
+        for b in boxes.iter().skip(i + 1) {
+            let overlap = rect_overlap(a.rect, b.rect);
+            assert!(
+                overlap <= 0.25,
+                "SVG text overlaps by {overlap:.2}: '{}' {:?} and '{}' {:?}",
+                a.label,
+                a.rect,
+                b.label,
+                b.rect
+            );
+        }
+    }
+}
+
+fn svg_text_boxes(svg: &str) -> Vec<SvgTextBox> {
+    svg.lines()
+        .filter(|line| line.contains("<text"))
+        .filter_map(|line| {
+            let x = extract_svg_attr(line, "x")?.parse::<f64>().ok()?;
+            let y = extract_svg_attr(line, "y")?.parse::<f64>().ok()?;
+            let font_size = extract_svg_attr(line, "font-size")?.parse::<f64>().ok()?;
+            let label = svg_text_content(line);
+            let rotation = extract_svg_attr(line, "transform")
+                .and_then(parse_svg_rotation)
+                .unwrap_or(0.0);
+            Some(SvgTextBox {
+                rect: rotated_text_rect(&label, font_size, x, y, rotation),
+                label,
+            })
+        })
+        .collect()
+}
+
+fn extract_svg_attr<'a>(line: &'a str, name: &str) -> Option<&'a str> {
+    let needle = format!(r#"{name}=""#);
+    let start = line.find(&needle)? + needle.len();
+    let end = line[start..].find('"')? + start;
+    Some(&line[start..end])
+}
+
+fn svg_text_content(line: &str) -> String {
+    let Some(start) = line.find('>').map(|index| index + 1) else {
+        return String::new();
+    };
+    let end = line[start..]
+        .find("</text>")
+        .map(|index| start + index)
+        .unwrap_or(line.len());
+    line[start..end].to_string()
+}
+
+fn parse_svg_rotation(transform: &str) -> Option<f64> {
+    let body = transform.strip_prefix("rotate(")?.strip_suffix(')')?;
+    body.split(',').next()?.trim().parse::<f64>().ok()
+}
+
+fn rotated_text_rect(label: &str, font_size: f64, x: f64, y: f64, rotation: f64) -> TestRect {
+    let width = label.chars().count() as f64 * font_size * 0.56;
+    let height = font_size * 1.15;
+    let radians = rotation.to_radians();
+    let cos = radians.cos();
+    let sin = radians.sin();
+    let mut rect = TestRect {
+        min_x: f64::INFINITY,
+        max_x: f64::NEG_INFINITY,
+        min_y: f64::INFINITY,
+        max_y: f64::NEG_INFINITY,
+    };
+    for (local_x, local_y) in [
+        (-width / 2.0, -height / 2.0),
+        (width / 2.0, -height / 2.0),
+        (width / 2.0, height / 2.0),
+        (-width / 2.0, height / 2.0),
+    ] {
+        let px = x + local_x * cos - local_y * sin;
+        let py = y + local_x * sin + local_y * cos;
+        rect.min_x = rect.min_x.min(px);
+        rect.max_x = rect.max_x.max(px);
+        rect.min_y = rect.min_y.min(py);
+        rect.max_y = rect.max_y.max(py);
+    }
+    rect
+}
+
+fn rect_overlap(a: TestRect, b: TestRect) -> f64 {
+    let width = (a.max_x.min(b.max_x) - a.min_x.max(b.min_x)).max(0.0);
+    let height = (a.max_y.min(b.max_y) - a.min_y.max(b.min_y)).max(0.0);
+    width * height
 }

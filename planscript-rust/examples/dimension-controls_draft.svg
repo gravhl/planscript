@@ -81,7 +81,7 @@
     <text class="room-label" data-room-label="kitchen" x="636.11" y="400.00" font-size="14" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen</text>
     <text class="fixture-label" data-object-label="wc" x="186.78" y="493.33" font-size="10.08" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 186.78, 493.33)">Floor Mounted Toilet</text>
     <text class="fixture-label" data-object-label="lav" x="326.94" y="194.50" font-size="10.08" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Wall Hung Sink</text>
-    <text class="fixture-label" data-object-label="range" x="550.56" y="643.67" font-size="10.08" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">600 Range</text>
+    <text class="fixture-label" data-object-label="range" x="550.56" y="597.72" font-size="10.08" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">600 Range</text>
     <text class="fixture-label" data-object-label="fridge" x="860.33" y="306.67" font-size="10.08" fill="#111111" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 860.33, 306.67)">900 Refrigerator</text>
 
   <!-- Dimensions -->
