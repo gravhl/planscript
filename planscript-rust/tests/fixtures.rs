@@ -481,11 +481,29 @@ fn compiles_and_draws_us_kitchen_builtins() {
             label "36 in Range"
           }
 
+          object range_left_counter {
+            use builtin.kitchen.counter.size_24in
+            in kitchen
+            attach north wall
+            at 3.238
+            facing south
+            label "24 in Landing"
+          }
+
+          object range_right_counter {
+            use builtin.kitchen.counter.size_36in
+            in kitchen
+            attach north wall
+            at 4.9144
+            facing south
+            label "36 in Landing"
+          }
+
           object dishwasher1 {
             use builtin.kitchen.dishwasher.standard_24in
             in kitchen
             attach north wall
-            at 5.2
+            at 6.0
             facing south
             label "Dishwasher"
           }
@@ -506,7 +524,34 @@ fn compiles_and_draws_us_kitchen_builtins() {
     let result = compile(source, CompileOptions::default());
     assert!(result.success, "{:?}", result.errors);
     let geometry = result.geometry.expect("geometry");
-    assert_eq!(geometry.objects.len(), 5);
+    assert_eq!(geometry.objects.len(), 7);
+    let object_bounds = |name: &str| {
+        let object = geometry
+            .objects
+            .iter()
+            .find(|object| object.name == name)
+            .unwrap_or_else(|| panic!("{name}"));
+        object.polygon.points.iter().fold(
+            SvgRect {
+                min_x: f64::INFINITY,
+                max_x: f64::NEG_INFINITY,
+                min_y: f64::INFINITY,
+                max_y: f64::NEG_INFINITY,
+            },
+            |mut rect, point| {
+                rect.min_x = rect.min_x.min(point.x);
+                rect.max_x = rect.max_x.max(point.x);
+                rect.min_y = rect.min_y.min(point.y);
+                rect.max_y = rect.max_y.max(point.y);
+                rect
+            },
+        )
+    };
+    let range_left = object_bounds("range_left_counter");
+    let range = object_bounds("range1");
+    let range_right = object_bounds("range_right_counter");
+    assert_close(range_left.max_x, range.min_x, 1e-9);
+    assert_close(range.max_x, range_right.min_x, 1e-9);
     let svg = result.svg.expect("svg");
     assert!(svg.contains(r#"class="fixture fixture-counter""#));
     assert!(svg.contains(r#"class="fixture-detail fixture-counter-front-edge""#));

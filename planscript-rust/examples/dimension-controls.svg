@@ -55,17 +55,17 @@
     </g>
     <circle data-object-origin="range" cx="566.11" cy="594.44" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-counter" data-object="range_left_counter" data-catalog-id="builtin.kitchen.counter.size_24in">
-      <path class="fixture-base fixture-counter" d="M 476.29 594.44 L 523.71 594.44 L 523.71 544.07 L 476.29 544.07 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-      <line class="fixture-detail fixture-counter-backsplash" x1="478.19" y1="588.40" x2="521.81" y2="588.40" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
-      <line class="fixture-detail fixture-counter-front-edge" x1="478.19" y1="548.10" x2="521.81" y2="548.10" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <path class="fixture-base fixture-counter" d="M 483.14 594.44 L 530.55 594.44 L 530.55 544.07 L 483.14 544.07 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-counter-backsplash" x1="485.03" y1="588.40" x2="528.65" y2="588.40" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <line class="fixture-detail fixture-counter-front-edge" x1="485.03" y1="548.10" x2="528.65" y2="548.10" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
     </g>
-    <circle data-object-origin="range_left_counter" cx="500.00" cy="594.44" r="2.5" fill="#8a6d3b" />
+    <circle data-object-origin="range_left_counter" cx="506.84" cy="594.44" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-counter" data-object="range_right_counter" data-catalog-id="builtin.kitchen.counter.size_36in">
-      <path class="fixture-base fixture-counter" d="M 604.44 594.44 L 675.56 594.44 L 675.56 544.07 L 604.44 544.07 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
-      <line class="fixture-detail fixture-counter-backsplash" x1="607.28" y1="588.40" x2="672.72" y2="588.40" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
-      <line class="fixture-detail fixture-counter-front-edge" x1="607.28" y1="548.10" x2="672.72" y2="548.10" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <path class="fixture-base fixture-counter" d="M 601.67 594.44 L 672.79 594.44 L 672.79 544.07 L 601.67 544.07 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-counter-backsplash" x1="604.52" y1="588.40" x2="669.95" y2="588.40" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <line class="fixture-detail fixture-counter-front-edge" x1="604.52" y1="548.10" x2="669.95" y2="548.10" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
     </g>
-    <circle data-object-origin="range_right_counter" cx="640.00" cy="594.44" r="2.5" fill="#8a6d3b" />
+    <circle data-object-origin="range_right_counter" cx="637.23" cy="594.44" r="2.5" fill="#8a6d3b" />
     <g class="fixture fixture-dishwasher" data-object="dishwasher" data-catalog-id="builtin.kitchen.dishwasher.standard_24in">
       <path class="fixture-base fixture-dishwasher" d="M 725.93 205.56 L 678.52 205.56 L 678.52 253.96 L 725.93 253.96 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
       <path class="fixture-detail fixture-dishwasher-door" d="M 721.19 217.17 L 683.26 217.17 L 683.26 249.12 L 721.19 249.12 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
@@ -112,8 +112,8 @@
     <text class="fixture-label" data-object-label="wc" x="213.22" y="477.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 213.22, 477.78)">Floor Mounted Toilet</text>
     <text class="fixture-label" data-object-label="lav" x="301.67" y="250.89" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Wall Hung Sink</text>
     <text class="fixture-label" data-object-label="range" x="566.11" y="526.82" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">36 in Range</text>
-    <text class="fixture-label" data-object-label="range_left_counter" x="500.00" y="604.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">24 in Counter Space</text>
-    <text class="fixture-label" data-object-label="range_right_counter" x="658.07" y="533.74" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">36 in Counter Space</text>
+    <text class="fixture-label" data-object-label="range_left_counter" x="476.93" y="604.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">24 in Counter Space</text>
+    <text class="fixture-label" data-object-label="range_right_counter" x="655.30" y="533.74" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">36 in Counter Space</text>
     <text class="fixture-label" data-object-label="dishwasher" x="702.22" y="264.29" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">24 in Dishwasher</text>
     <text class="fixture-label" data-object-label="kitchen_sink" x="760.56" y="195.22" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Kitchen Sink</text>
     <text class="fixture-label" data-object-label="fridge" x="860.33" y="302.78" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" transform="rotate(90, 860.33, 302.78)">36 in Counter Depth Refrigerator</text>

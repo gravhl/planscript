@@ -51,7 +51,7 @@ plan "Dimension Controls" {
     use builtin.kitchen.counter.size_24in
     in kitchen
     attach south wall
-    at 1.50
+    at 1.588
     facing north
   }
 
@@ -59,7 +59,7 @@ plan "Dimension Controls" {
     use builtin.kitchen.counter.size_36in
     in kitchen
     attach south wall
-    at 3.30
+    at 3.2644
     facing north
   }
 

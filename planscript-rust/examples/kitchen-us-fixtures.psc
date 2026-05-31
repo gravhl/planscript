@@ -44,7 +44,7 @@ plan "US Kitchen Fixtures" {
     use builtin.kitchen.counter.size_24in
     in kitchen
     attach north wall
-    at 3.55
+    at 3.658
     facing south
     label "24 in Landing"
   }
@@ -62,7 +62,7 @@ plan "US Kitchen Fixtures" {
     use builtin.kitchen.counter.size_36in
     in kitchen
     attach north wall
-    at 5.35
+    at 5.3344
     facing south
     label "36 in Landing"
   }
