@@ -1,0 +1,14 @@
+Example: realworld_02_poolhouse_bbq_bath.psc
+Source: Plan 62966DJ - Craftsman Style Poolhouse Plan with Bathroom and a Covered Patio
+URL: https://www.architecturaldesigns.com/house-plans/craftsman-style-poolhouse-plan-with-bathroom-and-a-covered-patio-62966dj
+
+Source excerpt used:
+"An L-shaped counter with enough space for any size backyard BBQ"
+
+Derived layout description:
+The example models a one-story poolhouse with a covered entertaining patio, pool storage, and a full pool bath. The patio has a prep sink, counter run, grill/range, and refrigerator, with a deck area outside the covered structure.
+
+PlanScript interpretation notes:
+- The source outdoor kitchen becomes an object-equipped covered patio room so catalog fixtures can be placed.
+- The bathroom includes a walk-in shower, toilet, and sink.
+- The pool deck is represented as an outdoor patio with paver flooring.

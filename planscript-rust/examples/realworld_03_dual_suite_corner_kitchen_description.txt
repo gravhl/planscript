@@ -1,0 +1,14 @@
+Example: realworld_03_dual_suite_corner_kitchen.psc
+Source: Plan 60640ND - One Story Home Plan with Open Great Room and Two Master Suites
+URL: https://www.architecturaldesigns.com/house-plans/one-story-home-plan-with-open-great-room-and-two-master-suites-60640nd
+
+Source excerpt used:
+"two master suites as well as a massive, open great room"
+
+Derived layout description:
+The example models an open great-room floor with a corner kitchen, eat-at island, walk-in pantry, guest bedroom, guest bath, and two private suite clusters. Each suite has its own bath and closet zone.
+
+PlanScript interpretation notes:
+- The plan is simplified into a rectangular training example with split suites on opposite sides of the common area.
+- The corner kitchen includes an island bar, range, sink, refrigerator, and pantry door.
+- Bathroom fixtures are represented with built-in sanitary catalog objects.

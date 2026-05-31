@@ -1,0 +1,14 @@
+Example: realworld_07_traditional_full_bath.psc
+Source: RoomSketcher - Full Bathroom Traditional Style
+URL: https://www.roomsketcher.com/floor-plan-gallery/399/andrea-platzer/full-bathroom-traditional-style/
+
+Source excerpt used:
+"A double vanity faces the door"
+
+Derived layout description:
+The example models a full traditional bathroom entered from a hall. The double vanity is placed opposite the door zone, with a tub on one side and a shower plus toilet grouped on the other side.
+
+PlanScript interpretation notes:
+- Two built-in wall-hung sinks stand in for the double vanity.
+- The rectangular bath is simplified from the source semi-rectangular room.
+- The layout keeps all fixtures against walls, matching common bathroom practice.

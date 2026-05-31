@@ -1,0 +1,14 @@
+Example: realworld_05_southern_jack_jill_floor.psc
+Source: Plan 500071VV - Exclusive Southern Home Plan with Screened Porch
+URL: https://www.architecturaldesigns.com/house-plans/exclusive-southern-home-plan-with-screened-porch-500071vv
+
+Source excerpt used:
+"two share a Jack-and-Jill bath"
+
+Derived layout description:
+The example models a Southern-house-inspired floor with guest suite, guest bath, mudroom, great room, chef kitchen, screened porch, and a pair of bedrooms sharing a Jack-and-Jill bath.
+
+PlanScript interpretation notes:
+- This is a compact derived training plan, not a traced copy of the source drawing.
+- The Jack-and-Jill bath uses two bedroom doors and a shared wet fixture group.
+- The kitchen includes a central island, sink, dishwasher, range, and refrigerator.

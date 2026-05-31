@@ -1,0 +1,14 @@
+Example: realworld_10_galley_kitchen_island.psc
+Source: RoomSketcher - Galley Kitchen With Island
+URL: https://www.roomsketcher.com/floor-plan-gallery/437/kitchen-floor-plan-examples/galley-kitchen-with-island/
+
+Source excerpt used:
+"galley-style kitchen with a central island"
+
+Derived layout description:
+The example models a galley kitchen connected to dining, pantry, and breakfast nook spaces. The kitchen has a wall sink and dishwasher, refrigerator, coffee counter, and a central island with an embedded cooktop.
+
+PlanScript interpretation notes:
+- The source mentions island range seating; this example uses a counter island with a cooktop catalog item embedded into it.
+- The breakfast nook and dining room are modeled as adjacent rooms so this is more than a single-room fixture study.
+- The galley layout keeps parallel work surfaces and a clear center aisle.

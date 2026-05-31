@@ -1,0 +1,14 @@
+Example: realworld_04_split_ranch_u_kitchen.psc
+Source: Plan 61328UT - One-Story Traditional House Plan with Optional Lower Level
+URL: https://www.architecturaldesigns.com/house-plans/one-story-traditional-house-plan-with-optional-lower-level-61328ut
+
+Source excerpt used:
+"U-shaped kitchen counters surround a prep island"
+
+Derived layout description:
+The example models a split-bedroom ranch main level with entry, den, two secondary bedrooms, shared hall bath, primary bedroom suite, great room, and kitchen/dining zone. The kitchen has a U-shaped counter run and separate prep island.
+
+PlanScript interpretation notes:
+- The source optional lower level is not modeled; this example focuses on the main level.
+- The primary bath is represented as a compact five-fixture bath using tub, shower, toilet, and vanity.
+- The dining area has an exterior double door representing the backyard connection.

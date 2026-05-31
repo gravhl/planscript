@@ -1,0 +1,14 @@
+Example: realworld_06_galley_lanai_suite.psc
+Source: Plan 33217ZRX - House Plan with 3 Beds Plus Possible 4th
+URL: https://www.architecturaldesigns.com/house-plans/house-plan-with-3-beds-plus-possible-4th-33217zrx
+
+Source excerpt used:
+"The galley kitchen also offers a door to the lanai"
+
+Derived layout description:
+The example models a long-foyer floor with guest/study space, laundry, guest bath, great room, dining area, galley kitchen, primary bedroom, primary bath, closet, and rear lanai. The kitchen includes an island sink and a door toward the outdoor living area.
+
+PlanScript interpretation notes:
+- The source has multiple stories; this example focuses on the main-level layout pattern.
+- The primary bath includes dual sinks, shower, and toilet.
+- The lanai is represented as an outdoor patio beyond the rear of the house.
