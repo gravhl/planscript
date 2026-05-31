@@ -84,6 +84,10 @@ pub struct DefaultsDeclaration {
     pub door_width: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window_width: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outdoor_floor: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -335,6 +339,8 @@ pub struct RoomDefinition {
     pub label: Option<String>,
     pub geometry: RoomGeometry,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub attach: Option<AttachDirective>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub align: Option<AlignDirective>,
@@ -342,6 +348,94 @@ pub struct RoomDefinition {
     pub gap: Option<GapDirective>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extend: Option<ExtendDirective>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OutdoorAreaKind {
+    Deck,
+    Patio,
+    Porch,
+    CoveredPorch,
+    Walkway,
+    Driveway,
+    Terrace,
+    Yard,
+    Garden,
+}
+
+impl OutdoorAreaKind {
+    pub fn from_token(raw: &str) -> Option<Self> {
+        match raw.to_ascii_lowercase().as_str() {
+            "deck" => Some(Self::Deck),
+            "patio" => Some(Self::Patio),
+            "porch" => Some(Self::Porch),
+            "covered_porch" | "covered-porch" => Some(Self::CoveredPorch),
+            "walkway" | "walk" => Some(Self::Walkway),
+            "driveway" | "drive" => Some(Self::Driveway),
+            "terrace" => Some(Self::Terrace),
+            "yard" => Some(Self::Yard),
+            "garden" => Some(Self::Garden),
+            _ => None,
+        }
+    }
+
+    pub fn display_name(self) -> &'static str {
+        match self {
+            Self::Deck => "Deck",
+            Self::Patio => "Patio",
+            Self::Porch => "Porch",
+            Self::CoveredPorch => "Covered Porch",
+            Self::Walkway => "Walkway",
+            Self::Driveway => "Driveway",
+            Self::Terrace => "Terrace",
+            Self::Yard => "Yard",
+            Self::Garden => "Garden",
+        }
+    }
+
+    pub fn has_overhead_cover(self) -> bool {
+        matches!(self, Self::CoveredPorch)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum OutdoorGeometry {
+    OutdoorPolygon { points: Vec<Point> },
+    OutdoorRect { p1: Point, p2: Point },
+    OutdoorRectAtSize { at: Point, size: Point },
+    OutdoorRectCenterSize { center: Point, size: Point },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OutdoorAreaDefinition {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub kind: OutdoorAreaKind,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub geometry: OutdoorGeometry,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum FloorMaterialLegendMode {
+    Auto,
+    Show,
+    Hide,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LegendDeclaration {
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub floor_materials: FloorMaterialLegendMode,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -618,10 +712,13 @@ pub struct PlanDefinition {
     pub zones: Vec<ZoneDefinition>,
     pub rooms: Vec<RoomDefinition>,
     pub courtyards: Vec<CourtyardDefinition>,
+    pub outdoor_areas: Vec<OutdoorAreaDefinition>,
     pub objects: Vec<ObjectDefinition>,
     pub openings: Vec<Opening>,
     pub wall_overrides: Vec<WallThicknessOverride>,
     pub assertions: Vec<Assertion>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub legend: Option<LegendDeclaration>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

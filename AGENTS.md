@@ -183,6 +183,8 @@ See `LANGUAGE_REFERENCE.md` for complete syntax documentation. Key constructs:
 - **Positioning**: `attach`, `align`, `gap`, `extend`
 - **Openings**: `opening door`, `opening double door`, `opening window`
 - **Objects**: Built-in and catalog-backed fixtures
+- **Outdoor areas**: `outdoor deck`, `outdoor patio`, exterior surfaces
+- **Floor materials**: `floor`, `outdoor_floor`, `legend { floor_materials ... }`
 - **Assertions**: `assert no_overlap`, `assert inside footprint`, etc.
 
 ## Error Handling

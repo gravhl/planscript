@@ -1,4 +1,7 @@
-use crate::ast::{ClearanceSide, DoorSwing, EdgeSide, Opening, Point, Position};
+use crate::ast::{
+    ClearanceSide, DoorSwing, EdgeSide, FloorMaterialLegendMode, Opening, OutdoorAreaKind, Point,
+    Position,
+};
 use crate::lowering::LoweredProgram;
 use serde::{Deserialize, Serialize};
 
@@ -57,6 +60,10 @@ pub struct ResolvedRoom {
     pub label: Option<String>,
     pub polygon: Polygon,
     pub area: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor_material: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub floor_material_declared: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -66,6 +73,21 @@ pub struct ResolvedCourtyard {
     pub label: Option<String>,
     pub polygon: Polygon,
     pub area: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolvedOutdoorArea {
+    pub kind: OutdoorAreaKind,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub polygon: Polygon,
+    pub area: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub floor_material: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub floor_material_declared: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -97,9 +119,11 @@ pub struct GeometryIr {
     pub footprint: Polygon,
     pub rooms: Vec<ResolvedRoom>,
     pub courtyards: Vec<ResolvedCourtyard>,
+    pub outdoor_areas: Vec<ResolvedOutdoorArea>,
     pub objects: Vec<ResolvedObject>,
     pub walls: Vec<WallSegment>,
     pub openings: Vec<OpeningPlacement>,
+    pub floor_material_legend: FloorMaterialLegendMode,
 }
 
 const STANDARD_DOOR_WIDTH: f64 = 0.9;
@@ -204,6 +228,8 @@ pub fn generate_geometry(lowered: &LoweredProgram) -> GeometryIr {
                 points: room.polygon.clone(),
             },
             area: calculate_polygon_area(&room.polygon),
+            floor_material: room.floor_material.clone(),
+            floor_material_declared: room.floor_material_declared,
         })
         .collect();
 
@@ -217,6 +243,22 @@ pub fn generate_geometry(lowered: &LoweredProgram) -> GeometryIr {
                 points: courtyard.polygon.clone(),
             },
             area: calculate_polygon_area(&courtyard.polygon),
+        })
+        .collect();
+
+    let outdoor_areas: Vec<ResolvedOutdoorArea> = lowered
+        .outdoor_areas
+        .iter()
+        .map(|area| ResolvedOutdoorArea {
+            kind: area.kind,
+            name: area.name.clone(),
+            label: area.label.clone(),
+            polygon: Polygon {
+                points: area.polygon.clone(),
+            },
+            area: calculate_polygon_area(&area.polygon),
+            floor_material: area.floor_material.clone(),
+            floor_material_declared: area.floor_material_declared,
         })
         .collect();
 
@@ -255,9 +297,11 @@ pub fn generate_geometry(lowered: &LoweredProgram) -> GeometryIr {
         footprint,
         rooms,
         courtyards,
+        outdoor_areas,
         objects,
         walls,
         openings,
+        floor_material_legend: lowered.floor_material_legend,
     }
 }
 

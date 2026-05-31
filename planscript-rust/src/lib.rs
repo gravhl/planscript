@@ -2,6 +2,7 @@ pub mod ast;
 pub mod catalog;
 pub mod compiler;
 pub mod exporters;
+pub mod flooring;
 pub mod geometry;
 pub mod lowering;
 pub mod parser;

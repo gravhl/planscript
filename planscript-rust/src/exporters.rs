@@ -1,7 +1,8 @@
-use crate::ast::{CardinalDirection, DoorSwing, Point, Program};
+use crate::ast::{CardinalDirection, DoorSwing, FloorMaterialLegendMode, Point, Program};
+use crate::flooring::{floor_material_spec, floor_pattern_id, FloorMaterialSpec, FloorPatternKind};
 use crate::geometry::{
-    GeometryIr, OpeningPlacementType, Polygon, ResolvedCourtyard, ResolvedObject, ResolvedRoom,
-    WallSegment,
+    GeometryIr, OpeningPlacementType, Polygon, ResolvedCourtyard, ResolvedObject,
+    ResolvedOutdoorArea, ResolvedRoom, WallSegment,
 };
 use crate::lowering::SiteInfo;
 use serde::{Deserialize, Serialize};
@@ -18,6 +19,7 @@ pub struct SvgExportOptions {
     pub show_dimensions: Option<bool>,
     pub show_footprint_dimensions: Option<bool>,
     pub show_compass: Option<bool>,
+    pub show_floor_material_legend: Option<bool>,
     pub background_color: Option<String>,
     pub wall_color: Option<String>,
     pub wall_width: Option<f64>,
@@ -53,6 +55,7 @@ struct SvgOptions {
     show_dimensions: bool,
     show_footprint_dimensions: bool,
     show_compass: bool,
+    show_floor_material_legend: Option<bool>,
     background_color: String,
     wall_color: String,
     wall_width: f64,
@@ -89,6 +92,7 @@ impl SvgOptions {
             show_dimensions: options.show_dimensions.unwrap_or(false),
             show_footprint_dimensions: options.show_footprint_dimensions.unwrap_or(true),
             show_compass: options.show_compass.unwrap_or(true),
+            show_floor_material_legend: options.show_floor_material_legend,
             background_color: options
                 .background_color
                 .unwrap_or_else(|| "#ffffff".to_string()),
@@ -184,9 +188,20 @@ pub fn export_svg(
     site: Option<SiteInfo>,
 ) -> String {
     let opts = SvgOptions::from_options(options);
-    let transform = create_transform(geometry, &opts);
+    let legend_entries = floor_material_legend_entries(geometry, &opts);
+    let transform = create_transform(geometry, &opts, !legend_entries.is_empty());
     let width = number(opts.width);
     let height = number(opts.height);
+    let floor_material_defs =
+        generate_floor_material_defs(&floor_material_render_entries(geometry));
+    let outdoor_areas = svg_section(
+        "Outdoor Areas",
+        generate_outdoor_areas_svg(&geometry.outdoor_areas, transform),
+    );
+    let floor_material_legend = svg_trailing_section(
+        "Floor Material Legend",
+        generate_floor_material_legend_svg(&legend_entries, &opts),
+    );
 
     let svg = format!(
         r#"<?xml version="1.0" encoding="UTF-8"?>
@@ -195,15 +210,14 @@ pub fn export_svg(
     <style>
       .room-label {{ font-family: Arial, sans-serif; font-weight: 500; }}
     </style>
-  </defs>
+{floor_material_defs}  </defs>
 
   <!-- Background -->
   <rect width="{width}" height="{height}" fill="{bg}" />
 
   <!-- Footprint (boundary) -->
   {footprint}
-
-  <!-- Rooms -->
+{outdoor_areas}  <!-- Rooms -->
   {rooms}
 
   <!-- Courtyards -->
@@ -226,9 +240,11 @@ pub fn export_svg(
 
   <!-- Compass / Orientation -->
   {compass}
-</svg>"#,
+{floor_material_legend}</svg>"#,
         bg = opts.background_color,
+        floor_material_defs = floor_material_defs,
         footprint = generate_footprint_svg(&geometry.footprint, transform, &opts),
+        outdoor_areas = outdoor_areas,
         rooms = generate_rooms_svg(&geometry.rooms, transform, &opts),
         courtyards = generate_courtyards_svg(&geometry.courtyards, transform, &opts),
         objects = generate_objects_svg(geometry, transform, &opts),
@@ -237,6 +253,7 @@ pub fn export_svg(
         labels = generate_labels_svg(geometry, transform, &opts),
         dimensions = generate_dimensions_svg(geometry, transform, &opts),
         compass = generate_compass_svg(site, &opts),
+        floor_material_legend = floor_material_legend,
     );
     strip_blank_line_whitespace(&svg)
 }
@@ -254,8 +271,28 @@ fn strip_blank_line_whitespace(input: &str) -> String {
     out
 }
 
-fn create_transform(geometry: &GeometryIr, opts: &SvgOptions) -> Transform {
-    let (min_x, max_x, min_y, max_y) = bounds(&geometry.footprint.points);
+fn svg_section(title: &str, body: String) -> String {
+    if body.trim().is_empty() {
+        "\n".to_string()
+    } else {
+        format!("\n  <!-- {title} -->\n  {body}\n\n")
+    }
+}
+
+fn svg_trailing_section(title: &str, body: String) -> String {
+    if body.trim().is_empty() {
+        String::new()
+    } else {
+        format!("\n  <!-- {title} -->\n  {body}\n")
+    }
+}
+
+fn create_transform(
+    geometry: &GeometryIr,
+    opts: &SvgOptions,
+    reserve_legend_space: bool,
+) -> Transform {
+    let (min_x, max_x, min_y, max_y) = geometry_bounds(geometry);
     let content_width = (max_x - min_x).max(0.001);
     let content_height = (max_y - min_y).max(0.001);
     let dimension_space = if opts.show_dimensions {
@@ -263,8 +300,9 @@ fn create_transform(geometry: &GeometryIr, opts: &SvgOptions) -> Transform {
     } else {
         0.0
     };
+    let legend_space = if reserve_legend_space { 190.0 } else { 0.0 };
     let padding = opts.padding + dimension_space;
-    let available_width = (opts.width - padding * 2.0).max(1.0);
+    let available_width = (opts.width - padding * 2.0 - legend_space).max(1.0);
     let available_height = (opts.height - padding * 2.0).max(1.0);
     let scale =
         (available_width / content_width).min(available_height / content_height) * opts.scale;
@@ -315,6 +353,195 @@ fn points_to_path(points: &[Point]) -> String {
     out
 }
 
+#[derive(Debug, Clone, PartialEq)]
+struct FloorLegendEntry {
+    id: String,
+    display_name: String,
+    spec: FloorMaterialSpec,
+}
+
+fn floor_material_legend_entries(
+    geometry: &GeometryIr,
+    opts: &SvgOptions,
+) -> Vec<FloorLegendEntry> {
+    if let Some(false) = opts.show_floor_material_legend {
+        return Vec::new();
+    }
+    if geometry.floor_material_legend == FloorMaterialLegendMode::Hide {
+        return Vec::new();
+    }
+
+    let mut entries = Vec::<FloorLegendEntry>::new();
+    for (material, declared) in geometry
+        .rooms
+        .iter()
+        .filter_map(|room| {
+            room.floor_material
+                .as_deref()
+                .map(|m| (m, room.floor_material_declared))
+        })
+        .chain(geometry.outdoor_areas.iter().filter_map(|area| {
+            area.floor_material
+                .as_deref()
+                .map(|m| (m, area.floor_material_declared))
+        }))
+    {
+        if !declared
+            && opts.show_floor_material_legend.is_none()
+            && geometry.floor_material_legend == FloorMaterialLegendMode::Auto
+        {
+            continue;
+        }
+        let Some(spec) = floor_material_spec(material) else {
+            continue;
+        };
+        if entries.iter().any(|entry| entry.id == spec.id) {
+            continue;
+        }
+        entries.push(FloorLegendEntry {
+            id: spec.id.to_string(),
+            display_name: spec.display_name.to_string(),
+            spec,
+        });
+    }
+    entries.sort_by(|a, b| a.display_name.cmp(&b.display_name));
+
+    if entries.is_empty() {
+        return Vec::new();
+    }
+    if opts.show_floor_material_legend == Some(true)
+        || geometry.floor_material_legend != FloorMaterialLegendMode::Hide
+    {
+        entries
+    } else {
+        Vec::new()
+    }
+}
+
+fn floor_material_render_entries(geometry: &GeometryIr) -> Vec<FloorLegendEntry> {
+    let mut entries = Vec::<FloorLegendEntry>::new();
+    for material in geometry
+        .rooms
+        .iter()
+        .filter_map(|room| room.floor_material.as_deref())
+        .chain(
+            geometry
+                .outdoor_areas
+                .iter()
+                .filter_map(|area| area.floor_material.as_deref()),
+        )
+    {
+        let Some(spec) = floor_material_spec(material) else {
+            continue;
+        };
+        if entries.iter().any(|entry| entry.id == spec.id) {
+            continue;
+        }
+        entries.push(FloorLegendEntry {
+            id: spec.id.to_string(),
+            display_name: spec.display_name.to_string(),
+            spec,
+        });
+    }
+    entries
+}
+
+fn floor_fill(material: Option<&str>, fallback: &str) -> String {
+    let Some(material) = material else {
+        return fallback.to_string();
+    };
+    if floor_material_spec(material).is_some() {
+        format!("url(#{})", floor_pattern_id(material))
+    } else {
+        "#f3efe7".to_string()
+    }
+}
+
+fn floor_stroke(material: Option<&str>, fallback: &str) -> String {
+    material
+        .and_then(floor_material_spec)
+        .map(|spec| spec.stroke.to_string())
+        .unwrap_or_else(|| fallback.to_string())
+}
+
+fn generate_floor_material_defs(entries: &[FloorLegendEntry]) -> String {
+    if entries.is_empty() {
+        return String::new();
+    }
+    let defs = entries
+        .iter()
+        .map(|entry| indent_block(&floor_pattern_def(entry.spec), "    "))
+        .collect::<Vec<_>>()
+        .join("\n");
+    format!("{defs}\n")
+}
+
+fn indent_block(input: &str, prefix: &str) -> String {
+    input
+        .lines()
+        .map(|line| format!("{prefix}{line}"))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn floor_pattern_def(spec: FloorMaterialSpec) -> String {
+    let id = floor_pattern_id(spec.id);
+    match spec.pattern {
+        FloorPatternKind::Solid => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="{}" />
+    </pattern>"#,
+            spec.fill
+        ),
+        FloorPatternKind::Planks => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="18" height="18">
+      <rect width="18" height="18" fill="{}" />
+      <path d="M 0 6 H 18 M 0 12 H 18 M 9 0 V 6 M 4 6 V 12 M 13 12 V 18" stroke="{}" stroke-width="0.7" opacity="0.55" />
+    </pattern>"#,
+            spec.fill, spec.stroke
+        ),
+        FloorPatternKind::Grid => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="14" height="14">
+      <rect width="14" height="14" fill="{}" />
+      <path d="M 14 0 V 14 M 0 14 H 14" stroke="{}" stroke-width="0.65" opacity="0.5" />
+    </pattern>"#,
+            spec.fill, spec.stroke
+        ),
+        FloorPatternKind::Diagonal => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="{}" />
+      <path d="M -3 12 L 12 -3 M 3 15 L 15 3" stroke="{}" stroke-width="0.6" opacity="0.4" />
+    </pattern>"#,
+            spec.fill, spec.stroke
+        ),
+        FloorPatternKind::RunningBond => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="24" height="16">
+      <rect width="24" height="16" fill="{}" />
+      <path d="M 0 8 H 24 M 12 0 V 8 M 0 8 V 16 M 24 8 V 16" stroke="{}" stroke-width="0.65" opacity="0.5" />
+    </pattern>"#,
+            spec.fill, spec.stroke
+        ),
+        FloorPatternKind::Dots => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="{}" />
+      <circle cx="3" cy="3" r="0.8" fill="{}" opacity="0.45" />
+      <circle cx="9" cy="8" r="0.8" fill="{}" opacity="0.35" />
+    </pattern>"#,
+            spec.fill, spec.stroke, spec.stroke
+        ),
+        FloorPatternKind::Speckles => format!(
+            r#"<pattern id="{id}" patternUnits="userSpaceOnUse" width="16" height="16">
+      <rect width="16" height="16" fill="{}" />
+      <circle cx="4" cy="5" r="0.7" fill="{}" opacity="0.45" />
+      <circle cx="10" cy="3" r="0.55" fill="{}" opacity="0.35" />
+      <circle cx="13" cy="11" r="0.65" fill="{}" opacity="0.4" />
+      <circle cx="6" cy="13" r="0.5" fill="{}" opacity="0.3" />
+    </pattern>"#,
+            spec.fill, spec.stroke, spec.stroke, spec.stroke, spec.stroke
+        ),
+    }
+}
+
 fn generate_footprint_svg(footprint: &Polygon, t: Transform, opts: &SvgOptions) -> String {
     let points = transform_polygon(&footprint.points, t);
     format!(
@@ -324,15 +551,64 @@ fn generate_footprint_svg(footprint: &Polygon, t: Transform, opts: &SvgOptions) 
     )
 }
 
+fn generate_outdoor_areas_svg(areas: &[ResolvedOutdoorArea], t: Transform) -> String {
+    areas
+        .iter()
+        .map(|area| {
+            let points = transform_polygon(&area.polygon.points, t);
+            let fill = floor_fill(area.floor_material.as_deref(), "#f5f6f1");
+            let stroke = floor_stroke(area.floor_material.as_deref(), "#9aa386");
+            let cover = if area.kind.has_overhead_cover() {
+                format!(
+                    r#"
+    <path class="outdoor-cover" data-outdoor-cover="{}" d="{}" fill="none" stroke="{}" stroke-width="1.25" stroke-dasharray="8,5" />"#,
+                    escape_xml(&area.name),
+                    points_to_path(&points),
+                    stroke
+                )
+            } else {
+                String::new()
+            };
+            format!(
+                r#"<g class="outdoor-area outdoor-{}" data-outdoor="{}" data-outdoor-kind="{}">
+    <path d="{}" fill="{}" stroke="{}" stroke-width="1.25" stroke-dasharray="3,2" />{}
+  </g>"#,
+                outdoor_kind_class(area.kind.display_name()),
+                escape_xml(&area.name),
+                escape_xml(area.kind.display_name()),
+                points_to_path(&points),
+                fill,
+                stroke,
+                cover
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n    ")
+}
+
+fn outdoor_kind_class(display_name: &str) -> String {
+    display_name
+        .chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() {
+                ch.to_ascii_lowercase()
+            } else {
+                '-'
+            }
+        })
+        .collect()
+}
+
 fn generate_rooms_svg(rooms: &[ResolvedRoom], t: Transform, opts: &SvgOptions) -> String {
     rooms
         .iter()
         .map(|room| {
             let points = transform_polygon(&room.polygon.points, t);
+            let fill = floor_fill(room.floor_material.as_deref(), &opts.room_fill_color);
             format!(
                 r#"<path d="{}" fill="{}" stroke="{}" stroke-width="{}" />"#,
                 points_to_path(&points),
-                opts.room_fill_color,
+                fill,
                 opts.room_stroke_color,
                 number(opts.room_stroke_width)
             )
@@ -1360,6 +1636,32 @@ fn generate_labels_svg(geometry: &GeometryIr, t: Transform, opts: &SvgOptions) -
             ));
         }
     }
+    for area in &geometry.outdoor_areas {
+        let label = area
+            .label
+            .as_deref()
+            .unwrap_or_else(|| area.kind.display_name());
+        let polygon = transform_polygon(&area.polygon.points, t);
+        let candidate = best_area_label_candidate(
+            label,
+            (opts.label_font_size * 0.82).max(9.0),
+            &polygon,
+            &obstacles,
+            &placed,
+            opts.width,
+            opts.height,
+        );
+        placed.push(candidate.rect);
+        out.push(format!(
+            r#"<text class="outdoor-label" data-outdoor-label="{}" x="{:.2}" y="{:.2}" font-size="{}" fill="{}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-style="italic">{}</text>"#,
+            escape_xml(&area.name),
+            candidate.x,
+            candidate.y,
+            number((opts.label_font_size * 0.82).max(9.0)),
+            floor_stroke(area.floor_material.as_deref(), "#6f7a66"),
+            escape_xml(label)
+        ));
+    }
     for courtyard in &geometry.courtyards {
         if let Some(label) = &courtyard.label {
             let polygon = transform_polygon(&courtyard.polygon.points, t);
@@ -2065,6 +2367,52 @@ fn street_label_position(dir: CardinalDirection, x: f64, y: f64, arrow: f64) -> 
     }
 }
 
+fn generate_floor_material_legend_svg(entries: &[FloorLegendEntry], opts: &SvgOptions) -> String {
+    if entries.is_empty() {
+        return String::new();
+    }
+
+    let width = 165.0;
+    let row_height = 22.0;
+    let header_height = 24.0;
+    let height = header_height + row_height * entries.len() as f64 + 12.0;
+    let x = opts.width - opts.padding - width;
+    let y = opts.padding + opts.compass_size + 34.0;
+    let mut rows = Vec::new();
+
+    for (index, entry) in entries.iter().enumerate() {
+        let row_y = y + header_height + index as f64 * row_height;
+        rows.push(format!(
+            r#"<rect x="{:.2}" y="{:.2}" width="18" height="12" fill="url(#{})" stroke="{}" stroke-width="0.8" />
+    <text x="{:.2}" y="{:.2}" font-size="10" fill="{}" dominant-baseline="middle" font-family="Arial, sans-serif">{}</text>"#,
+            x + 12.0,
+            row_y + 4.0,
+            floor_pattern_id(&entry.id),
+            entry.spec.stroke,
+            x + 38.0,
+            row_y + 10.0,
+            opts.label_color,
+            escape_xml(&entry.display_name)
+        ));
+    }
+
+    format!(
+        r##"<g class="floor-material-legend">
+    <rect x="{:.2}" y="{:.2}" width="{:.2}" height="{:.2}" rx="4" fill="#ffffff" fill-opacity="0.92" stroke="#c9d0d3" stroke-width="1" />
+    <text x="{:.2}" y="{:.2}" font-size="11" fill="{}" font-family="Arial, sans-serif" font-weight="bold">Floor Materials</text>
+    {}
+  </g>"##,
+        x,
+        y,
+        width,
+        height,
+        x + 12.0,
+        y + 16.0,
+        opts.label_color,
+        rows.join("\n    ")
+    )
+}
+
 fn polygon_center(points: &[Point]) -> Point {
     if points.is_empty() {
         return Point { x: 0.0, y: 0.0 };
@@ -2093,6 +2441,18 @@ fn bounds(points: &[Point]) -> (f64, f64, f64, f64) {
         max_y = max_y.max(p.y);
     }
     (min_x, max_x, min_y, max_y)
+}
+
+fn geometry_bounds(geometry: &GeometryIr) -> (f64, f64, f64, f64) {
+    let mut points = geometry.footprint.points.clone();
+    for area in &geometry.outdoor_areas {
+        points.extend(area.polygon.points.iter().copied());
+    }
+    if points.is_empty() {
+        (0.0, 1.0, 0.0, 1.0)
+    } else {
+        bounds(&points)
+    }
 }
 
 fn format_dimension(meters: f64) -> String {
