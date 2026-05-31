@@ -1,0 +1,14 @@
+Example: realworld_20_square_industrial_three_quarter_bath.psc
+Source: RoomSketcher - Square Industrial Style Bathroom Floor Plan
+URL: https://www.roomsketcher.com/floor-plan-gallery/195/bathroom-floor-plan-examples/square-industrial-style-bathroom-floor-plan/
+
+Source excerpt used:
+"compact layout features a swing door into an open, square room"
+
+Derived layout description:
+The example models a square three-quarter bathroom with vanity, toilet, and no-threshold shower connected to a hall.
+
+PlanScript interpretation notes:
+- The source floating fixtures are represented with PlanScript wall-hung sink and standard toilet/shower built-ins.
+- A short hall is added so the bathroom has a realistic entry and participates in room-connection tests.
+- The industrial material cue is approximated with tile in the bath and concrete in the hall.

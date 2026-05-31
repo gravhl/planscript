@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <style>
+      .room-label { font-family: Arial, sans-serif; font-weight: 500; }
+    </style>
+    <pattern id="floor-material-concrete" patternUnits="userSpaceOnUse" width="26" height="26">
+          <rect width="26" height="26" fill="#e4e6e4" />
+          <path d="M 4 5 l 3 -1 l -1 3 z M 17 4 l 4 2 M 8 15 l 3 3 M 20 16 l -3 4 M 4 22 l 4 -1" fill="none" stroke="#a5aaa5" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="round" opacity="0.42" />
+          <circle cx="15" cy="12" r="0.7" fill="#a5aaa5" opacity="0.28" />
+          <circle cx="23" cy="23" r="0.55" fill="#a5aaa5" opacity="0.28" />
+        </pattern>
+    <pattern id="floor-material-tile" patternUnits="userSpaceOnUse" width="22" height="22">
+          <rect width="22" height="22" fill="#eef1f2" />
+          <path d="M 22 0 V 22 M 0 22 H 22" stroke="#aeb8bc" stroke-width="0.65" opacity="0.56" />
+        </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#ffffff" />
+
+  <!-- Footprint (boundary) -->
+  <path d="M 60.00 630.00 L 750.00 630.00 L 750.00 170.00 L 60.00 170.00 Z" fill="none" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="8,4" />
+
+  <!-- Rooms -->
+  <path d="M 60.00 630.00 L 272.31 630.00 L 272.31 170.00 L 60.00 170.00 Z" fill="url(#floor-material-concrete)" stroke="#bdc3c7" stroke-width="1" />
+    <path d="M 272.31 630.00 L 750.00 630.00 L 750.00 170.00 L 272.31 170.00 Z" fill="url(#floor-material-tile)" stroke="#bdc3c7" stroke-width="1" />
+
+  <!-- Courtyards -->
+
+
+  <!-- Objects / Fixtures -->
+  <path class="object-clearance" d="M 462.50 249.62 L 365.19 249.62 L 365.19 373.46 L 462.50 373.46 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 489.04 170.00 L 462.50 170.00 L 462.50 249.62 L 489.04 249.62 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 365.19 170.00 L 338.65 170.00 L 338.65 249.62 L 365.19 249.62 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 629.69 513.23 L 629.69 446.00 L 497.00 446.00 L 497.00 513.23 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 750.00 548.62 L 750.00 513.23 L 629.69 513.23 L 629.69 548.62 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 750.00 446.00 L 750.00 410.62 L 629.69 410.62 L 629.69 446.00 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <path class="object-clearance" d="M 511.15 470.77 L 670.38 470.77 L 670.38 346.92 L 511.15 346.92 Z" fill="#7f8c8d" fill-opacity="0.08" stroke="#7f8c8d" stroke-opacity="0.28" stroke-width="0.75" stroke-dasharray="1,4" />
+    <g class="fixture fixture-bath-sink" data-object="vanity" data-catalog-id="builtin.sanitary.sink.wall_hung">
+      <path class="fixture-base fixture-bath-sink" d="M 462.50 170.00 L 365.19 170.00 L 365.19 249.62 L 462.50 249.62 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <path class="fixture-detail fixture-sink-basin" d="M 380.76 208.22 L 381.89 214.40 L 385.19 220.16 L 390.45 225.10 L 397.30 228.90 L 405.28 231.29 L 413.85 232.10 L 422.41 231.29 L 430.39 228.90 L 437.24 225.10 L 442.50 220.16 L 445.80 214.40 L 446.93 208.22 L 445.80 202.03 L 442.50 196.27 L 437.24 191.33 L 430.39 187.53 L 422.41 185.14 L 413.85 184.33 L 405.28 185.14 L 397.30 187.53 L 390.45 191.33 L 385.19 196.27 L 381.89 202.03 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-sink-inner" d="M 392.44 208.22 L 393.17 211.92 L 395.31 215.38 L 398.71 218.35 L 403.14 220.63 L 408.31 222.06 L 413.85 222.55 L 419.39 222.06 L 424.55 220.63 L 428.98 218.35 L 432.39 215.38 L 434.52 211.92 L 435.25 208.22 L 434.52 204.51 L 432.39 201.05 L 428.98 198.08 L 424.55 195.80 L 419.39 194.37 L 413.85 193.88 L 408.31 194.37 L 403.14 195.80 L 398.71 198.08 L 395.31 201.05 L 393.17 204.51 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-drain" d="M 410.44 209.81 L 410.56 210.69 L 410.90 211.51 L 411.44 212.22 L 412.14 212.76 L 412.96 213.10 L 413.85 213.21 L 414.73 213.10 L 415.55 212.76 L 416.25 212.22 L 416.80 211.51 L 417.14 210.69 L 417.25 209.81 L 417.14 208.93 L 416.80 208.10 L 416.25 207.40 L 415.55 206.86 L 414.73 206.52 L 413.85 206.40 L 412.96 206.52 L 412.14 206.86 L 411.44 207.40 L 410.90 208.10 L 410.56 208.93 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <line class="fixture-detail fixture-faucet" x1="413.85" y1="179.55" x2="413.85" y2="193.88" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+    </g>
+    <circle data-object-origin="vanity" cx="413.85" cy="170.00" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-toilet" data-object="toilet" data-catalog-id="builtin.sanitary.toilet.floor_mounted">
+      <path class="fixture-base fixture-toilet" d="M 750.00 513.23 L 750.00 446.00 L 629.69 446.00 L 629.69 513.23 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <path class="fixture-detail fixture-toilet-tank" d="M 743.98 503.82 L 743.98 455.41 L 723.53 455.41 L 723.53 503.82 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-toilet-bowl" d="M 687.44 457.43 L 679.34 458.19 L 671.80 460.40 L 665.32 463.93 L 660.35 468.52 L 657.23 473.87 L 656.16 479.62 L 657.23 485.36 L 660.35 490.71 L 665.32 495.30 L 671.80 498.83 L 679.34 501.05 L 687.44 501.80 L 695.54 501.05 L 703.08 498.83 L 709.56 495.30 L 714.53 490.71 L 717.65 485.36 L 718.72 479.62 L 717.65 473.87 L 714.53 468.52 L 709.56 463.93 L 703.08 460.40 L 695.54 458.19 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-toilet-water" d="M 686.24 467.51 L 682.19 467.93 L 678.42 469.14 L 675.18 471.06 L 672.69 473.56 L 671.13 476.48 L 670.60 479.62 L 671.13 482.75 L 672.69 485.67 L 675.18 488.17 L 678.42 490.10 L 682.19 491.30 L 686.24 491.72 L 690.28 491.30 L 694.06 490.10 L 697.30 488.17 L 699.78 485.67 L 701.34 482.75 L 701.88 479.62 L 701.34 476.48 L 699.78 473.56 L 697.30 471.06 L 694.06 469.14 L 690.28 467.93 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+    </g>
+    <circle data-object-origin="toilet" cx="750.00" cy="479.62" r="2.5" fill="#8a6d3b" />
+    <g class="fixture fixture-shower" data-object="shower" data-catalog-id="builtin.sanitary.shower.size_900x900">
+      <path class="fixture-base fixture-shower" d="M 511.15 630.00 L 670.38 630.00 L 670.38 470.77 L 511.15 470.77 Z" fill="#f8f1df" stroke="#8a6d3b" stroke-width="1.5" />
+      <line class="fixture-detail fixture-shower-slope" x1="530.26" y1="610.89" x2="651.28" y2="489.88" stroke="#8a6d3b" stroke-width="1" stroke-linecap="round" />
+      <path class="fixture-detail fixture-drain" d="M 644.11 594.97 L 643.81 592.70 L 642.94 590.59 L 641.55 588.78 L 639.73 587.38 L 637.62 586.51 L 635.35 586.21 L 633.09 586.51 L 630.98 587.38 L 629.16 588.78 L 627.77 590.59 L 626.89 592.70 L 626.60 594.97 L 626.89 597.24 L 627.77 599.35 L 629.16 601.16 L 630.98 602.55 L 633.09 603.43 L 635.35 603.73 L 637.62 603.43 L 639.73 602.55 L 641.55 601.16 L 642.94 599.35 L 643.81 597.24 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+      <path class="fixture-detail fixture-shower-head" d="M 552.55 499.43 L 552.23 496.96 L 551.27 494.65 L 549.76 492.68 L 547.78 491.16 L 545.47 490.20 L 543.00 489.88 L 540.53 490.20 L 538.22 491.16 L 536.24 492.68 L 534.73 494.65 L 533.77 496.96 L 533.45 499.43 L 533.77 501.90 L 534.73 504.21 L 536.24 506.19 L 538.22 507.70 L 540.53 508.66 L 543.00 508.98 L 545.47 508.66 L 547.78 507.70 L 549.76 506.19 L 551.27 504.21 L 552.23 501.90 Z" fill="#ffffff" fill-opacity="0.42" stroke="#8a6d3b" stroke-width="1" />
+    </g>
+    <circle data-object-origin="shower" cx="590.77" cy="630.00" r="2.5" fill="#8a6d3b" />
+
+  <!-- Walls -->
+  <line x1="272.31" y1="630.00" x2="272.31" y2="170.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="630.00" x2="272.31" y2="630.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="170.00" x2="272.31" y2="170.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="60.00" y1="630.00" x2="60.00" y2="170.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="272.31" y1="630.00" x2="750.00" y2="630.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="750.00" y1="630.00" x2="750.00" y2="170.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+    <line x1="272.31" y1="170.00" x2="750.00" y2="170.00" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Openings (doors/windows) -->
+  <line x1="272.31" y1="470.77" x2="272.31" y2="329.23" stroke="#e74c3c" stroke-width="4" stroke-linecap="round" />
+    <line class="door-leaf" x1="272.31" y1="329.23" x2="413.85" y2="329.23" stroke="#e74c3c" stroke-width="1.5" stroke-linecap="round" />
+    <path class="door-swing" d="M 272.31 470.77 A 141.54 141.54 0 0 0 413.85 329.23" fill="none" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2" opacity="0.8" />
+    <line x1="542.12" y1="170.00" x2="719.04" y2="170.00" stroke="#3498db" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Labels -->
+  <text class="room-label" data-room-label="hall" x="166.15" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Hall</text>
+    <text class="room-label" data-room-label="three_quarter_bath" x="511.15" y="400.00" font-size="14" fill="#2c3e50" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">3/4 Bath</text>
+    <text class="fixture-label" data-object-label="vanity" x="413.85" y="259.95" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Vanity</text>
+    <text class="fixture-label" data-object-label="toilet" x="689.85" y="523.56" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Toilet</text>
+    <text class="fixture-label" data-object-label="shower" x="590.77" y="640.33" font-size="10.08" fill="#8a6d3b" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif">Shower</text>
+
+  <!-- Dimensions -->
+
+
+  <!-- Compass / Orientation -->
+
+
+  <!-- Floor Material Legend -->
+  <g class="floor-material-legend">
+    <rect x="775.00" y="144.00" width="165.00" height="80.00" rx="4" fill="#ffffff" fill-opacity="0.92" stroke="#c9d0d3" stroke-width="1" />
+    <text x="787.00" y="160.00" font-size="11" fill="#2c3e50" font-family="Arial, sans-serif" font-weight="bold">Floor Materials</text>
+    <rect x="787.00" y="172.00" width="18" height="12" fill="url(#floor-material-concrete)" stroke="#a5aaa5" stroke-width="0.8" />
+    <text x="813.00" y="178.00" font-size="10" fill="#2c3e50" dominant-baseline="middle" font-family="Arial, sans-serif">Concrete</text>
+    <rect x="787.00" y="194.00" width="18" height="12" fill="url(#floor-material-tile)" stroke="#aeb8bc" stroke-width="0.8" />
+    <text x="813.00" y="200.00" font-size="10" fill="#2c3e50" dominant-baseline="middle" font-family="Arial, sans-serif">Tile</text>
+  </g>
+</svg>

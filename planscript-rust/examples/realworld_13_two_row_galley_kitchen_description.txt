@@ -1,0 +1,14 @@
+Example: realworld_13_two_row_galley_kitchen.psc
+Source: Dimensions - Two Row Galley Kitchens
+URL: https://www.dimensions.com/element/galley-two-rows-kitchen-layout
+
+Source excerpt used:
+"a pair of optimized linear bars"
+
+Derived layout description:
+The example models a two-row galley kitchen with opposing fixture runs, a connected dining room, and a side pantry.
+
+PlanScript interpretation notes:
+- North and south wall fixture runs create the paired galley bars described by the reference.
+- Dining and pantry rooms are included so the plan behaves like a real kitchen zone inside a floor plan.
+- The central aisle is left open between the two rows.

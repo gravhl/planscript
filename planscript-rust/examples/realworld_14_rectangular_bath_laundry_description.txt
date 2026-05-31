@@ -1,0 +1,14 @@
+Example: realworld_14_rectangular_bath_laundry.psc
+Source: RoomSketcher - Rectangular Bathroom Layout With Washer and Dryer
+URL: https://www.roomsketcher.com/floor-plan-gallery/199/roomsketcher-bathroom-floor-plan-examples/rectangular-bathroom-layout-with-washer-and-dryer/
+
+Source excerpt used:
+"A washer and dryer add functionality"
+
+Derived layout description:
+The example models a rectangular full bathroom with vanity, toilet, tub/shower, and side-by-side laundry appliances.
+
+PlanScript interpretation notes:
+- The source compact bath is scaled slightly larger so the built-in tub and laundry fixtures fit cleanly.
+- A hall is added to give the room a realistic entry and an inter-room connection for examples testing.
+- Laundry appliances are placed on the opposite wall from the tub/shower zone.
