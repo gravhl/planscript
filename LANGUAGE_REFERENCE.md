@@ -12,6 +12,7 @@ This document provides a complete specification of the PlanScript language for d
 - [Origin](#origin)
 - [Defaults](#defaults)
 - [Render Mode](#render-mode)
+- [Dimensions](#dimensions)
 - [Site](#site)
 - [Plan Block](#plan-block)
 - [Footprint](#footprint)
@@ -119,6 +120,7 @@ site { ... }              # Optional: site orientation (for solar/street context
 
 plan "<name>" {           # Required: the floor plan definition
   footprint ...           # Required: building boundary
+  dimensions { ... }      # Optional: SVG dimension display controls
   zone ... { ... }        # Zero or more zones (grouped rooms)
   room ... { ... }        # Zero or more standalone rooms
   courtyard ... { ... }   # Zero or more courtyards (open spaces)
@@ -220,6 +222,47 @@ The CLI can also force draft rendering:
 
 ```bash
 planscript-rust compile house.psc --svg house.svg --draft
+```
+
+---
+
+## Dimensions
+
+Controls SVG dimension annotations. The CLI `--dimensions` flag still shows room and footprint dimensions; use a plan-level `dimensions` block for wall and fixture/object control.
+
+```planscript
+dimensions {
+  walls all
+  fixtures all
+}
+```
+
+Target specific walls by room edge, and specific fixtures by object name:
+
+```planscript
+dimensions {
+  rooms none
+  footprint off
+  walls living.north kitchen.east
+  fixtures island fridge
+}
+```
+
+Options:
+
+| Directive | Values |
+|-----------|--------|
+| `rooms` | `all`, `none`, `on`, `off` |
+| `footprint` | `on`, `off` |
+| `walls` | `all`, `none`, wall ids, or room-edge refs like `bath.east` |
+| `fixtures` | `all`, `none`, or object names |
+| `objects` | Alias for `fixtures` |
+
+CLI shortcuts:
+
+```bash
+planscript-rust compile house.psc --svg house.svg --dimensions all
+planscript-rust compile house.psc --svg house.svg --wall-dimensions --fixture-dimensions
 ```
 
 ---

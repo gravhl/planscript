@@ -1,4 +1,6 @@
-use planscript::ast::RenderMode;
+use planscript::ast::{
+    DimensionDeclaration, DimensionFixtureSelection, DimensionWallSelection, RenderMode,
+};
 use planscript::catalog::{
     candidate_ifc_item_from_file, import_ifc_manifest, lint_catalog_item, Catalog, CatalogItem,
     CatalogLintSeverity,
@@ -55,7 +57,9 @@ Commands:
 Compile Options:
   --svg <output.svg>   Write SVG output to file
   --json <output.json> Write JSON output to file
-  --dimensions         Include dimension lines in SVG
+  --dimensions [mode]  Include dimensions: rooms (default), walls, fixtures, or all
+  --wall-dimensions    Include dimensions on every wall
+  --fixture-dimensions Include dimensions on every fixture/object
   --draft              Render SVG in black-and-white architectural draft mode
   --no-labels          Don't show room labels in SVG
   --no-svg             Don't generate SVG
@@ -63,7 +67,10 @@ Compile Options:
 Solve Options:
   --out <output.psc>   Write generated PlanScript to file
   --svg <output.svg>   Also compile and write SVG
+  --dimensions [mode]  Include dimensions: rooms (default), walls, fixtures, or all
   --draft              Render SVG in black-and-white architectural draft mode
+  --wall-dimensions    Include dimensions on every wall in emitted SVG
+  --fixture-dimensions Include dimensions on every fixture/object in emitted SVG
   --inspect            Show solver inspection summary
   --variants <n>       Accepted for CLI compatibility
 
@@ -116,6 +123,8 @@ fn run_compile(args: &[String]) -> Result<(), String> {
     let mut emit_svg = true;
     let mut emit_json = false;
     let mut show_dimensions = false;
+    let mut show_wall_dimensions = false;
+    let mut show_fixture_dimensions = false;
     let mut show_labels = true;
     let mut render_mode = None;
 
@@ -136,7 +145,33 @@ fn run_compile(args: &[String]) -> Result<(), String> {
                 i += 1;
             }
             "--dimensions" => {
-                show_dimensions = true;
+                if i + 1 < args.len() && !args[i + 1].starts_with('-') {
+                    apply_dimension_cli_mode(
+                        Some(args[i + 1].as_str()),
+                        &mut show_dimensions,
+                        &mut show_wall_dimensions,
+                        &mut show_fixture_dimensions,
+                    )?;
+                    i += 2;
+                } else {
+                    apply_dimension_cli_mode(
+                        None,
+                        &mut show_dimensions,
+                        &mut show_wall_dimensions,
+                        &mut show_fixture_dimensions,
+                    )?;
+                    i += 1;
+                }
+            }
+            "--wall-dimensions" | "--walls-dimensions" => {
+                show_wall_dimensions = true;
+                i += 1;
+            }
+            "--fixture-dimensions"
+            | "--fixtures-dimensions"
+            | "--object-dimensions"
+            | "--objects-dimensions" => {
+                show_fixture_dimensions = true;
                 i += 1;
             }
             "--draft" | "--draft-mode" | "--black-white" | "--bw" => {
@@ -166,6 +201,7 @@ fn run_compile(args: &[String]) -> Result<(), String> {
                 show_dimensions: Some(show_dimensions),
                 show_labels: Some(show_labels),
                 render_mode,
+                dimensions: dimension_cli_override(show_wall_dimensions, show_fixture_dimensions),
                 ..Default::default()
             }),
             json_options: Some(JsonExportOptions {
@@ -236,6 +272,57 @@ fn print_compile_warnings(warnings: &[String]) {
     for warning in warnings {
         println!("  - {warning}");
     }
+}
+
+fn dimension_cli_override(
+    show_wall_dimensions: bool,
+    show_fixture_dimensions: bool,
+) -> Option<DimensionDeclaration> {
+    if !show_wall_dimensions && !show_fixture_dimensions {
+        return None;
+    }
+    Some(DimensionDeclaration {
+        node_type: "DimensionDeclaration".to_string(),
+        walls: if show_wall_dimensions {
+            DimensionWallSelection::All
+        } else {
+            DimensionWallSelection::None
+        },
+        fixtures: if show_fixture_dimensions {
+            DimensionFixtureSelection::All
+        } else {
+            DimensionFixtureSelection::None
+        },
+        ..Default::default()
+    })
+}
+
+fn apply_dimension_cli_mode(
+    mode: Option<&str>,
+    show_room_dimensions: &mut bool,
+    show_wall_dimensions: &mut bool,
+    show_fixture_dimensions: &mut bool,
+) -> Result<(), String> {
+    match mode.unwrap_or("rooms") {
+        "all" => {
+            *show_room_dimensions = true;
+            *show_wall_dimensions = true;
+            *show_fixture_dimensions = true;
+        }
+        "walls" | "wall" => {
+            *show_room_dimensions = false;
+            *show_wall_dimensions = true;
+        }
+        "fixtures" | "fixture" | "objects" | "object" => {
+            *show_room_dimensions = false;
+            *show_fixture_dimensions = true;
+        }
+        "rooms" | "room" => {
+            *show_room_dimensions = true;
+        }
+        unknown => return Err(format!("Unknown --dimensions mode '{unknown}'")),
+    }
+    Ok(())
 }
 
 fn run_catalog(args: &[String]) -> Result<(), String> {
@@ -487,6 +574,9 @@ fn run_solve(args: &[String]) -> Result<(), String> {
     let mut inspect = false;
     let mut variants = 1usize;
     let mut render_mode = None;
+    let mut show_dimensions = false;
+    let mut show_wall_dimensions = false;
+    let mut show_fixture_dimensions = false;
 
     let mut i = 1;
     while i < args.len() {
@@ -503,12 +593,42 @@ fn run_solve(args: &[String]) -> Result<(), String> {
                 inspect = true;
                 i += 1;
             }
+            "--dimensions" => {
+                if i + 1 < args.len() && !args[i + 1].starts_with('-') {
+                    apply_dimension_cli_mode(
+                        Some(args[i + 1].as_str()),
+                        &mut show_dimensions,
+                        &mut show_wall_dimensions,
+                        &mut show_fixture_dimensions,
+                    )?;
+                    i += 2;
+                } else {
+                    apply_dimension_cli_mode(
+                        None,
+                        &mut show_dimensions,
+                        &mut show_wall_dimensions,
+                        &mut show_fixture_dimensions,
+                    )?;
+                    i += 1;
+                }
+            }
             "--draft" | "--draft-mode" | "--black-white" | "--bw" => {
                 render_mode = Some(RenderMode::Draft);
                 i += 1;
             }
             "--color" | "--colour" => {
                 render_mode = Some(RenderMode::Color);
+                i += 1;
+            }
+            "--wall-dimensions" | "--walls-dimensions" => {
+                show_wall_dimensions = true;
+                i += 1;
+            }
+            "--fixture-dimensions"
+            | "--fixtures-dimensions"
+            | "--object-dimensions"
+            | "--objects-dimensions" => {
+                show_fixture_dimensions = true;
                 i += 1;
             }
             "--variants" if i + 1 < args.len() => {
@@ -575,7 +695,12 @@ fn run_solve(args: &[String]) -> Result<(), String> {
                         emit_svg: Some(true),
                         svg_options: Some(SvgExportOptions {
                             show_labels: Some(true),
+                            show_dimensions: Some(show_dimensions),
                             render_mode,
+                            dimensions: dimension_cli_override(
+                                show_wall_dimensions,
+                                show_fixture_dimensions,
+                            ),
                             ..Default::default()
                         }),
                         ..Default::default()

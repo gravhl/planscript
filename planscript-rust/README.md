@@ -97,6 +97,19 @@ Supported materials include `hardwood`, `tile`, `carpet`, `concrete`, `polished_
 
 Draft mode is optional and color remains the default. Use `render { mode draft }` in PlanScript or pass `--draft` to the CLI to render SVGs with black-and-white architectural hatches. The repository example builder emits paired color and draft SVGs for every `.psc` example.
 
+## Dimension Controls
+
+PlanScript can dimension every wall and fixture, or only selected room edges and object names:
+
+```planscript
+dimensions {
+  walls bath.east kitchen.south
+  fixtures wc lav range
+}
+```
+
+Use `walls all`, `fixtures all`, or CLI shortcuts such as `--dimensions all`, `--wall-dimensions`, and `--fixture-dimensions` for broad annotation passes.
+
 ## Door Swing Conventions
 
 Rust supports construction-style door handing on door openings:
