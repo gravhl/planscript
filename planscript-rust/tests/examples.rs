@@ -1,3 +1,4 @@
+use planscript::ast::DoorSlideDirection;
 use planscript::compiler::{compile, CompileOptions};
 use planscript::geometry::OpeningPlacementType;
 use std::collections::HashMap;
@@ -158,4 +159,49 @@ fn examples_compile_with_handed_doors_and_room_connections() {
     );
     assert!(double_doors > 0, "examples should exercise double doors");
     assert!(pocket_doors > 0, "examples should exercise pocket doors");
+}
+
+#[test]
+fn pocket_door_examples_cover_syntax_variants() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let gallery_path = manifest_dir
+        .join("examples")
+        .join("pocket-door-syntax-gallery.psc");
+    let source = fs::read_to_string(&gallery_path)
+        .unwrap_or_else(|error| panic!("failed to read {}: {error}", gallery_path.display()));
+
+    assert!(source.contains("opening pocket door"));
+    assert!(source.contains("opening pocket_door"));
+    assert!(source.contains("\n    pocket\n"));
+
+    let result = compile_example(&gallery_path);
+    assert!(result.success, "{:?}", result.errors);
+    let geometry = result.geometry.expect("geometry");
+    let pockets = geometry
+        .openings
+        .iter()
+        .filter(|opening| opening.opening_type == OpeningPlacementType::Door && opening.pocket)
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        pockets.len(),
+        5,
+        "syntax gallery should render every pocket-door form"
+    );
+    assert!(
+        pockets
+            .iter()
+            .any(|opening| opening.slide == Some(DoorSlideDirection::Left)),
+        "syntax gallery should include slide left"
+    );
+    assert!(
+        pockets
+            .iter()
+            .any(|opening| opening.slide == Some(DoorSlideDirection::Right)),
+        "syntax gallery should include slide right"
+    );
+    assert!(
+        pockets.iter().any(|opening| opening.slide.is_none()),
+        "syntax gallery should include default slide direction"
+    );
 }
